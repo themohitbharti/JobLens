@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import connectDB from './db/conn';
 import {app} from './app'
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Load environment variables
 dotenv.config();
@@ -31,7 +32,19 @@ app.get('/', (req, res) => {
 });
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health',(req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+
+// test AI call
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+app.get('/AI', async(req, res) => {
+    const result = await model.generateContent("Give name of 5 best cricketers");
+    const response = result.response.text();
+    console.log(response);
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
