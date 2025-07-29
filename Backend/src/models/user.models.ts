@@ -4,7 +4,6 @@ import bcrypt from "bcrypt"
 import { config } from "../config/envConfig";
 
 export interface UserDocument extends mongoose.Document {
-    username: string;
     email: string;
     fullName: string;
     googleId?: string;
@@ -21,15 +20,6 @@ export interface UserDocument extends mongoose.Document {
 }
 
 const userSchema = new mongoose.Schema<UserDocument>({
-    username: {
-        type: String,
-        required: function(): boolean {
-            return !this.googleId; // Required only if not signed up via Google
-        },
-        lowercase:true,
-        trim: true,
-        index:true,
-    },
     email: {
         type: String,
         required: true,
@@ -88,7 +78,6 @@ userSchema.methods.generateAccessToken =  async function(){
     return jwt.sign(
         {
             _id : this._id,
-            username: this.username,
             email: this.email,
         },
 
