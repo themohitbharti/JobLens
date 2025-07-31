@@ -131,15 +131,18 @@ const resumeScanSchema = new mongoose.Schema<ResumeScanDocument>(
       targetIndustry: {
         type: String,
         required: true,
+        default: "General",
       },
       experienceLevel: {
         type: String,
         enum: ["entry", "mid", "senior", "executive"],
         required: true,
+        default: "mid",
       },
       targetJobTitle: {
         type: String,
         required: true,
+        default: "General Position",
       },
       targetCompany: String,
       aiSuggestionLevel: {

@@ -1,9 +1,41 @@
 export class DeterministicScoringService {
-  // Define the type for role weights
+  // Add a comprehensive default/general role weights
   private readonly ROLE_SPECIFIC_WEIGHTS: Record<
     string,
     Record<string, number>
   > = {
+    // 🔥 NEW: Default/General role for any job type
+    default: {
+      // Balanced weights for universal resume quality
+      contactInfoComplete: 9, // Always critical
+      professionalSummary: 8, // Very important for any role
+      roleClarity: 8, // Clear positioning matters
+      relevantExperience: 8, // Experience is always key
+      quantifiedAchievements: 7, // Numbers matter in most roles
+      skillsRelevance: 7, // Skills matching is important
+      actionVerbUsage: 6, // Good writing matters
+      industryKeywords: 6, // Some keyword matching helps
+      chronologicalOrder: 6, // Proper structure
+      consistentFormatting: 5, // Professional appearance
+      optimalLength: 5, // Right length
+      properHeadings: 5, // Clear structure
+      grammarCheck: 5, // Basic quality
+      spellingCheck: 5, // Basic quality
+      keywordDensity: 4, // Moderate importance
+      noImages: 4, // ATS compliance
+      noTables: 4, // ATS compliance
+      standardFonts: 4, // ATS compliance
+      readabilityScore: 4, // General quality
+      leadershipExamples: 3, // Nice to have
+      teamworkHighlighted: 3, // Nice to have
+      problemSolvingExamples: 3, // Nice to have
+      educationRelevance: 3, // Depends on role
+      certificationPresence: 3, // Depends on industry
+      continuousLearning: 3, // Good but not critical
+      uniquenessScore: 2, // Least critical
+      buzzwordPresence: 2, // Can be harmful if overdone
+    },
+
     "software engineer": {
       // Technical roles prioritize these
       skillsRelevance: 10,
@@ -35,6 +67,7 @@ export class DeterministicScoringService {
       uniquenessScore: 3,
       buzzwordPresence: 2,
     },
+
     "product manager": {
       // Leadership and strategy focused
       leadershipExamples: 10,
@@ -66,6 +99,7 @@ export class DeterministicScoringService {
       uniquenessScore: 4,
       buzzwordPresence: 3,
     },
+
     "marketing manager": {
       // Communication and creativity focused
       roleClarity: 9,
@@ -97,6 +131,7 @@ export class DeterministicScoringService {
       spellingCheck: 4,
       buzzwordPresence: 3,
     },
+
     "data scientist": {
       // Technical + analytical focus
       skillsRelevance: 10,
@@ -128,6 +163,7 @@ export class DeterministicScoringService {
       uniquenessScore: 3,
       buzzwordPresence: 2,
     },
+
     "sales representative": {
       // Results and communication focused
       quantifiedAchievements: 10,
@@ -161,11 +197,22 @@ export class DeterministicScoringService {
     },
   };
 
-  // Experience level modifiers - also add proper typing
+  // 🔥 UPDATE: Add default experience modifiers
   private readonly EXPERIENCE_MODIFIERS: Record<
     string,
     Record<string, number>
   > = {
+    // Default for when experience level is not provided
+    default: {
+      // Balanced modifiers - no extreme adjustments
+      relevantExperience: 1.0,
+      quantifiedAchievements: 1.0,
+      skillsRelevance: 1.0,
+      leadershipExamples: 1.0,
+      educationRelevance: 1.0,
+      certificationPresence: 1.0,
+    },
+
     entry: {
       educationRelevance: 1.3,
       certificationPresence: 1.2,
@@ -175,6 +222,7 @@ export class DeterministicScoringService {
       leadershipExamples: 0.7,
       quantifiedAchievements: 0.9,
     },
+
     mid: {
       relevantExperience: 1.2,
       quantifiedAchievements: 1.2,
@@ -183,6 +231,7 @@ export class DeterministicScoringService {
       educationRelevance: 0.9,
       leadershipExamples: 1.0,
     },
+
     senior: {
       leadershipExamples: 1.3,
       quantifiedAchievements: 1.3,
@@ -192,6 +241,7 @@ export class DeterministicScoringService {
       educationRelevance: 0.8,
       certificationPresence: 0.9,
     },
+
     executive: {
       leadershipExamples: 1.5,
       quantifiedAchievements: 1.4,
@@ -204,17 +254,27 @@ export class DeterministicScoringService {
     },
   };
 
-  // Advanced weighted scoring algorithms
+  // 🔥 UPDATE: Handle null/undefined and use defaults
   calculateOverallScore(
     benchmarkResults: any,
-    targetJobTitle: string,
-    experienceLevel: string,
-    targetIndustry: string
+    targetJobTitle?: string,
+    experienceLevel?: string,
+    targetIndustry?: string
   ): number {
+    // 🔥 Validate and set defaults
+    if (!benchmarkResults || typeof benchmarkResults !== "object") {
+      console.warn("Invalid benchmarkResults provided, using fallback scoring");
+      return 50;
+    }
+
+    const safeJobTitle = targetJobTitle?.trim() || null;
+    const safeExperienceLevel = experienceLevel?.trim() || null;
+    const safeIndustry = targetIndustry?.trim() || null;
+
     const weights = this.getAdjustedWeights(
-      targetJobTitle,
-      experienceLevel,
-      targetIndustry
+      safeJobTitle,
+      safeExperienceLevel,
+      safeIndustry
     );
 
     // Use Multiple Weighted Algorithm Approaches
@@ -235,153 +295,59 @@ export class DeterministicScoringService {
     return Math.round(Math.min(100, Math.max(0, finalScore)));
   }
 
+  // 🔥 UPDATE: Handle nulls and use defaults
   private getAdjustedWeights(
-    jobTitle: string,
-    experienceLevel: string,
-    industry: string
+    jobTitle: string | null,
+    experienceLevel: string | null,
+    industry: string | null
   ): Record<string, number> {
-    // Get base weights for job role
-    const normalizedJobTitle = this.normalizeJobTitle(jobTitle);
+    // Get base weights for job role (with default fallback)
+    const normalizedJobTitle = jobTitle
+      ? this.normalizeJobTitle(jobTitle)
+      : "default";
     let baseWeights =
       this.ROLE_SPECIFIC_WEIGHTS[normalizedJobTitle] ||
       this.getDefaultWeights();
 
-    // Apply experience level modifiers
+    // Apply experience level modifiers (with default fallback)
+    const safeExperienceLevel = experienceLevel || "default";
     const experienceModifiers =
-      this.EXPERIENCE_MODIFIERS[experienceLevel] || {};
+      this.EXPERIENCE_MODIFIERS[safeExperienceLevel] || {};
 
     const adjustedWeights: Record<string, number> = { ...baseWeights };
 
     Object.entries(experienceModifiers).forEach(([benchmark, modifier]) => {
-      if (adjustedWeights[benchmark]) {
+      if (
+        adjustedWeights[benchmark] &&
+        typeof modifier === "number" &&
+        !isNaN(modifier)
+      ) {
         adjustedWeights[benchmark] = Math.round(
           adjustedWeights[benchmark] * modifier
         );
       }
     });
 
-    // Apply industry-specific adjustments
-    this.applyIndustryAdjustments(adjustedWeights, industry);
+    // Apply industry-specific adjustments (only if industry is provided)
+    if (industry) {
+      this.applyIndustryAdjustments(adjustedWeights, industry);
+    }
 
     return adjustedWeights;
   }
 
-  private calculateWeightedAverage(
-    benchmarkResults: any,
-    weights: Record<string, number>
-  ): number {
-    let totalWeightedScore = 0;
-    let totalWeight = 0;
-
-    Object.entries(weights).forEach(([benchmark, weight]) => {
-      const result = benchmarkResults[benchmark];
-      if (result && typeof weight === "number") {
-        totalWeightedScore += result.score * weight;
-        totalWeight += weight;
-      }
-    });
-
-    return totalWeight > 0 ? (totalWeightedScore / totalWeight) * 10 : 0;
-  }
-
-  private calculateHarmonicMean(
-    benchmarkResults: any,
-    weights: Record<string, number>
-  ): number {
-    let weightedSum = 0;
-    let totalWeight = 0;
-
-    Object.entries(weights).forEach(([benchmark, weight]) => {
-      const result = benchmarkResults[benchmark];
-      if (result && result.score > 0 && typeof weight === "number") {
-        weightedSum += weight / result.score;
-        totalWeight += weight;
-      }
-    });
-
-    if (weightedSum === 0 || totalWeight === 0) return 0;
-    return (totalWeight / weightedSum) * 10;
-  }
-
-  private calculateNormalizedScore(
-    benchmarkResults: any,
-    weights: Record<string, number>
-  ): number {
-    const scores: number[] = [];
-    const weightValues: number[] = [];
-
-    Object.entries(weights).forEach(([benchmark, weight]) => {
-      const result = benchmarkResults[benchmark];
-      if (result && typeof weight === "number") {
-        scores.push(result.score);
-        weightValues.push(weight);
-      }
-    });
-
-    if (scores.length === 0) return 0;
-
-    // Z-score normalization then weighted average
-    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
-    const stdDev = Math.sqrt(
-      scores.reduce((sq, score) => sq + Math.pow(score - mean, 2), 0) /
-        scores.length
-    );
-
-    if (stdDev === 0) return mean * 10;
-
-    let normalizedWeightedSum = 0;
-    let totalWeight = 0;
-
-    scores.forEach((score, index) => {
-      const normalizedScore = (score - mean) / stdDev;
-      const adjustedScore = Math.max(
-        0,
-        Math.min(10, (normalizedScore + 2) * 2.5)
-      ); // Scale to 0-10
-      normalizedWeightedSum += adjustedScore * weightValues[index];
-      totalWeight += weightValues[index];
-    });
-
-    return totalWeight > 0 ? (normalizedWeightedSum / totalWeight) * 10 : 0;
-  }
-
-  private calculatePenalizedScore(
-    benchmarkResults: any,
-    weights: Record<string, number>
-  ): number {
-    const criticalBenchmarks = [
-      "contactInfoComplete",
-      "relevantExperience",
-      "skillsRelevance",
-      "roleClarity",
-    ];
-    let baseScore = this.calculateWeightedAverage(benchmarkResults, weights);
-
-    // Apply penalties for missing critical elements
-    criticalBenchmarks.forEach((benchmark) => {
-      const result = benchmarkResults[benchmark];
-      if (!result || result.score < 3) {
-        baseScore *= 0.85; // 15% penalty for each critical missing element
-      }
-    });
-
-    // Bonus for exceptional performance
-    let exceptionalCount = 0;
-    Object.values(benchmarkResults).forEach((result: any) => {
-      if (result && result.score >= 9) {
-        exceptionalCount++;
-      }
-    });
-
-    if (exceptionalCount >= 5) {
-      baseScore *= 1.1; // 10% bonus for 5+ exceptional scores
+  // 🔥 UPDATE: Better job title normalization with default
+  private normalizeJobTitle(jobTitle: string): string {
+    if (!jobTitle || typeof jobTitle !== "string") {
+      return "default";
     }
 
-    return baseScore;
-  }
+    const title = jobTitle.toLowerCase().trim();
 
-  private normalizeJobTitle(jobTitle: string): string {
-    const title = jobTitle.toLowerCase();
+    // If title is empty after trimming
+    if (title.length === 0) {
+      return "default";
+    }
 
     if (
       title.includes("software") ||
@@ -406,51 +372,80 @@ export class DeterministicScoringService {
       return "sales representative";
     }
 
-    return "software engineer"; // Default fallback
+    // 🔥 Return default instead of hard-coded role
+    return "default";
   }
 
+  // 🔥 UPDATE: Industry adjustments only if industry provided
   private applyIndustryAdjustments(
     weights: Record<string, number>,
     industry: string
   ): void {
-    const industryLower = industry.toLowerCase();
+    if (!industry || typeof industry !== "string") {
+      return; // No adjustments for invalid/missing industry
+    }
 
+    const industryLower = industry.toLowerCase().trim();
+
+    // Only apply if we actually recognize the industry
     if (industryLower.includes("tech") || industryLower.includes("software")) {
-      weights.skillsRelevance = Math.round(weights.skillsRelevance * 1.2);
-      weights.industryKeywords = Math.round(weights.industryKeywords * 1.1);
-      weights.continuousLearning = Math.round(weights.continuousLearning * 1.1);
+      this.safeAdjustWeight(weights, "skillsRelevance", 1.2);
+      this.safeAdjustWeight(weights, "industryKeywords", 1.1);
+      this.safeAdjustWeight(weights, "continuousLearning", 1.1);
     } else if (
       industryLower.includes("finance") ||
       industryLower.includes("banking")
     ) {
-      weights.quantifiedAchievements = Math.round(
-        weights.quantifiedAchievements * 1.3
-      );
-      weights.certificationPresence = Math.round(
-        weights.certificationPresence * 1.2
-      );
-      weights.educationRelevance = Math.round(weights.educationRelevance * 1.1);
+      this.safeAdjustWeight(weights, "quantifiedAchievements", 1.3);
+      this.safeAdjustWeight(weights, "certificationPresence", 1.2);
+      this.safeAdjustWeight(weights, "educationRelevance", 1.1);
     } else if (industryLower.includes("healthcare")) {
-      weights.certificationPresence = Math.round(
-        weights.certificationPresence * 1.4
-      );
-      weights.continuousLearning = Math.round(weights.continuousLearning * 1.2);
-      weights.educationRelevance = Math.round(weights.educationRelevance * 1.2);
+      this.safeAdjustWeight(weights, "certificationPresence", 1.4);
+      this.safeAdjustWeight(weights, "continuousLearning", 1.2);
+      this.safeAdjustWeight(weights, "educationRelevance", 1.2);
     }
+    // If industry doesn't match known patterns, no adjustments (which is fine)
   }
 
+  // 🔥 UPDATE: Use default weights
   private getDefaultWeights(): Record<string, number> {
-    return this.ROLE_SPECIFIC_WEIGHTS["software engineer"];
+    return this.ROLE_SPECIFIC_WEIGHTS["default"];
   }
 
+  // 🔥 UPDATE: Section score calculation with nulls handling
   calculateSectionScore(
     sectionName: string,
     benchmarkResults: any,
-    jobTitle: string,
-    experienceLevel: string
+    jobTitle?: string,
+    experienceLevel?: string
   ): number {
-    const sectionBenchmarks = this.getSectionBenchmarks(sectionName);
-    const weights = this.getAdjustedWeights(jobTitle, experienceLevel, "");
+    if (
+      !sectionName?.trim() ||
+      !benchmarkResults ||
+      typeof benchmarkResults !== "object"
+    ) {
+      console.warn(
+        `Invalid parameters for section score calculation: ${sectionName}`
+      );
+      return 5; // Fallback score
+    }
+
+    const safeSectionName = sectionName.trim();
+    const safeJobTitle = jobTitle?.trim() || null;
+    const safeExperienceLevel = experienceLevel?.trim() || null;
+
+    const sectionBenchmarks = this.getSectionBenchmarks(safeSectionName);
+
+    if (sectionBenchmarks.length === 0) {
+      console.warn(`No benchmarks found for section: ${safeSectionName}`);
+      return 5;
+    }
+
+    const weights = this.getAdjustedWeights(
+      safeJobTitle,
+      safeExperienceLevel,
+      null
+    );
 
     let weightedScore = 0;
     let totalWeight = 0;
@@ -459,13 +454,141 @@ export class DeterministicScoringService {
       const result = benchmarkResults[benchmark];
       const weight = weights[benchmark] || 1;
 
-      if (result) {
+      if (result && typeof result.score === "number" && !isNaN(result.score)) {
         weightedScore += result.score * weight;
         totalWeight += weight;
       }
     });
 
     return totalWeight > 0 ? Math.round(weightedScore / totalWeight) : 5;
+  }
+
+  private calculateWeightedAverage(
+    benchmarkResults: any,
+    weights: Record<string, number>
+  ): number {
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+
+    Object.entries(weights).forEach(([benchmark, weight]) => {
+      const result = benchmarkResults[benchmark];
+      if (
+        result &&
+        typeof result.score === "number" &&
+        !isNaN(result.score) &&
+        typeof weight === "number" &&
+        !isNaN(weight)
+      ) {
+        totalWeightedScore += result.score * weight;
+        totalWeight += weight;
+      }
+    });
+
+    return totalWeight > 0 ? (totalWeightedScore / totalWeight) * 10 : 50;
+  }
+
+  private calculateHarmonicMean(
+    benchmarkResults: any,
+    weights: Record<string, number>
+  ): number {
+    let weightedSum = 0;
+    let totalWeight = 0;
+
+    Object.entries(weights).forEach(([benchmark, weight]) => {
+      const result = benchmarkResults[benchmark];
+      if (
+        result &&
+        typeof result.score === "number" &&
+        result.score > 0 &&
+        !isNaN(result.score) &&
+        typeof weight === "number" &&
+        !isNaN(weight)
+      ) {
+        weightedSum += weight / result.score;
+        totalWeight += weight;
+      }
+    });
+
+    if (weightedSum === 0 || totalWeight === 0) return 50;
+    return (totalWeight / weightedSum) * 10;
+  }
+
+  private calculateNormalizedScore(
+    benchmarkResults: any,
+    weights: Record<string, number>
+  ): number {
+    const scores: number[] = [];
+    const weightValues: number[] = [];
+
+    Object.entries(weights).forEach(([benchmark, weight]) => {
+      const result = benchmarkResults[benchmark];
+      if (result && typeof weight === "number") {
+        scores.push(result.score);
+        weightValues.push(weight);
+      }
+    });
+
+    if (scores.length === 0) return 50;
+
+    // Z-score normalization then weighted average
+    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const stdDev = Math.sqrt(
+      scores.reduce((sq, score) => sq + Math.pow(score - mean, 2), 0) /
+        scores.length
+    );
+
+    if (stdDev === 0) return mean * 10;
+
+    let normalizedWeightedSum = 0;
+    let totalWeight = 0;
+
+    scores.forEach((score, index) => {
+      const normalizedScore = (score - mean) / stdDev;
+      const adjustedScore = Math.max(
+        0,
+        Math.min(10, (normalizedScore + 2) * 2.5)
+      );
+      normalizedWeightedSum += adjustedScore * weightValues[index];
+      totalWeight += weightValues[index];
+    });
+
+    return totalWeight > 0 ? (normalizedWeightedSum / totalWeight) * 10 : 50;
+  }
+
+  private calculatePenalizedScore(
+    benchmarkResults: any,
+    weights: Record<string, number>
+  ): number {
+    const criticalBenchmarks = [
+      "contactInfoComplete",
+      "relevantExperience",
+      "skillsRelevance",
+      "roleClarity",
+    ];
+
+    let baseScore = this.calculateWeightedAverage(benchmarkResults, weights);
+
+    // Apply penalties for missing critical elements
+    criticalBenchmarks.forEach((benchmark) => {
+      const result = benchmarkResults[benchmark];
+      if (!result || result.score < 3) {
+        baseScore *= 0.85; // 15% penalty for each critical missing element
+      }
+    });
+
+    // Bonus for exceptional performance
+    let exceptionalCount = 0;
+    Object.values(benchmarkResults).forEach((result: any) => {
+      if (result && result.score >= 9) {
+        exceptionalCount++;
+      }
+    });
+
+    if (exceptionalCount >= 5) {
+      baseScore *= 1.1; // 10% bonus for 5+ exceptional scores
+    }
+
+    return baseScore;
   }
 
   private getSectionBenchmarks(sectionName: string): string[] {
@@ -494,4 +617,21 @@ export class DeterministicScoringService {
 
     return sectionMapping[sectionName] || [];
   }
+
+  // Helper method for safe weight adjustment (already exists)
+  private safeAdjustWeight(
+    weights: Record<string, number>,
+    key: string,
+    multiplier: number
+  ): void {
+    if (
+      weights[key] &&
+      typeof weights[key] === "number" &&
+      !isNaN(weights[key])
+    ) {
+      weights[key] = Math.round(weights[key] * multiplier);
+    }
+  }
+
+  // ...rest of the existing methods remain the same...
 }

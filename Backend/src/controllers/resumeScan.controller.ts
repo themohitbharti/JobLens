@@ -90,7 +90,7 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     // Store file path for cleanup
     uploadedFilePath = req.file.path;
 
-    // Extract scan preferences from request body
+    // Extract scan preferences from request body with defaults
     const {
       targetIndustry,
       experienceLevel,
@@ -100,49 +100,46 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       keywords,
     } = req.body;
 
-    if (!targetIndustry || !experienceLevel || !targetJobTitle) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Target industry, experience level, and job title are required",
-      });
-    }
+    const analysisPreferences = {
+      targetIndustry: targetIndustry?.trim() || "General", // Default industry
+      experienceLevel: experienceLevel?.trim() || "mid", // Default experience level
+      targetJobTitle: targetJobTitle?.trim() || "General Position", // Default job title
+      targetCompany: targetCompany?.trim() || null,
+      keywords: keywords
+        ? keywords.split(",").map((k: string) => k.trim())
+        : [],
+    };
 
     // Extract text from PDF
     const extractedContent = await extractTextFromPDF(req.file.path);
 
-    // Analyze with Gemini (ONLY for benchmarks and suggestions, NOT scores)
+    // Analyze with Gemini using safe preferences
     const geminiService = new GeminiAnalysisService();
-    const analysisResult = await geminiService.analyzeResume(extractedContent, {
-      targetIndustry,
-      experienceLevel,
-      targetJobTitle,
-      targetCompany,
-      keywords: keywords
-        ? keywords.split(",").map((k: string) => k.trim())
-        : [],
-    });
+    const analysisResult = await geminiService.analyzeResume(
+      extractedContent,
+      analysisPreferences
+    );
 
     // Calculate deterministic scores using algorithm
     const scoringService = new DeterministicScoringService();
 
-    // Calculate overall score using algorithm (NOT from AI)
+    // Calculate overall score using algorithm (with defaults if needed)
     const calculatedOverallScore = scoringService.calculateOverallScore(
       analysisResult.benchmarkResults,
-      targetJobTitle,
-      experienceLevel,
-      targetIndustry
+      analysisPreferences.targetJobTitle, // Use safe preference
+      analysisPreferences.experienceLevel, // Use safe preference
+      analysisPreferences.targetIndustry // Use safe preference
     );
 
-    // Calculate section scores using algorithm (NOT from AI)
+    // Calculate section scores using algorithm (with defaults if needed)
     const calculatedSectionScores = analysisResult.sectionAnalysis.map(
       (section) => ({
         sectionName: section.sectionName,
         score: scoringService.calculateSectionScore(
           section.sectionName,
           analysisResult.benchmarkResults,
-          targetJobTitle,
-          experienceLevel
+          analysisPreferences.targetJobTitle, // Use safe preference
+          analysisPreferences.experienceLevel // Use safe preference
         ),
         weight: 1,
       })
@@ -155,11 +152,10 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     const detailedFeedback = analysisResult.sectionAnalysis.map((section) => ({
       sectionName: section.sectionName,
       currentScore: scoringService.calculateSectionScore(
-        // Use algorithm score
         section.sectionName,
         analysisResult.benchmarkResults,
-        targetJobTitle,
-        experienceLevel
+        analysisPreferences.targetJobTitle, // Use safe preference
+        analysisPreferences.experienceLevel // Use safe preference
       ),
       issues: section.issues,
       aiSuggestion: analysisResult.aiSuggestions.find(
@@ -184,27 +180,25 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       benchmarkResults: analysisResult.benchmarkResults,
     }));
 
-    // Create resume scan document (use calculated scores)
+    // Create resume scan document (use safe preferences)
     const resumeScan = new ResumeScan({
       userId: req.user._id,
       fileName: req.file.originalname,
-      overallScore: calculatedOverallScore, //Algorithm score, not AI
+      overallScore: calculatedOverallScore,
       sectionsFound: extractedContent.sections.map((s) => s.sectionName),
-      sectionScores: calculatedSectionScores, //Algorithm scores, not AI
+      sectionScores: calculatedSectionScores,
       scanPreferences: {
-        targetIndustry,
-        experienceLevel,
-        targetJobTitle,
-        targetCompany,
+        targetIndustry: analysisPreferences.targetIndustry, // Use safe preference
+        experienceLevel: analysisPreferences.experienceLevel, // Use safe preference
+        targetJobTitle: analysisPreferences.targetJobTitle, // Use safe preference
+        targetCompany: analysisPreferences.targetCompany,
         aiSuggestionLevel,
-        keywords: keywords
-          ? keywords.split(",").map((k: string) => k.trim())
-          : [],
+        keywords: analysisPreferences.keywords,
       },
       detailedFeedback,
       overallBenchmarks: analysisResult.benchmarkResults,
       processingTime,
-      improvementPotential: Math.max(0, 100 - calculatedOverallScore), // Use calculated score
+      improvementPotential: Math.max(0, 100 - calculatedOverallScore),
     });
 
     await resumeScan.save();
@@ -215,7 +209,6 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     user.resumeStats.lastScanDate = new Date();
 
     if (calculatedOverallScore > user.resumeStats.bestScore) {
-      // Use calculated score
       user.resumeStats.bestScore = calculatedOverallScore;
     }
 
@@ -233,13 +226,23 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       message: "Resume analyzed successfully",
       data: {
         scanId: resumeScan._id,
-        overallScore: calculatedOverallScore, //Algorithm score
-        sectionScores: calculatedSectionScores, //Algorithm scores
+        overallScore: calculatedOverallScore,
+        sectionScores: calculatedSectionScores,
         detailedFeedback: resumeScan.detailedFeedback,
         benchmarkResults: resumeScan.overallBenchmarks,
         processingTime,
         improvementPotential: resumeScan.improvementPotential,
         sectionsFound: resumeScan.sectionsFound,
+        usedPreferences: {
+          targetIndustry: analysisPreferences.targetIndustry,
+          experienceLevel: analysisPreferences.experienceLevel,
+          targetJobTitle: analysisPreferences.targetJobTitle,
+          isUsingDefaults: {
+            industry: !targetIndustry?.trim(),
+            experienceLevel: !experienceLevel?.trim(),
+            jobTitle: !targetJobTitle?.trim(),
+          },
+        },
       },
     });
   } catch (error: any) {

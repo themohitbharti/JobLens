@@ -19,6 +19,7 @@ yarn-error.log*
 backend/dist/
 backend/coverage/
 backend/.env
+uploads/
 
 # Frontend-specific
 /frontend/node_modules/
