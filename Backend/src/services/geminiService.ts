@@ -292,13 +292,30 @@ Be thorough in your analysis of all 20 benchmarks. ${
         const verbCount = result.verbCount || 0;
         return Math.min(10, baseScore + Math.min(3, Math.floor(verbCount / 3)));
 
+      // 🔥 FIXED: Handle contactInfoComplete properly
       case "contactInfoComplete":
-        const completeness = result.completenessScore || 0;
-        return Math.min(10, completeness);
+        // If we have a specific completeness score, use it
+        if (
+          result.completenessScore &&
+          typeof result.completenessScore === "number"
+        ) {
+          return Math.min(10, result.completenessScore);
+        }
+        // Otherwise, use pass/fail logic with enhancement
+        return result.passed
+          ? Math.min(10, baseScore + 4)
+          : Math.max(0, baseScore - 2);
 
+      // 🔥 FIXED: Handle professionalSummary properly
       case "professionalSummary":
-        const quality = result.qualityScore || 0;
-        return Math.min(10, quality);
+        // If we have a specific quality score, use it
+        if (result.qualityScore && typeof result.qualityScore === "number") {
+          return Math.min(10, result.qualityScore);
+        }
+        // Otherwise, use pass/fail logic with enhancement
+        return result.passed
+          ? Math.min(10, baseScore + 4)
+          : Math.max(0, baseScore - 2);
 
       case "optimalLength":
         const wordCount = result.wordCount || 0;
@@ -314,13 +331,30 @@ Be thorough in your analysis of all 20 benchmarks. ${
         if (density > 0) return 5;
         return 2;
 
+      // 🔥 FIXED: Handle relevantExperience properly
       case "relevantExperience":
-        const relevanceScore = result.relevanceScore || 0;
-        return Math.min(10, relevanceScore);
+        // If we have a specific relevance score, use it
+        if (
+          result.relevanceScore &&
+          typeof result.relevanceScore === "number"
+        ) {
+          return Math.min(10, result.relevanceScore);
+        }
+        // Otherwise, use pass/fail logic with enhancement
+        return result.passed
+          ? Math.min(10, baseScore + 4)
+          : Math.max(0, baseScore - 2);
 
+      // 🔥 FIXED: Handle skillsRelevance properly
       case "skillsRelevance":
-        const matchScore = result.matchScore || 0;
-        return Math.min(10, matchScore);
+        // If we have a specific match score, use it
+        if (result.matchScore && typeof result.matchScore === "number") {
+          return Math.min(10, result.matchScore);
+        }
+        // Otherwise, use pass/fail logic with enhancement
+        return result.passed
+          ? Math.min(10, baseScore + 4)
+          : Math.max(0, baseScore - 2);
 
       case "leadershipExamples":
         const leadershipCount = result.exampleCount || 0;
@@ -334,7 +368,7 @@ Be thorough in your analysis of all 20 benchmarks. ${
         const certCount = result.certCount || 0;
         return Math.min(10, baseScore + Math.min(3, certCount));
 
-      // Boolean benchmarks (ATS compliance)
+      // Boolean benchmarks (ATS compliance) - these work correctly
       case "noImages":
       case "noTables":
       case "standardFonts":
@@ -342,15 +376,18 @@ Be thorough in your analysis of all 20 benchmarks. ${
       case "chronologicalOrder":
         return result.passed ? 10 : 0;
 
-      // Quality assessments
+      // 🔥 FIXED: Handle other quality assessments properly
       case "teamworkHighlighted":
       case "educationRelevance":
         return result.passed
-          ? Math.min(10, baseScore + 2)
-          : Math.max(0, baseScore - 2);
+          ? Math.min(10, baseScore + 4) // Give higher score for pass
+          : Math.max(0, baseScore - 2); // Lower score for fail
 
       default:
-        return baseScore;
+        // Default case - use enhanced pass/fail scoring
+        return result.passed
+          ? Math.min(10, baseScore + 2)
+          : Math.max(0, baseScore - 2);
     }
   }
 
