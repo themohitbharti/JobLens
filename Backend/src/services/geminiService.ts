@@ -243,7 +243,7 @@ Be thorough in your analysis of all 20 benchmarks. ${
     allBenchmarks.forEach((benchmark) => {
       const result = benchmarkResults[benchmark];
 
-      // 🔥 SPECIAL HANDLING: Always use deterministic validation for contactInfoComplete
+      // Always use deterministic validation for contactInfoComplete
       if (benchmark === "contactInfoComplete") {
         const score = this.validateContactInfo(content.fullText);
         processedResults[benchmark] = {
@@ -285,7 +285,7 @@ Be thorough in your analysis of all 20 benchmarks. ${
 
     // Enhance score based on specific evidence and metrics
     switch (benchmark) {
-      // 🔥 FIXED: Make contactInfoComplete completely deterministic
+      // Make contactInfoComplete completely deterministic
       case "contactInfoComplete":
         return this.validateContactInfo(content.fullText);
 
@@ -306,7 +306,7 @@ Be thorough in your analysis of all 20 benchmarks. ${
         const verbCount = result.verbCount || 0;
         return Math.min(10, baseScore + Math.min(3, Math.floor(verbCount / 3)));
 
-      // 🔥 FIXED: Handle professionalSummary properly
+      // Handle professionalSummary properly
       case "professionalSummary":
         // If we have a specific quality score, use it
         if (result.qualityScore && typeof result.qualityScore === "number") {
@@ -331,7 +331,7 @@ Be thorough in your analysis of all 20 benchmarks. ${
         if (density > 0) return 5;
         return 2;
 
-      // 🔥 FIXED: Handle relevantExperience properly
+      // Handle relevantExperience properly
       case "relevantExperience":
         // If we have a specific relevance score, use it
         if (
@@ -345,7 +345,7 @@ Be thorough in your analysis of all 20 benchmarks. ${
           ? Math.min(10, baseScore + 4)
           : Math.max(0, baseScore - 2);
 
-      // 🔥 FIXED: Handle skillsRelevance properly
+      // Handle skillsRelevance properly
       case "skillsRelevance":
         // If we have a specific match score, use it
         if (result.matchScore && typeof result.matchScore === "number") {
@@ -376,7 +376,7 @@ Be thorough in your analysis of all 20 benchmarks. ${
       case "chronologicalOrder":
         return result.passed ? 10 : 0;
 
-      // 🔥 FIXED: Handle other quality assessments properly
+      // Handle other quality assessments properly
       case "teamworkHighlighted":
       case "educationRelevance":
         return result.passed
@@ -391,7 +391,7 @@ Be thorough in your analysis of all 20 benchmarks. ${
     }
   }
 
-  // 🔥 NEW: Reliable contact info validation method
+  // Reliable contact info validation method
   private validateContactInfo(text: string): number {
     const lowerText = text.toLowerCase();
     let score = 0;
@@ -464,7 +464,7 @@ Be thorough in your analysis of all 20 benchmarks. ${
     const text = content.fullText.toLowerCase();
 
     switch (benchmark) {
-      // 🔥 FIXED: Use the same reliable validation for fallback
+      // Use the same reliable validation for fallback
       case "contactInfoComplete":
         return this.validateContactInfo(content.fullText);
 

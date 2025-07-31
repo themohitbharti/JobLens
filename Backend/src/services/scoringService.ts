@@ -155,6 +155,78 @@ export class DeterministicScoringService {
     },
   };
 
+  // Section importance weights by role
+  private readonly SECTION_IMPORTANCE_WEIGHTS: Record<
+    string,
+    Record<string, number>
+  > = {
+    default: {
+      "Contact Information": 0.15, // 15% - Always critical
+      "Professional Summary": 0.2, // 20% - Very important
+      "Work Experience": 0.3, // 30% - Most important
+      Skills: 0.15, // 15% - Important
+      Education: 0.1, // 10% - Moderate
+      Projects: 0.05, // 5% - Nice to have
+      Certifications: 0.03, // 3% - Nice to have
+      Achievements: 0.02, // 2% - Nice to have
+    },
+
+    "software engineer": {
+      "Contact Information": 0.1,
+      "Professional Summary": 0.15,
+      "Work Experience": 0.35, // Higher for tech roles
+      Skills: 0.25, // Much higher for tech
+      Education: 0.08,
+      Projects: 0.05, // Important for developers
+      Certifications: 0.02,
+      Achievements: 0.0,
+    },
+
+    "product manager": {
+      "Contact Information": 0.12,
+      "Professional Summary": 0.25, // Higher for leadership
+      "Work Experience": 0.35,
+      Skills: 0.15,
+      Education: 0.08,
+      Projects: 0.03,
+      Certifications: 0.01,
+      Achievements: 0.01,
+    },
+
+    "marketing manager": {
+      "Contact Information": 0.15,
+      "Professional Summary": 0.25,
+      "Work Experience": 0.3,
+      Skills: 0.15,
+      Education: 0.08,
+      Projects: 0.04,
+      Certifications: 0.02,
+      Achievements: 0.01,
+    },
+
+    "data scientist": {
+      "Contact Information": 0.08,
+      "Professional Summary": 0.15,
+      "Work Experience": 0.3,
+      Skills: 0.25,
+      Education: 0.15, // Higher for data science
+      Projects: 0.05,
+      Certifications: 0.02,
+      Achievements: 0.0,
+    },
+
+    "sales representative": {
+      "Contact Information": 0.15,
+      "Professional Summary": 0.2,
+      "Work Experience": 0.35,
+      Skills: 0.12,
+      Education: 0.05,
+      Projects: 0.02,
+      Certifications: 0.01,
+      Achievements: 0.1, // Higher for sales achievements
+    },
+  };
+
   private readonly EXPERIENCE_MODIFIERS: Record<
     string,
     Record<string, number>
@@ -210,52 +282,72 @@ export class DeterministicScoringService {
     },
   };
 
-  // Handle null/undefined and use defaults
+  // Calculate overall score from section scores
   calculateOverallScore(
     benchmarkResults: any,
     targetJobTitle?: string,
     experienceLevel?: string,
     targetIndustry?: string
   ): number {
-    // Validate and set defaults
+    // Validate inputs
     if (!benchmarkResults || typeof benchmarkResults !== "object") {
       console.warn("Invalid benchmarkResults provided, using fallback scoring");
       return 50;
     }
 
-    const safeJobTitle = targetJobTitle?.trim() || null;
-    const safeExperienceLevel = experienceLevel?.trim() || null;
-    const safeIndustry = targetIndustry?.trim() || null;
+    const safeJobTitle = targetJobTitle?.trim() || undefined;
+    const safeExperienceLevel = experienceLevel?.trim() || undefined;
+    const safeIndustry = targetIndustry?.trim() || undefined;
 
-    const weights = this.getAdjustedWeights(
+    // Get section importance weights for this role
+    const sectionWeights = this.getSectionImportanceWeights(safeJobTitle);
+
+    // Calculate individual section scores
+    const sectionScores: Record<string, number> = {};
+    const definedSections = Object.keys(sectionWeights);
+
+    definedSections.forEach((sectionName) => {
+      sectionScores[sectionName] = this.calculateSectionScore(
+        sectionName,
+        benchmarkResults,
+        safeJobTitle,
+        safeExperienceLevel
+      );
+    });
+
+    // Calculate weighted average of section scores
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+
+    Object.entries(sectionWeights).forEach(([sectionName, weight]) => {
+      const sectionScore = sectionScores[sectionName];
+      if (typeof sectionScore === "number" && !isNaN(sectionScore)) {
+        totalWeightedScore += sectionScore * weight;
+        totalWeight += weight;
+      }
+    });
+
+    // Convert from 0-10 scale to 0-100 scale
+    const baseScore =
+      totalWeight > 0 ? (totalWeightedScore / totalWeight) * 10 : 50;
+
+    // Apply role and industry bonuses/penalties
+    const adjustedScore = this.applyOverallAdjustments(
+      baseScore,
+      sectionScores,
+      benchmarkResults,
       safeJobTitle,
-      safeExperienceLevel,
       safeIndustry
     );
 
-    // Use Multiple Weighted Algorithm Approaches
-    const scores = {
-      weightedAverage: this.calculateWeightedAverage(benchmarkResults, weights),
-      harmonicMean: this.calculateHarmonicMean(benchmarkResults, weights),
-      normalizedScore: this.calculateNormalizedScore(benchmarkResults, weights),
-      penalizedScore: this.calculatePenalizedScore(benchmarkResults, weights),
-    };
-
-    // Combine algorithms with their own weights
-    const finalScore =
-      scores.weightedAverage * 0.4 + // Primary method
-      scores.normalizedScore * 0.3 + // Handles outliers
-      scores.penalizedScore * 0.2 + // Penalizes missing critical elements
-      scores.harmonicMean * 0.1; // Prevents inflation from single high scores
-
-    return Math.round(Math.min(100, Math.max(0, finalScore)));
+    return Math.round(Math.min(100, Math.max(0, adjustedScore)));
   }
 
-  // Handle nulls and use defaults
+  // Handle null/undefined and use defaults
   private getAdjustedWeights(
-    jobTitle: string | null,
-    experienceLevel: string | null,
-    industry: string | null
+    jobTitle: string | undefined, // Changed from string | null
+    experienceLevel: string | undefined, // Changed from string | null
+    industry: string | undefined // Changed from string | null
   ): Record<string, number> {
     // Get base weights for job role (with default fallback)
     const normalizedJobTitle = jobTitle
@@ -290,6 +382,19 @@ export class DeterministicScoringService {
     }
 
     return adjustedWeights;
+  }
+
+  // Get section importance weights by role
+  private getSectionImportanceWeights(
+    jobTitle: string | undefined
+  ): Record<string, number> {
+    const normalizedJobTitle = jobTitle
+      ? this.normalizeJobTitle(jobTitle)
+      : "default";
+    return (
+      this.SECTION_IMPORTANCE_WEIGHTS[normalizedJobTitle] ||
+      this.SECTION_IMPORTANCE_WEIGHTS["default"]
+    );
   }
 
   // Better job title normalization with default
@@ -366,6 +471,122 @@ export class DeterministicScoringService {
     return this.ROLE_SPECIFIC_WEIGHTS["default"];
   }
 
+  // Apply overall adjustments based on performance patterns
+  private applyOverallAdjustments(
+    baseScore: number,
+    sectionScores: Record<string, number>,
+    benchmarkResults: any,
+    jobTitle: string | undefined,
+    industry: string | undefined
+  ): number {
+    let adjustedScore = baseScore;
+
+    // 1. Consistency bonus - reward well-rounded resumes
+    const sectionScoreValues = Object.values(sectionScores).filter(
+      (score) => !isNaN(score)
+    );
+    if (sectionScoreValues.length > 0) {
+      const mean =
+        sectionScoreValues.reduce((a, b) => a + b, 0) /
+        sectionScoreValues.length;
+      const variance =
+        sectionScoreValues.reduce(
+          (sq, score) => sq + Math.pow(score - mean, 2),
+          0
+        ) / sectionScoreValues.length;
+      const standardDev = Math.sqrt(variance);
+
+      // Lower standard deviation = more consistent = bonus
+      if (standardDev < 1.5) {
+        adjustedScore *= 1.05; // 5% bonus for consistency
+      } else if (standardDev > 3.0) {
+        adjustedScore *= 0.95; // 5% penalty for inconsistency
+      }
+    }
+
+    // 2. Critical benchmarks penalty
+    const criticalBenchmarks = [
+      "contactInfoComplete",
+      "relevantExperience",
+      "skillsRelevance",
+      "roleClarity",
+    ];
+
+    let criticalFailures = 0;
+    criticalBenchmarks.forEach((benchmark) => {
+      const result = benchmarkResults[benchmark];
+      if (!result || result.score < 5) {
+        criticalFailures++;
+      }
+    });
+
+    if (criticalFailures > 0) {
+      adjustedScore *= Math.pow(0.9, criticalFailures); // 10% penalty per critical failure
+    }
+
+    // 3. Excellence bonus - reward exceptional sections
+    let excellentSections = 0;
+    Object.values(sectionScores).forEach((score) => {
+      if (score >= 9) excellentSections++;
+    });
+
+    if (excellentSections >= 3) {
+      adjustedScore *= 1.1; // 10% bonus for 3+ excellent sections
+    }
+
+    // 4. Industry-specific adjustments
+    if (industry) {
+      adjustedScore = this.applyIndustryOverallAdjustments(
+        adjustedScore,
+        sectionScores,
+        industry
+      );
+    }
+
+    return adjustedScore;
+  }
+
+  // Industry-specific overall adjustments
+  private applyIndustryOverallAdjustments(
+    score: number,
+    sectionScores: Record<string, number>,
+    industry: string
+  ): number {
+    const industryLower = industry.toLowerCase().trim();
+    let adjustedScore = score;
+
+    if (industryLower.includes("tech") || industryLower.includes("software")) {
+      // Tech industry values skills and projects highly
+      const skillsScore = sectionScores["Skills"] || 0;
+      const projectsScore = sectionScores["Projects"] || 0;
+
+      if (skillsScore >= 8 && projectsScore >= 7) {
+        adjustedScore *= 1.08; // 8% bonus for strong tech profile
+      }
+    } else if (
+      industryLower.includes("finance") ||
+      industryLower.includes("banking")
+    ) {
+      // Finance values achievements and certifications
+      const achievementsScore = sectionScores["Achievements"] || 0;
+      const certsScore = sectionScores["Certifications"] || 0;
+
+      if (achievementsScore >= 7 && certsScore >= 6) {
+        adjustedScore *= 1.06; // 6% bonus for finance credentials
+      }
+    } else if (industryLower.includes("healthcare")) {
+      // Healthcare values education and certifications highly
+      const educationScore = sectionScores["Education"] || 0;
+      const certsScore = sectionScores["Certifications"] || 0;
+
+      if (educationScore >= 8 && certsScore >= 7) {
+        adjustedScore *= 1.07; // 7% bonus for healthcare qualifications
+      }
+    }
+
+    return adjustedScore;
+  }
+
   // Section score calculation with nulls handling
   calculateSectionScore(
     sectionName: string,
@@ -385,8 +606,9 @@ export class DeterministicScoringService {
     }
 
     const safeSectionName = sectionName.trim();
-    const safeJobTitle = jobTitle?.trim() || null;
-    const safeExperienceLevel = experienceLevel?.trim() || null;
+    // Use undefined consistently
+    const safeJobTitle = jobTitle?.trim() || undefined;
+    const safeExperienceLevel = experienceLevel?.trim() || undefined;
 
     const sectionBenchmarks = this.getSectionBenchmarks(safeSectionName);
 
@@ -395,10 +617,11 @@ export class DeterministicScoringService {
       return 5;
     }
 
+    // Pass undefined instead of null
     const weights = this.getAdjustedWeights(
       safeJobTitle,
       safeExperienceLevel,
-      null
+      undefined // Changed from null to undefined
     );
 
     let weightedScore = 0;
@@ -414,7 +637,56 @@ export class DeterministicScoringService {
       }
     });
 
-    return totalWeight > 0 ? Math.round(weightedScore / totalWeight) : 5;
+    const finalScore =
+      totalWeight > 0 ? Math.round(weightedScore / totalWeight) : 5;
+
+    // Optional: Add section-specific adjustments
+    return this.applySectionSpecificAdjustments(
+      safeSectionName,
+      finalScore,
+      benchmarkResults
+    );
+  }
+
+  // Section-specific adjustments
+  private applySectionSpecificAdjustments(
+    sectionName: string,
+    baseScore: number,
+    benchmarkResults: any
+  ): number {
+    let adjustedScore = baseScore;
+
+    switch (sectionName) {
+      case "Work Experience":
+        // Bonus for strong leadership + achievements combination
+        const leadership = benchmarkResults["leadershipExamples"]?.score || 0;
+        const achievements =
+          benchmarkResults["quantifiedAchievements"]?.score || 0;
+        if (leadership >= 8 && achievements >= 8) {
+          adjustedScore = Math.min(10, adjustedScore * 1.1);
+        }
+        break;
+
+      case "Skills":
+        // Bonus for both skills relevance + industry keywords
+        const skillsRel = benchmarkResults["skillsRelevance"]?.score || 0;
+        const keywords = benchmarkResults["industryKeywords"]?.score || 0;
+        if (skillsRel >= 8 && keywords >= 7) {
+          adjustedScore = Math.min(10, adjustedScore * 1.08);
+        }
+        break;
+
+      case "Professional Summary":
+        // Penalty for missing professional summary but having role clarity
+        const summary = benchmarkResults["professionalSummary"]?.score || 0;
+        const clarity = benchmarkResults["roleClarity"]?.score || 0;
+        if (summary < 5 && clarity >= 7) {
+          adjustedScore = Math.max(0, adjustedScore * 0.85); // Encourage having both
+        }
+        break;
+    }
+
+    return Math.round(Math.min(10, Math.max(0, adjustedScore)));
   }
 
   private calculateWeightedAverage(
@@ -582,5 +854,45 @@ export class DeterministicScoringService {
     ) {
       weights[key] = Math.round(weights[key] * multiplier);
     }
+  }
+
+  // Get detailed scoring breakdown for debugging
+  getDetailedScoreBreakdown(
+    benchmarkResults: any,
+    targetJobTitle?: string,
+    experienceLevel?: string,
+    targetIndustry?: string
+  ): {
+    sectionScores: Record<string, number>;
+    sectionWeights: Record<string, number>;
+    overallScore: number;
+    adjustments: string[];
+  } {
+    const safeJobTitle = targetJobTitle?.trim() || undefined;
+    const sectionWeights = this.getSectionImportanceWeights(safeJobTitle);
+
+    const sectionScores: Record<string, number> = {};
+    Object.keys(sectionWeights).forEach((sectionName) => {
+      sectionScores[sectionName] = this.calculateSectionScore(
+        sectionName,
+        benchmarkResults,
+        safeJobTitle,
+        experienceLevel?.trim() || undefined
+      );
+    });
+
+    const overallScore = this.calculateOverallScore(
+      benchmarkResults,
+      targetJobTitle,
+      experienceLevel,
+      targetIndustry
+    );
+
+    return {
+      sectionScores,
+      sectionWeights,
+      overallScore,
+      adjustments: [], // Could add specific adjustment reasons
+    };
   }
 }
