@@ -6,6 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { CustomRequest } from "../middlewares/verifyToken.middleware";
 import { extractTextFromPDF } from "../utils/pdfProcessor";
 import { GeminiAnalysisService } from "../services/geminiService";
+import { DeterministicScoringService } from "../services/scoringService";
 import { ResumeScan } from "../models/resumeScan.models";
 import { User } from "../models/user.models";
 
@@ -95,7 +96,7 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       experienceLevel,
       targetJobTitle,
       targetCompany,
-      aiSuggestionLevel = "detailed",
+      aiSuggestionLevel = "basic",
       keywords,
     } = req.body;
 
@@ -110,7 +111,7 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     // Extract text from PDF
     const extractedContent = await extractTextFromPDF(req.file.path);
 
-    // Analyze with Gemini
+    // Analyze with Gemini (ONLY for benchmarks and suggestions, NOT scores)
     const geminiService = new GeminiAnalysisService();
     const analysisResult = await geminiService.analyzeResume(extractedContent, {
       targetIndustry,
@@ -122,13 +123,44 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
         : [],
     });
 
+    // Calculate deterministic scores using algorithm
+    const scoringService = new DeterministicScoringService();
+
+    // Calculate overall score using algorithm (NOT from AI)
+    const calculatedOverallScore = scoringService.calculateOverallScore(
+      analysisResult.benchmarkResults,
+      targetJobTitle,
+      experienceLevel,
+      targetIndustry
+    );
+
+    // Calculate section scores using algorithm (NOT from AI)
+    const calculatedSectionScores = analysisResult.sectionAnalysis.map(
+      (section) => ({
+        sectionName: section.sectionName,
+        score: scoringService.calculateSectionScore(
+          section.sectionName,
+          analysisResult.benchmarkResults,
+          targetJobTitle,
+          experienceLevel
+        ),
+        weight: 1,
+      })
+    );
+
     // Calculate processing time
     const processingTime = Date.now() - startTime;
 
-    // Create detailed feedback array
+    // Create detailed feedback array (use calculated scores, not AI scores)
     const detailedFeedback = analysisResult.sectionAnalysis.map((section) => ({
       sectionName: section.sectionName,
-      currentScore: section.score,
+      currentScore: scoringService.calculateSectionScore(
+        // Use algorithm score
+        section.sectionName,
+        analysisResult.benchmarkResults,
+        targetJobTitle,
+        experienceLevel
+      ),
       issues: section.issues,
       aiSuggestion: analysisResult.aiSuggestions.find(
         (suggestion) => suggestion.sectionName === section.sectionName
@@ -152,17 +184,13 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       benchmarkResults: analysisResult.benchmarkResults,
     }));
 
-    // Create resume scan document
+    // Create resume scan document (use calculated scores)
     const resumeScan = new ResumeScan({
       userId: req.user._id,
       fileName: req.file.originalname,
-      overallScore: analysisResult.overallScore,
+      overallScore: calculatedOverallScore, //Algorithm score, not AI
       sectionsFound: extractedContent.sections.map((s) => s.sectionName),
-      sectionScores: analysisResult.sectionAnalysis.map((section) => ({
-        sectionName: section.sectionName,
-        score: section.score,
-        weight: 1, // Default weight, can be customized
-      })),
+      sectionScores: calculatedSectionScores, //Algorithm scores, not AI
       scanPreferences: {
         targetIndustry,
         experienceLevel,
@@ -176,7 +204,7 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       detailedFeedback,
       overallBenchmarks: analysisResult.benchmarkResults,
       processingTime,
-      improvementPotential: Math.max(0, 100 - analysisResult.overallScore),
+      improvementPotential: Math.max(0, 100 - calculatedOverallScore), // Use calculated score
     });
 
     await resumeScan.save();
@@ -186,8 +214,9 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     user.resumeStats.totalScans += 1;
     user.resumeStats.lastScanDate = new Date();
 
-    if (analysisResult.overallScore > user.resumeStats.bestScore) {
-      user.resumeStats.bestScore = analysisResult.overallScore;
+    if (calculatedOverallScore > user.resumeStats.bestScore) {
+      // Use calculated score
+      user.resumeStats.bestScore = calculatedOverallScore;
     }
 
     await user.calculateWeeklyStats();
@@ -198,14 +227,14 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       safeDeleteFile(uploadedFilePath);
     }
 
-    // Return response
+    // Return response (use calculated scores)
     return res.status(200).json({
       success: true,
       message: "Resume analyzed successfully",
       data: {
         scanId: resumeScan._id,
-        overallScore: analysisResult.overallScore,
-        sectionScores: resumeScan.sectionScores,
+        overallScore: calculatedOverallScore, //Algorithm score
+        sectionScores: calculatedSectionScores, //Algorithm scores
         detailedFeedback: resumeScan.detailedFeedback,
         benchmarkResults: resumeScan.overallBenchmarks,
         processingTime,

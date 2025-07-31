@@ -83,13 +83,13 @@ const identifySections = (text: string) => {
     {
       name: "Certifications",
       patterns: [
-        /(certifications|certificates|licenses)[\s\S]*?(?=\n.*?(achievements|references|awards))/i,
+        /(certifications|course|certificates|licenses)[\s\S]*?(?=\n.*?(achievements|references|awards))/i,
       ],
     },
     {
       name: "Achievements",
       patterns: [
-        /(achievements|awards|accomplishments)[\s\S]*?(?=\n.*?(references|additional))/i,
+        /(achievements|awards|achieved|secured|accompalishments)[\s\S]*?(?=\n.*?(references|additional))/i,
       ],
     },
   ];

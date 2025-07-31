@@ -3,17 +3,17 @@ import { config } from "../config/envConfig";
 import { ExtractedContent } from "../utils/pdfProcessor";
 
 export interface GeminiAnalysisResult {
-  overallScore: number;
+  overallScore: number; // Will be calculated by algorithm
   sectionAnalysis: {
     sectionName: string;
-    score: number;
+    score: number; // Will be calculated by algorithm
     issues: string[];
     suggestions: string[];
   }[];
   benchmarkResults: {
     [key: string]: {
       passed: boolean;
-      score: number;
+      score: number; // Will be generated from passed + content analysis
     };
   };
   aiSuggestions: {
@@ -49,7 +49,7 @@ export class GeminiAnalysisService {
       const result = await this.model.generateContent(prompt);
       const response = result.response.text();
 
-      return this.parseGeminiResponse(response, extractedContent);
+      return this.parseGeminiResponse(response, extractedContent, preferences);
     } catch (error) {
       console.error("Gemini analysis error:", error);
       throw new Error("Failed to analyze resume with AI");
@@ -61,92 +61,243 @@ export class GeminiAnalysisService {
     preferences: any
   ): string {
     return `
-You are an expert resume analyzer and ATS specialist. Analyze the following resume and provide detailed feedback.
+You are an expert resume analyzer for ${
+      preferences.targetIndustry
+    } industry, focusing on ${preferences.targetJobTitle} positions at ${
+      preferences.experienceLevel
+    } level.
 
 **Resume Content:**
 ${content.fullText}
 
-**Target Requirements:**
+**Target Context:**
 - Industry: ${preferences.targetIndustry}
-- Experience Level: ${preferences.experienceLevel}
+- Experience Level: ${preferences.experienceLevel}  
 - Job Title: ${preferences.targetJobTitle}
-- Target Company: ${preferences.targetCompany || "Not specified"}
 - Keywords: ${preferences.keywords?.join(", ") || "None provided"}
 
-**Sections Found:**
-${content.sections
-  .map((s) => `- ${s.sectionName}: ${s.content.substring(0, 100)}...`)
-  .join("\n")}
+**Analyze each benchmark and provide detailed scoring rationale:**
 
-**IMPORTANT SCORING GUIDELINES:**
-- All benchmark scores must be between 0-10 (0 = very poor, 10 = excellent)
-- Use 0 for completely missing elements
-- Use 1-3 for poor performance
-- Use 4-6 for average performance  
-- Use 7-8 for good performance
-- Use 9-10 for excellent performance
+**IMPORTANT: For each benchmark, analyze the content and provide:**
+1. Whether it passes (boolean)
+2. A detailed scoring explanation (0-10 scale)
+3. Specific evidence from the resume
 
-**Please analyze and provide a JSON response with the following structure:**
+**Provide JSON response:**
 {
-  "overallScore": <number 0-100>,
+  "benchmarkResults": {
+    "buzzwordPresence": { 
+      "passed": boolean, 
+      "evidence": "specific examples found",
+      "scoreRationale": "why this deserves X/10 score",
+      "detectedCount": number
+    },
+    "roleClarity": { 
+      "passed": boolean,
+      "evidence": "how role clarity is demonstrated",
+      "scoreRationale": "scoring explanation",
+      "matchPercentage": number
+    },
+    "quantifiedAchievements": { 
+      "passed": boolean,
+      "evidence": "metrics and numbers found",
+      "scoreRationale": "scoring explanation", 
+      "achievementCount": number
+    },
+    "actionVerbUsage": { 
+      "passed": boolean,
+      "evidence": "action verbs identified",
+      "scoreRationale": "scoring explanation",
+      "verbCount": number
+    },
+    "industryKeywords": { 
+      "passed": boolean,
+      "evidence": "industry terms found",
+      "scoreRationale": "scoring explanation",
+      "keywordMatches": number
+    },
+    "contactInfoComplete": { 
+      "passed": boolean,
+      "evidence": "contact elements found",
+      "scoreRationale": "scoring explanation",
+      "completenessScore": number
+    },
+    "professionalSummary": { 
+      "passed": boolean,
+      "evidence": "summary quality assessment",
+      "scoreRationale": "scoring explanation",
+      "qualityScore": number
+    },
+    "chronologicalOrder": { 
+      "passed": boolean,
+      "evidence": "date ordering analysis",
+      "scoreRationale": "scoring explanation"
+    },
+    "consistentFormatting": { 
+      "passed": boolean,
+      "evidence": "formatting consistency notes",
+      "scoreRationale": "scoring explanation"
+    },
+    "optimalLength": { 
+      "passed": boolean,
+      "evidence": "length analysis",
+      "scoreRationale": "scoring explanation",
+      "wordCount": number
+    },
+    "noImages": { 
+      "passed": boolean,
+      "evidence": "image detection result",
+      "scoreRationale": "scoring explanation"
+    },
+    "noTables": { 
+      "passed": boolean,
+      "evidence": "table detection result", 
+      "scoreRationale": "scoring explanation"
+    },
+    "standardFonts": { 
+      "passed": boolean,
+      "evidence": "font analysis",
+      "scoreRationale": "scoring explanation"
+    },
+    "properHeadings": { 
+      "passed": boolean,
+      "evidence": "heading structure analysis",
+      "scoreRationale": "scoring explanation"
+    },
+    "keywordDensity": { 
+      "passed": boolean,
+      "evidence": "keyword density analysis",
+      "scoreRationale": "scoring explanation",
+      "densityPercentage": number
+    },
+    "relevantExperience": { 
+      "passed": boolean,
+      "evidence": "experience relevance assessment",
+      "scoreRationale": "scoring explanation",
+      "relevanceScore": number
+    },
+    "skillsRelevance": { 
+      "passed": boolean,
+      "evidence": "skills matching analysis",
+      "scoreRationale": "scoring explanation",
+      "matchScore": number
+    },
+    "leadershipExamples": { 
+      "passed": boolean,
+      "evidence": "leadership evidence found",
+      "scoreRationale": "scoring explanation",
+      "exampleCount": number
+    },
+    "teamworkHighlighted": { 
+      "passed": boolean,
+      "evidence": "teamwork examples identified",
+      "scoreRationale": "scoring explanation"
+    },
+    "problemSolvingExamples": { 
+      "passed": boolean,
+      "evidence": "problem-solving examples found",
+      "scoreRationale": "scoring explanation",
+      "exampleCount": number
+    },
+    "educationRelevance": { 
+      "passed": boolean,
+      "evidence": "education relevance assessment",
+      "scoreRationale": "scoring explanation"
+    },
+    "certificationPresence": { 
+      "passed": boolean,
+      "evidence": "certifications found",
+      "scoreRationale": "scoring explanation",
+      "certCount": number
+    },
+    "continuousLearning": { 
+      "passed": boolean,
+      "evidence": "learning evidence identified",
+      "scoreRationale": "scoring explanation"
+    },
+    "grammarCheck": { 
+      "passed": boolean,
+      "evidence": "grammar quality assessment",
+      "scoreRationale": "scoring explanation"
+    },
+    "spellingCheck": { 
+      "passed": boolean,
+      "evidence": "spelling accuracy assessment", 
+      "scoreRationale": "scoring explanation"
+    },
+    "readabilityScore": { 
+      "passed": boolean,
+      "evidence": "readability assessment",
+      "scoreRationale": "scoring explanation"
+    },
+    "uniquenessScore": { 
+      "passed": boolean,
+      "evidence": "uniqueness assessment",
+      "scoreRationale": "scoring explanation"
+    }
+  },
   "sectionAnalysis": [
     {
-      "sectionName": "string",
-      "score": <number 0-10>,
-      "issues": ["string array of issues"],
-      "suggestions": ["string array of improvement suggestions"]
+      "sectionName": "Contact Information",
+      "issues": ["specific issues found"],
+      "suggestions": ["specific improvements needed"]
+    },
+    {
+      "sectionName": "Professional Summary", 
+      "issues": ["specific issues found"],
+      "suggestions": ["specific improvements needed"]
+    },
+    {
+      "sectionName": "Work Experience",
+      "issues": ["specific issues found"],
+      "suggestions": ["specific improvements needed"]
+    },
+    {
+      "sectionName": "Skills",
+      "issues": ["specific issues found"],
+      "suggestions": ["specific improvements needed"]
+    },
+    {
+      "sectionName": "Education",
+      "issues": ["specific issues found"],
+      "suggestions": ["specific improvements needed"]
+    },
+    {
+      "sectionName": "Projects",
+      "issues": ["specific issues found"],
+      "suggestions": ["specific improvements needed"]
+    },
+    {
+      "sectionName": "Certifications",
+      "issues": ["specific issues found"],
+      "suggestions": ["specific improvements needed"]
+    },
+    {
+      "sectionName": "Achievements",
+      "issues": ["specific issues found"],
+      "suggestions": ["specific improvements needed"]
     }
   ],
-  "benchmarkResults": {
-    "buzzwordPresence": { "passed": boolean, "score": <0-10> },
-    "roleClarity": { "passed": boolean, "score": <0-10> },
-    "quantifiedAchievements": { "passed": boolean, "score": <0-10> },
-    "actionVerbUsage": { "passed": boolean, "score": <0-10> },
-    "industryKeywords": { "passed": boolean, "score": <0-10> },
-    "contactInfoComplete": { "passed": boolean, "score": <0-10> },
-    "professionalSummary": { "passed": boolean, "score": <0-10> },
-    "chronologicalOrder": { "passed": boolean, "score": <0-10> },
-    "consistentFormatting": { "passed": boolean, "score": <0-10> },
-    "optimalLength": { "passed": boolean, "score": <0-10> },
-    "noImages": { "passed": boolean, "score": <0-10> },
-    "noTables": { "passed": boolean, "score": <0-10> },
-    "standardFonts": { "passed": boolean, "score": <0-10> },
-    "properHeadings": { "passed": boolean, "score": <0-10> },
-    "keywordDensity": { "passed": boolean, "score": <0-10> },
-    "relevantExperience": { "passed": boolean, "score": <0-10> },
-    "skillsRelevance": { "passed": boolean, "score": <0-10> },
-    "leadershipExamples": { "passed": boolean, "score": <0-10> },
-    "teamworkHighlighted": { "passed": boolean, "score": <0-10> },
-    "problemSolvingExamples": { "passed": boolean, "score": <0-10> },
-    "educationRelevance": { "passed": boolean, "score": <0-10> },
-    "certificationPresence": { "passed": boolean, "score": <0-10> },
-    "continuousLearning": { "passed": boolean, "score": <0-10> },
-    "grammarCheck": { "passed": boolean, "score": <0-10> },
-    "spellingCheck": { "passed": boolean, "score": <0-10> },
-    "readabilityScore": { "passed": boolean, "score": <0-10> },
-    "uniquenessScore": { "passed": boolean, "score": <0-10> }
-  },
   "aiSuggestions": [
     {
       "sectionName": "string",
-      "originalText": "string",
-      "improvedText": "string", 
-      "explanation": "string"
+      "originalText": "text needing improvement",
+      "improvedText": "improved version",
+      "explanation": "why this helps for ${preferences.targetJobTitle} role"
     }
   ]
 }
 
-Ensure ALL scores are integers between 0-10. Never use negative numbers or scores above 10.
-Focus on ATS compatibility, keyword optimization, and industry-specific requirements.
+Be thorough in your analysis. Provide specific evidence and scoring rationale for each benchmark.
 `;
   }
 
   private parseGeminiResponse(
     response: string,
-    content: ExtractedContent
+    content: ExtractedContent,
+    preferences: any
   ): GeminiAnalysisResult {
     try {
-      // Extract JSON from response (Gemini sometimes adds extra text)
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new Error("No valid JSON found in response");
@@ -154,32 +305,302 @@ Focus on ATS compatibility, keyword optimization, and industry-specific requirem
 
       const parsedResponse = JSON.parse(jsonMatch[0]);
 
-      // Validate and set defaults if needed
+      // Convert AI analysis to numeric scores
+      const processedBenchmarks = this.convertToNumericScores(
+        parsedResponse.benchmarkResults || {},
+        content,
+        preferences
+      );
+
       return {
-        overallScore: parsedResponse.overallScore || 50,
-        sectionAnalysis: parsedResponse.sectionAnalysis || [],
-        benchmarkResults: parsedResponse.benchmarkResults || {},
+        overallScore: 0, // Will be calculated by scoring service
+        sectionAnalysis: this.ensureAllSections(
+          parsedResponse.sectionAnalysis || []
+        ),
+        benchmarkResults: processedBenchmarks,
         aiSuggestions: parsedResponse.aiSuggestions || [],
       };
     } catch (error) {
       console.error("Error parsing Gemini response:", error);
-      // Return fallback analysis
-      return this.generateFallbackAnalysis(content);
+      return this.generateFallbackAnalysis(content, preferences);
     }
   }
 
+  private convertToNumericScores(
+    benchmarkResults: any,
+    content: ExtractedContent,
+    preferences: any
+  ): { [key: string]: { passed: boolean; score: number } } {
+    const processedResults: {
+      [key: string]: { passed: boolean; score: number };
+    } = {};
+
+    // Define all expected benchmarks
+    const allBenchmarks = [
+      "buzzwordPresence",
+      "roleClarity",
+      "quantifiedAchievements",
+      "actionVerbUsage",
+      "industryKeywords",
+      "contactInfoComplete",
+      "professionalSummary",
+      "chronologicalOrder",
+      "consistentFormatting",
+      "optimalLength",
+      "noImages",
+      "noTables",
+      "standardFonts",
+      "properHeadings",
+      "keywordDensity",
+      "relevantExperience",
+      "skillsRelevance",
+      "leadershipExamples",
+      "teamworkHighlighted",
+      "problemSolvingExamples",
+      "educationRelevance",
+      "certificationPresence",
+      "continuousLearning",
+      "grammarCheck",
+      "spellingCheck",
+      "readabilityScore",
+      "uniquenessScore",
+    ];
+
+    allBenchmarks.forEach((benchmark) => {
+      const result = benchmarkResults[benchmark];
+
+      if (result) {
+        processedResults[benchmark] = {
+          passed: result.passed || false,
+          score: this.calculateBenchmarkScore(
+            benchmark,
+            result,
+            content,
+            preferences
+          ),
+        };
+      } else {
+        // Fallback scoring for missing benchmarks
+        processedResults[benchmark] = {
+          passed: false,
+          score: this.calculateFallbackScore(benchmark, content, preferences),
+        };
+      }
+    });
+
+    return processedResults;
+  }
+
+  private calculateBenchmarkScore(
+    benchmark: string,
+    result: any,
+    content: ExtractedContent,
+    preferences: any
+  ): number {
+    const baseScore = result.passed ? 6 : 2; // Base score for pass/fail
+
+    // Enhance score based on specific evidence and metrics
+    switch (benchmark) {
+      case "quantifiedAchievements":
+        const achievementCount = result.achievementCount || 0;
+        return Math.min(10, baseScore + Math.min(4, achievementCount));
+
+      case "industryKeywords":
+        const keywordMatches = result.keywordMatches || 0;
+        const keywordBonus = Math.min(3, keywordMatches / 2);
+        return Math.min(10, baseScore + keywordBonus);
+
+      case "roleClarity":
+        const matchPercentage = result.matchPercentage || 0;
+        return Math.min(10, Math.round(matchPercentage / 10));
+
+      case "actionVerbUsage":
+        const verbCount = result.verbCount || 0;
+        return Math.min(10, baseScore + Math.min(3, Math.floor(verbCount / 3)));
+
+      case "contactInfoComplete":
+        const completeness = result.completenessScore || 0;
+        return Math.min(10, completeness);
+
+      case "professionalSummary":
+        const quality = result.qualityScore || 0;
+        return Math.min(10, quality);
+
+      case "optimalLength":
+        const wordCount = result.wordCount || 0;
+        if (wordCount >= 200 && wordCount <= 600) return 10;
+        if (wordCount >= 150 && wordCount <= 800) return 8;
+        if (wordCount >= 100 && wordCount <= 1000) return 6;
+        return 3;
+
+      case "keywordDensity":
+        const density = result.densityPercentage || 0;
+        if (density >= 2 && density <= 4) return 10;
+        if (density >= 1 && density <= 6) return 8;
+        if (density > 0) return 5;
+        return 2;
+
+      case "relevantExperience":
+        const relevanceScore = result.relevanceScore || 0;
+        return Math.min(10, relevanceScore);
+
+      case "skillsRelevance":
+        const matchScore = result.matchScore || 0;
+        return Math.min(10, matchScore);
+
+      case "leadershipExamples":
+        const leadershipCount = result.exampleCount || 0;
+        return Math.min(10, baseScore + Math.min(3, leadershipCount));
+
+      case "problemSolvingExamples":
+        const problemCount = result.exampleCount || 0;
+        return Math.min(10, baseScore + Math.min(3, problemCount));
+
+      case "certificationPresence":
+        const certCount = result.certCount || 0;
+        return Math.min(10, baseScore + Math.min(3, certCount));
+
+      // Boolean benchmarks (ATS compliance)
+      case "noImages":
+      case "noTables":
+      case "standardFonts":
+      case "properHeadings":
+      case "chronologicalOrder":
+      case "consistentFormatting":
+        return result.passed ? 10 : 0;
+
+      // Quality assessments
+      case "grammarCheck":
+      case "spellingCheck":
+      case "readabilityScore":
+      case "uniquenessScore":
+      case "teamworkHighlighted":
+      case "educationRelevance":
+      case "continuousLearning":
+      case "buzzwordPresence":
+        return result.passed
+          ? Math.min(10, baseScore + 2)
+          : Math.max(0, baseScore - 2);
+
+      default:
+        return baseScore;
+    }
+  }
+
+  private calculateFallbackScore(
+    benchmark: string,
+    content: ExtractedContent,
+    preferences: any
+  ): number {
+    // Simple content-based scoring for missing benchmarks
+    const text = content.fullText.toLowerCase();
+
+    switch (benchmark) {
+      case "contactInfoComplete":
+        const hasEmail = /@/.test(text);
+        const hasPhone = /\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/.test(text);
+        return (hasEmail ? 5 : 0) + (hasPhone ? 5 : 0);
+
+      case "quantifiedAchievements":
+        const numberMatches = text.match(/\d+%|\d+\+|\$\d+|\d+x/g) || [];
+        return Math.min(10, numberMatches.length * 2);
+
+      case "industryKeywords":
+        const keywords = preferences.keywords || [];
+        const matches = keywords.filter((kw: string) =>
+          text.includes(kw.toLowerCase())
+        ).length;
+        return Math.min(10, matches * 2);
+
+      case "optimalLength":
+        const wordCount = content.metadata.wordCount;
+        if (wordCount >= 200 && wordCount <= 600) return 10;
+        if (wordCount >= 150 && wordCount <= 800) return 8;
+        return 5;
+
+      default:
+        return 5; // Default neutral score
+    }
+  }
+
+  private ensureAllSections(sectionAnalysis: any[]): any[] {
+    const requiredSections = [
+      "Contact Information",
+      "Professional Summary",
+      "Work Experience",
+      "Skills",
+      "Education",
+      "Projects",
+      "Certifications",
+      "Achievements",
+    ];
+
+    const analysisMap = new Map(sectionAnalysis.map((s) => [s.sectionName, s]));
+
+    return requiredSections.map((sectionName) => {
+      if (analysisMap.has(sectionName)) {
+        return analysisMap.get(sectionName);
+      } else {
+        return {
+          sectionName,
+          score: 0, // Will be calculated by scoring service
+          issues: ["Section is missing from resume"],
+          suggestions: ["Add this section to improve your resume completeness"],
+        };
+      }
+    });
+  }
+
   private generateFallbackAnalysis(
-    content: ExtractedContent
+    content: ExtractedContent,
+    preferences: any
   ): GeminiAnalysisResult {
+    // Create fallback benchmark results with basic scoring
+    const fallbackBenchmarks: {
+      [key: string]: { passed: boolean; score: number };
+    } = {};
+
+    const allBenchmarks = [
+      "buzzwordPresence",
+      "roleClarity",
+      "quantifiedAchievements",
+      "actionVerbUsage",
+      "industryKeywords",
+      "contactInfoComplete",
+      "professionalSummary",
+      "chronologicalOrder",
+      "consistentFormatting",
+      "optimalLength",
+      "noImages",
+      "noTables",
+      "standardFonts",
+      "properHeadings",
+      "keywordDensity",
+      "relevantExperience",
+      "skillsRelevance",
+      "leadershipExamples",
+      "teamworkHighlighted",
+      "problemSolvingExamples",
+      "educationRelevance",
+      "certificationPresence",
+      "continuousLearning",
+      "grammarCheck",
+      "spellingCheck",
+      "readabilityScore",
+      "uniquenessScore",
+    ];
+
+    allBenchmarks.forEach((benchmark) => {
+      fallbackBenchmarks[benchmark] = {
+        passed: false,
+        score: this.calculateFallbackScore(benchmark, content, preferences),
+      };
+    });
+
     return {
-      overallScore: 60,
-      sectionAnalysis: content.sections.map((section) => ({
-        sectionName: section.sectionName,
-        score: 6,
-        issues: ["Analysis failed - manual review required"],
-        suggestions: ["Please try uploading the resume again"],
-      })),
-      benchmarkResults: {},
+      overallScore: 0, // Will be calculated by scoring service
+      sectionAnalysis: this.ensureAllSections([]),
+      benchmarkResults: fallbackBenchmarks,
       aiSuggestions: [],
     };
   }
