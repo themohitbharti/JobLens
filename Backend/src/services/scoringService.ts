@@ -1,10 +1,10 @@
 export class DeterministicScoringService {
-  // Add a comprehensive default/general role weights
+  // Updated role weights for 20 benchmarks
   private readonly ROLE_SPECIFIC_WEIGHTS: Record<
     string,
     Record<string, number>
   > = {
-    // 🔥 NEW: Default/General role for any job type
+    // Default/General role for any job type
     default: {
       // Balanced weights for universal resume quality
       contactInfoComplete: 9, // Always critical
@@ -16,24 +16,17 @@ export class DeterministicScoringService {
       actionVerbUsage: 6, // Good writing matters
       industryKeywords: 6, // Some keyword matching helps
       chronologicalOrder: 6, // Proper structure
-      consistentFormatting: 5, // Professional appearance
       optimalLength: 5, // Right length
       properHeadings: 5, // Clear structure
-      grammarCheck: 5, // Basic quality
-      spellingCheck: 5, // Basic quality
       keywordDensity: 4, // Moderate importance
       noImages: 4, // ATS compliance
       noTables: 4, // ATS compliance
       standardFonts: 4, // ATS compliance
-      readabilityScore: 4, // General quality
       leadershipExamples: 3, // Nice to have
       teamworkHighlighted: 3, // Nice to have
       problemSolvingExamples: 3, // Nice to have
       educationRelevance: 3, // Depends on role
       certificationPresence: 3, // Depends on industry
-      continuousLearning: 3, // Good but not critical
-      uniquenessScore: 2, // Least critical
-      buzzwordPresence: 2, // Can be harmful if overdone
     },
 
     "software engineer": {
@@ -43,7 +36,6 @@ export class DeterministicScoringService {
       quantifiedAchievements: 8,
       problemSolvingExamples: 8,
       relevantExperience: 9,
-      continuousLearning: 7,
       certificationPresence: 6,
       // Standard weights for others
       contactInfoComplete: 8,
@@ -51,7 +43,6 @@ export class DeterministicScoringService {
       actionVerbUsage: 5,
       roleClarity: 7,
       chronologicalOrder: 5,
-      consistentFormatting: 4,
       optimalLength: 4,
       noImages: 5,
       noTables: 4,
@@ -61,11 +52,6 @@ export class DeterministicScoringService {
       leadershipExamples: 4,
       teamworkHighlighted: 3,
       educationRelevance: 5,
-      grammarCheck: 3,
-      spellingCheck: 3,
-      readabilityScore: 3,
-      uniquenessScore: 3,
-      buzzwordPresence: 2,
     },
 
     "product manager": {
@@ -78,13 +64,11 @@ export class DeterministicScoringService {
       relevantExperience: 9,
       industryKeywords: 7,
       skillsRelevance: 7,
-      continuousLearning: 6,
       // Standard weights
       contactInfoComplete: 8,
       professionalSummary: 7,
       actionVerbUsage: 6,
       chronologicalOrder: 5,
-      consistentFormatting: 4,
       optimalLength: 4,
       noImages: 5,
       noTables: 4,
@@ -93,11 +77,6 @@ export class DeterministicScoringService {
       keywordDensity: 5,
       certificationPresence: 4,
       educationRelevance: 5,
-      grammarCheck: 3,
-      spellingCheck: 3,
-      readabilityScore: 4,
-      uniquenessScore: 4,
-      buzzwordPresence: 3,
     },
 
     "marketing manager": {
@@ -110,13 +89,10 @@ export class DeterministicScoringService {
       teamworkHighlighted: 7,
       leadershipExamples: 7,
       skillsRelevance: 7,
-      readabilityScore: 6,
-      uniquenessScore: 6,
       // Standard weights
       contactInfoComplete: 8,
       professionalSummary: 7,
       chronologicalOrder: 5,
-      consistentFormatting: 5,
       optimalLength: 5,
       noImages: 5,
       noTables: 4,
@@ -125,11 +101,7 @@ export class DeterministicScoringService {
       keywordDensity: 6,
       problemSolvingExamples: 5,
       certificationPresence: 4,
-      continuousLearning: 5,
       educationRelevance: 5,
-      grammarCheck: 4,
-      spellingCheck: 4,
-      buzzwordPresence: 3,
     },
 
     "data scientist": {
@@ -140,7 +112,6 @@ export class DeterministicScoringService {
       problemSolvingExamples: 9,
       relevantExperience: 9,
       certificationPresence: 8,
-      continuousLearning: 8,
       educationRelevance: 8,
       // Standard weights
       contactInfoComplete: 8,
@@ -148,7 +119,6 @@ export class DeterministicScoringService {
       roleClarity: 7,
       actionVerbUsage: 6,
       chronologicalOrder: 5,
-      consistentFormatting: 4,
       optimalLength: 4,
       noImages: 5,
       noTables: 4,
@@ -157,11 +127,6 @@ export class DeterministicScoringService {
       keywordDensity: 7,
       leadershipExamples: 4,
       teamworkHighlighted: 4,
-      grammarCheck: 3,
-      spellingCheck: 3,
-      readabilityScore: 3,
-      uniquenessScore: 3,
-      buzzwordPresence: 2,
     },
 
     "sales representative": {
@@ -173,12 +138,10 @@ export class DeterministicScoringService {
       industryKeywords: 7,
       teamworkHighlighted: 6,
       skillsRelevance: 6,
-      readabilityScore: 6,
       // Standard weights
       contactInfoComplete: 8,
       professionalSummary: 7,
       chronologicalOrder: 5,
-      consistentFormatting: 4,
       optimalLength: 4,
       noImages: 5,
       noTables: 4,
@@ -188,16 +151,10 @@ export class DeterministicScoringService {
       leadershipExamples: 5,
       problemSolvingExamples: 5,
       certificationPresence: 4,
-      continuousLearning: 4,
       educationRelevance: 4,
-      grammarCheck: 4,
-      spellingCheck: 4,
-      uniquenessScore: 5,
-      buzzwordPresence: 4,
     },
   };
 
-  // 🔥 UPDATE: Add default experience modifiers
   private readonly EXPERIENCE_MODIFIERS: Record<
     string,
     Record<string, number>
@@ -216,7 +173,6 @@ export class DeterministicScoringService {
     entry: {
       educationRelevance: 1.3,
       certificationPresence: 1.2,
-      continuousLearning: 1.2,
       skillsRelevance: 1.1,
       relevantExperience: 0.8,
       leadershipExamples: 0.7,
@@ -254,14 +210,14 @@ export class DeterministicScoringService {
     },
   };
 
-  // 🔥 UPDATE: Handle null/undefined and use defaults
+  // Handle null/undefined and use defaults
   calculateOverallScore(
     benchmarkResults: any,
     targetJobTitle?: string,
     experienceLevel?: string,
     targetIndustry?: string
   ): number {
-    // 🔥 Validate and set defaults
+    // Validate and set defaults
     if (!benchmarkResults || typeof benchmarkResults !== "object") {
       console.warn("Invalid benchmarkResults provided, using fallback scoring");
       return 50;
@@ -295,7 +251,7 @@ export class DeterministicScoringService {
     return Math.round(Math.min(100, Math.max(0, finalScore)));
   }
 
-  // 🔥 UPDATE: Handle nulls and use defaults
+  // Handle nulls and use defaults
   private getAdjustedWeights(
     jobTitle: string | null,
     experienceLevel: string | null,
@@ -336,7 +292,7 @@ export class DeterministicScoringService {
     return adjustedWeights;
   }
 
-  // 🔥 UPDATE: Better job title normalization with default
+  // Better job title normalization with default
   private normalizeJobTitle(jobTitle: string): string {
     if (!jobTitle || typeof jobTitle !== "string") {
       return "default";
@@ -372,11 +328,11 @@ export class DeterministicScoringService {
       return "sales representative";
     }
 
-    // 🔥 Return default instead of hard-coded role
+    // Return default instead of hard-coded role
     return "default";
   }
 
-  // 🔥 UPDATE: Industry adjustments only if industry provided
+  // Industry adjustments only for existing benchmarks
   private applyIndustryAdjustments(
     weights: Record<string, number>,
     industry: string
@@ -391,7 +347,6 @@ export class DeterministicScoringService {
     if (industryLower.includes("tech") || industryLower.includes("software")) {
       this.safeAdjustWeight(weights, "skillsRelevance", 1.2);
       this.safeAdjustWeight(weights, "industryKeywords", 1.1);
-      this.safeAdjustWeight(weights, "continuousLearning", 1.1);
     } else if (
       industryLower.includes("finance") ||
       industryLower.includes("banking")
@@ -401,18 +356,17 @@ export class DeterministicScoringService {
       this.safeAdjustWeight(weights, "educationRelevance", 1.1);
     } else if (industryLower.includes("healthcare")) {
       this.safeAdjustWeight(weights, "certificationPresence", 1.4);
-      this.safeAdjustWeight(weights, "continuousLearning", 1.2);
       this.safeAdjustWeight(weights, "educationRelevance", 1.2);
     }
     // If industry doesn't match known patterns, no adjustments (which is fine)
   }
 
-  // 🔥 UPDATE: Use default weights
+  // Use default weights
   private getDefaultWeights(): Record<string, number> {
     return this.ROLE_SPECIFIC_WEIGHTS["default"];
   }
 
-  // 🔥 UPDATE: Section score calculation with nulls handling
+  // Section score calculation with nulls handling
   calculateSectionScore(
     sectionName: string,
     benchmarkResults: any,
@@ -591,14 +545,11 @@ export class DeterministicScoringService {
     return baseScore;
   }
 
-  private getSectionBenchmarks(sectionName: string): string[] {
+  // Updated section mapping to only use 20 benchmarks
+  public getSectionBenchmarks(sectionName: string): string[] {
     const sectionMapping: Record<string, string[]> = {
       "Contact Information": ["contactInfoComplete"],
-      "Professional Summary": [
-        "professionalSummary",
-        "roleClarity",
-        "buzzwordPresence",
-      ],
+      "Professional Summary": ["professionalSummary", "roleClarity"],
       "Work Experience": [
         "quantifiedAchievements",
         "actionVerbUsage",
@@ -611,7 +562,7 @@ export class DeterministicScoringService {
       Skills: ["skillsRelevance", "industryKeywords"],
       Education: ["educationRelevance"],
       Projects: ["problemSolvingExamples", "skillsRelevance"],
-      Certifications: ["certificationPresence", "continuousLearning"],
+      Certifications: ["certificationPresence"],
       Achievements: ["quantifiedAchievements", "leadershipExamples"],
     };
 
@@ -632,6 +583,4 @@ export class DeterministicScoringService {
       weights[key] = Math.round(weights[key] * multiplier);
     }
   }
-
-  // ...rest of the existing methods remain the same...
 }

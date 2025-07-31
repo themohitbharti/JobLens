@@ -169,37 +169,56 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     // Calculate processing time
     const processingTime = Date.now() - startTime;
 
-    // Create detailed feedback array (use calculated scores, not AI scores)
-    const detailedFeedback = analysisResult.sectionAnalysis.map((section) => ({
-      sectionName: section.sectionName,
-      currentScore: scoringService.calculateSectionScore(
-        section.sectionName,
-        analysisResult.benchmarkResults,
-        analysisPreferences.targetJobTitle,
-        analysisPreferences.experienceLevel
-      ),
-      issues: section.issues,
-      aiSuggestion: analysisResult.aiSuggestions.find(
-        (suggestion) => suggestion.sectionName === section.sectionName
-      )
-        ? {
-            originalText:
-              analysisResult.aiSuggestions.find(
-                (s) => s.sectionName === section.sectionName
-              )?.originalText || "",
-            improvedText:
-              analysisResult.aiSuggestions.find(
-                (s) => s.sectionName === section.sectionName
-              )?.improvedText || "",
-            explanation:
-              analysisResult.aiSuggestions.find(
-                (s) => s.sectionName === section.sectionName
-              )?.explanation || "",
-            improvementType: "content" as const,
-          }
-        : undefined,
-      benchmarkResults: analysisResult.benchmarkResults,
-    }));
+    // Create detailed feedback array with section-specific benchmarks
+    const detailedFeedback = analysisResult.sectionAnalysis.map((section) => {
+      // Get benchmarks specific to this section
+      const sectionBenchmarks = scoringService.getSectionBenchmarks(
+        section.sectionName
+      );
+
+      // Filter benchmark results to only include relevant ones for this section
+      const sectionSpecificBenchmarks: {
+        [key: string]: { passed: boolean; score: number };
+      } = {};
+
+      sectionBenchmarks.forEach((benchmark) => {
+        if (analysisResult.benchmarkResults[benchmark]) {
+          sectionSpecificBenchmarks[benchmark] =
+            analysisResult.benchmarkResults[benchmark];
+        }
+      });
+
+      return {
+        sectionName: section.sectionName,
+        currentScore: scoringService.calculateSectionScore(
+          section.sectionName,
+          analysisResult.benchmarkResults,
+          analysisPreferences.targetJobTitle,
+          analysisPreferences.experienceLevel
+        ),
+        issues: section.issues,
+        aiSuggestion: analysisResult.aiSuggestions.find(
+          (suggestion) => suggestion.sectionName === section.sectionName
+        )
+          ? {
+              originalText:
+                analysisResult.aiSuggestions.find(
+                  (s) => s.sectionName === section.sectionName
+                )?.originalText || "",
+              improvedText:
+                analysisResult.aiSuggestions.find(
+                  (s) => s.sectionName === section.sectionName
+                )?.improvedText || "",
+              explanation:
+                analysisResult.aiSuggestions.find(
+                  (s) => s.sectionName === section.sectionName
+                )?.explanation || "",
+              improvementType: "content" as const,
+            }
+          : undefined,
+        benchmarkResults: sectionSpecificBenchmarks, // Only section-specific benchmarks
+      };
+    });
 
     // Create resume scan document (use safe preferences)
     const resumeScan = new ResumeScan({

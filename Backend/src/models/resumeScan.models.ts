@@ -42,10 +42,9 @@ export interface ResumeScanDocument extends mongoose.Document {
     };
   }[];
 
-  // Comprehensive benchmark results - all consistent with passed & score (0-10)
+  // Comprehensive benchmark results - 20 core benchmarks
   overallBenchmarks: {
     // Content Quality Benchmarks
-    buzzwordPresence: { passed: boolean; score: number }; // 0-10
     roleClarity: { passed: boolean; score: number }; // 0-10
     quantifiedAchievements: { passed: boolean; score: number }; // 0-10
     actionVerbUsage: { passed: boolean; score: number }; // 0-10
@@ -55,7 +54,6 @@ export interface ResumeScanDocument extends mongoose.Document {
     contactInfoComplete: { passed: boolean; score: number }; // 0-10
     professionalSummary: { passed: boolean; score: number }; // 0-10
     chronologicalOrder: { passed: boolean; score: number }; // 0-10
-    consistentFormatting: { passed: boolean; score: number }; // 0-10
     optimalLength: { passed: boolean; score: number }; // 0-10
 
     // ATS Compliance Benchmarks
@@ -75,13 +73,6 @@ export interface ResumeScanDocument extends mongoose.Document {
     // Education & Certifications
     educationRelevance: { passed: boolean; score: number }; // 0-10
     certificationPresence: { passed: boolean; score: number }; // 0-10
-    continuousLearning: { passed: boolean; score: number }; // 0-10
-
-    // Additional Quality Metrics
-    grammarCheck: { passed: boolean; score: number }; // 0-10
-    spellingCheck: { passed: boolean; score: number }; // 0-10
-    readabilityScore: { passed: boolean; score: number }; // 0-10
-    uniquenessScore: { passed: boolean; score: number }; // 0-10
   };
 
   scanDate: Date;
@@ -177,50 +168,42 @@ const resumeScanSchema = new mongoose.Schema<ResumeScanDocument>(
       },
     ],
 
-    // All benchmarks now have consistent structure: passed (boolean) and score (0-10)
+    // 20 core benchmarks with consistent structure: passed (boolean) and score (0-10)
     overallBenchmarks: {
       // Content Quality Benchmarks
-      buzzwordPresence: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
-      },
       roleClarity: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       quantifiedAchievements: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       actionVerbUsage: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       industryKeywords: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
 
       // Structure & Format Benchmarks
       contactInfoComplete: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       professionalSummary: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       chronologicalOrder: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
-      },
-      consistentFormatting: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       optimalLength: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
 
       // ATS Compliance Benchmarks
@@ -273,28 +256,6 @@ const resumeScanSchema = new mongoose.Schema<ResumeScanDocument>(
         score: { type: Number, min: 0, max: 10, default: 0 },
       },
       certificationPresence: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      continuousLearning: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-
-      // Additional Quality Metrics
-      grammarCheck: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      spellingCheck: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      readabilityScore: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      uniquenessScore: {
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },

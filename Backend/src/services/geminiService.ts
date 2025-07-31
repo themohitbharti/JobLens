@@ -60,7 +60,7 @@ export class GeminiAnalysisService {
     content: ExtractedContent,
     preferences: any
   ): string {
-    // 🔥 Handle default values in prompt
+    // Handle default values in prompt
     const isUsingDefaults = {
       industry: preferences.targetIndustry === "General",
       jobTitle: preferences.targetJobTitle === "General Position",
@@ -97,7 +97,29 @@ ${
     : `**Note:** Tailoring analysis for ${preferences.targetJobTitle} in ${preferences.targetIndustry} industry.`
 }
 
-**Analyze each benchmark and provide detailed scoring rationale:**
+**Analyze each of these 20 core benchmarks and provide detailed scoring rationale:**
+
+**Core Benchmarks to Analyze:**
+1. roleClarity
+2. quantifiedAchievements
+3. actionVerbUsage
+4. industryKeywords
+5. contactInfoComplete
+6. professionalSummary
+7. chronologicalOrder
+8. optimalLength
+9. noImages
+10. noTables
+11. standardFonts
+12. properHeadings
+13. keywordDensity
+14. relevantExperience
+15. skillsRelevance
+16. leadershipExamples
+17. teamworkHighlighted
+18. problemSolvingExamples
+19. educationRelevance
+20. certificationPresence
 
 **IMPORTANT: For each benchmark, analyze the content and provide:**
 1. Whether it passes (boolean)
@@ -107,19 +129,19 @@ ${
 **Provide JSON response:**
 {
   "benchmarkResults": {
-    "buzzwordPresence": { 
-      "passed": boolean, 
-      "evidence": "specific examples found",
-      "scoreRationale": "why this deserves X/10 score",
-      "detectedCount": number
-    },
     "roleClarity": { 
       "passed": boolean,
       "evidence": "how role clarity is demonstrated",
       "scoreRationale": "scoring explanation",
       "matchPercentage": number
     },
-    // ... rest of benchmarks
+    "quantifiedAchievements": { 
+      "passed": boolean, 
+      "evidence": "specific examples found",
+      "scoreRationale": "why this deserves X/10 score",
+      "detectedCount": number
+    },
+    // ... rest of 20 benchmarks
   },
   "sectionAnalysis": [
     {
@@ -143,7 +165,7 @@ ${
   ]
 }
 
-Be thorough in your analysis. ${
+Be thorough in your analysis of all 20 benchmarks. ${
       isUsingDefaults.industry && isUsingDefaults.jobTitle
         ? "Focus on universal resume quality principles."
         : "Provide specific evidence and scoring rationale for each benchmark based on the target role."
@@ -196,7 +218,6 @@ Be thorough in your analysis. ${
 
     // Define all expected benchmarks
     const allBenchmarks = [
-      "buzzwordPresence",
       "roleClarity",
       "quantifiedAchievements",
       "actionVerbUsage",
@@ -204,7 +225,6 @@ Be thorough in your analysis. ${
       "contactInfoComplete",
       "professionalSummary",
       "chronologicalOrder",
-      "consistentFormatting",
       "optimalLength",
       "noImages",
       "noTables",
@@ -218,11 +238,6 @@ Be thorough in your analysis. ${
       "problemSolvingExamples",
       "educationRelevance",
       "certificationPresence",
-      "continuousLearning",
-      "grammarCheck",
-      "spellingCheck",
-      "readabilityScore",
-      "uniquenessScore",
     ];
 
     allBenchmarks.forEach((benchmark) => {
@@ -325,18 +340,11 @@ Be thorough in your analysis. ${
       case "standardFonts":
       case "properHeadings":
       case "chronologicalOrder":
-      case "consistentFormatting":
         return result.passed ? 10 : 0;
 
       // Quality assessments
-      case "grammarCheck":
-      case "spellingCheck":
-      case "readabilityScore":
-      case "uniquenessScore":
       case "teamworkHighlighted":
       case "educationRelevance":
-      case "continuousLearning":
-      case "buzzwordPresence":
         return result.passed
           ? Math.min(10, baseScore + 2)
           : Math.max(0, baseScore - 2);
@@ -420,7 +428,6 @@ Be thorough in your analysis. ${
     } = {};
 
     const allBenchmarks = [
-      "buzzwordPresence",
       "roleClarity",
       "quantifiedAchievements",
       "actionVerbUsage",
@@ -428,7 +435,6 @@ Be thorough in your analysis. ${
       "contactInfoComplete",
       "professionalSummary",
       "chronologicalOrder",
-      "consistentFormatting",
       "optimalLength",
       "noImages",
       "noTables",
@@ -442,11 +448,6 @@ Be thorough in your analysis. ${
       "problemSolvingExamples",
       "educationRelevance",
       "certificationPresence",
-      "continuousLearning",
-      "grammarCheck",
-      "spellingCheck",
-      "readabilityScore",
-      "uniquenessScore",
     ];
 
     allBenchmarks.forEach((benchmark) => {
