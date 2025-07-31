@@ -101,17 +101,38 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     } = req.body;
 
     const analysisPreferences = {
-      targetIndustry: targetIndustry?.trim() || "General", // Default industry
-      experienceLevel: experienceLevel?.trim() || "mid", // Default experience level
-      targetJobTitle: targetJobTitle?.trim() || "General Position", // Default job title
+      targetIndustry: targetIndustry?.trim() || "General",
+      experienceLevel: experienceLevel?.trim() || "mid",
+      targetJobTitle: targetJobTitle?.trim() || "General Position",
       targetCompany: targetCompany?.trim() || null,
       keywords: keywords
         ? keywords.split(",").map((k: string) => k.trim())
         : [],
     };
 
-    // Extract text from PDF
-    const extractedContent = await extractTextFromPDF(req.file.path);
+    // Extract text from PDF with content limits
+    let extractedContent;
+    try {
+      extractedContent = await extractTextFromPDF(req.file.path);
+    } catch (error: any) {
+      // Handle content validation errors
+      if (error.message.includes("Resume too short")) {
+        return res.status(400).json({
+          success: false,
+          message: error.message,
+          details: "Please upload a more detailed resume.",
+        });
+      }
+      throw error; // Re-throw other errors
+    }
+
+    // Log content statistics for monitoring
+    console.log(`📊 Content Stats:`, {
+      originalWords: extractedContent.metadata.originalWordCount,
+      processedWords: extractedContent.metadata.wordCount,
+      isTruncated: extractedContent.metadata.isTruncated,
+      estimatedTokens: Math.ceil(extractedContent.fullText.length / 4),
+    });
 
     // Analyze with Gemini using safe preferences
     const geminiService = new GeminiAnalysisService();
@@ -126,9 +147,9 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     // Calculate overall score using algorithm (with defaults if needed)
     const calculatedOverallScore = scoringService.calculateOverallScore(
       analysisResult.benchmarkResults,
-      analysisPreferences.targetJobTitle, // Use safe preference
-      analysisPreferences.experienceLevel, // Use safe preference
-      analysisPreferences.targetIndustry // Use safe preference
+      analysisPreferences.targetJobTitle,
+      analysisPreferences.experienceLevel,
+      analysisPreferences.targetIndustry
     );
 
     // Calculate section scores using algorithm (with defaults if needed)
@@ -138,8 +159,8 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
         score: scoringService.calculateSectionScore(
           section.sectionName,
           analysisResult.benchmarkResults,
-          analysisPreferences.targetJobTitle, // Use safe preference
-          analysisPreferences.experienceLevel // Use safe preference
+          analysisPreferences.targetJobTitle,
+          analysisPreferences.experienceLevel
         ),
         weight: 1,
       })
@@ -154,8 +175,8 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       currentScore: scoringService.calculateSectionScore(
         section.sectionName,
         analysisResult.benchmarkResults,
-        analysisPreferences.targetJobTitle, // Use safe preference
-        analysisPreferences.experienceLevel // Use safe preference
+        analysisPreferences.targetJobTitle,
+        analysisPreferences.experienceLevel
       ),
       issues: section.issues,
       aiSuggestion: analysisResult.aiSuggestions.find(
@@ -188,9 +209,9 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       sectionsFound: extractedContent.sections.map((s) => s.sectionName),
       sectionScores: calculatedSectionScores,
       scanPreferences: {
-        targetIndustry: analysisPreferences.targetIndustry, // Use safe preference
-        experienceLevel: analysisPreferences.experienceLevel, // Use safe preference
-        targetJobTitle: analysisPreferences.targetJobTitle, // Use safe preference
+        targetIndustry: analysisPreferences.targetIndustry,
+        experienceLevel: analysisPreferences.experienceLevel,
+        targetJobTitle: analysisPreferences.targetJobTitle,
         targetCompany: analysisPreferences.targetCompany,
         aiSuggestionLevel,
         keywords: analysisPreferences.keywords,
@@ -220,7 +241,7 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       safeDeleteFile(uploadedFilePath);
     }
 
-    // Return response (use calculated scores)
+    // Return response with truncation info
     return res.status(200).json({
       success: true,
       message: "Resume analyzed successfully",
@@ -243,7 +264,19 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
             jobTitle: !targetJobTitle?.trim(),
           },
         },
+        // Content processing info
+        contentInfo: {
+          originalWordCount: extractedContent.metadata.originalWordCount,
+          processedWordCount: extractedContent.metadata.wordCount,
+          wasTruncated: extractedContent.metadata.isTruncated,
+          estimatedTokensUsed: Math.ceil(extractedContent.fullText.length / 4),
+        },
       },
+      // Warning if content was truncated
+      ...(extractedContent.metadata.isTruncated && {
+        warning:
+          "Your resume was longer than optimal for analysis. Content was automatically truncated to focus on the most important sections.",
+      }),
     });
   } catch (error: any) {
     console.error("Resume scan error:", error);
