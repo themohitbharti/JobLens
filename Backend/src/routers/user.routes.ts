@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser , logoutUser , refreshAccessToken , verifyOTP , changePassword , forgotPassword , resetPassword} from "../controller/user.controllers";
+import { registerUser, loginUser , logoutUser , refreshAccessToken , verifyOTP , changePassword , forgotPassword , resetPassword} from "../controllers/user.controllers";
 import {verifyToken} from '../middlewares/verifyToken.middleware'
 import { validateInput } from "../middlewares/isValidInput.middleware";
 

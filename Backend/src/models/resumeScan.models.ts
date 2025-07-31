@@ -42,46 +42,46 @@ export interface ResumeScanDocument extends mongoose.Document {
     };
   }[];
 
-  // Comprehensive benchmark results - all consistent with passed & score (1-10)
+  // Comprehensive benchmark results - all consistent with passed & score (0-10)
   overallBenchmarks: {
     // Content Quality Benchmarks
-    buzzwordPresence: { passed: boolean; score: number }; // 1-10
-    roleClarity: { passed: boolean; score: number }; // 1-10
-    quantifiedAchievements: { passed: boolean; score: number }; // 1-10
-    actionVerbUsage: { passed: boolean; score: number }; // 1-10
-    industryKeywords: { passed: boolean; score: number }; // 1-10
+    buzzwordPresence: { passed: boolean; score: number }; // 0-10
+    roleClarity: { passed: boolean; score: number }; // 0-10
+    quantifiedAchievements: { passed: boolean; score: number }; // 0-10
+    actionVerbUsage: { passed: boolean; score: number }; // 0-10
+    industryKeywords: { passed: boolean; score: number }; // 0-10
 
     // Structure & Format Benchmarks
-    contactInfoComplete: { passed: boolean; score: number }; // 1-10
-    professionalSummary: { passed: boolean; score: number }; // 1-10
-    chronologicalOrder: { passed: boolean; score: number }; // 1-10
-    consistentFormatting: { passed: boolean; score: number }; // 1-10
-    optimalLength: { passed: boolean; score: number }; // 1-10
+    contactInfoComplete: { passed: boolean; score: number }; // 0-10
+    professionalSummary: { passed: boolean; score: number }; // 0-10
+    chronologicalOrder: { passed: boolean; score: number }; // 0-10
+    consistentFormatting: { passed: boolean; score: number }; // 0-10
+    optimalLength: { passed: boolean; score: number }; // 0-10
 
     // ATS Compliance Benchmarks
-    noImages: { passed: boolean; score: number }; // 1-10
-    noTables: { passed: boolean; score: number }; // 1-10
-    standardFonts: { passed: boolean; score: number }; // 1-10
-    properHeadings: { passed: boolean; score: number }; // 1-10
-    keywordDensity: { passed: boolean; score: number }; // 1-10
+    noImages: { passed: boolean; score: number }; // 0-10
+    noTables: { passed: boolean; score: number }; // 0-10
+    standardFonts: { passed: boolean; score: number }; // 0-10
+    properHeadings: { passed: boolean; score: number }; // 0-10
+    keywordDensity: { passed: boolean; score: number }; // 0-10
 
     // Experience & Skills Benchmarks
-    relevantExperience: { passed: boolean; score: number }; // 1-10
-    skillsRelevance: { passed: boolean; score: number }; // 1-10
-    leadershipExamples: { passed: boolean; score: number }; // 1-10
-    teamworkHighlighted: { passed: boolean; score: number }; // 1-10
-    problemSolvingExamples: { passed: boolean; score: number }; // 1-10
+    relevantExperience: { passed: boolean; score: number }; // 0-10
+    skillsRelevance: { passed: boolean; score: number }; // 0-10
+    leadershipExamples: { passed: boolean; score: number }; // 0-10
+    teamworkHighlighted: { passed: boolean; score: number }; // 0-10
+    problemSolvingExamples: { passed: boolean; score: number }; // 0-10
 
     // Education & Certifications
-    educationRelevance: { passed: boolean; score: number }; // 1-10
-    certificationPresence: { passed: boolean; score: number }; // 1-10
-    continuousLearning: { passed: boolean; score: number }; // 1-10
+    educationRelevance: { passed: boolean; score: number }; // 0-10
+    certificationPresence: { passed: boolean; score: number }; // 0-10
+    continuousLearning: { passed: boolean; score: number }; // 0-10
 
     // Additional Quality Metrics
-    grammarCheck: { passed: boolean; score: number }; // 1-10
-    spellingCheck: { passed: boolean; score: number }; // 1-10
-    readabilityScore: { passed: boolean; score: number }; // 1-10
-    uniquenessScore: { passed: boolean; score: number }; // 1-10
+    grammarCheck: { passed: boolean; score: number }; // 0-10
+    spellingCheck: { passed: boolean; score: number }; // 0-10
+    readabilityScore: { passed: boolean; score: number }; // 0-10
+    uniquenessScore: { passed: boolean; score: number }; // 0-10
   };
 
   scanDate: Date;
@@ -115,7 +115,7 @@ const resumeScanSchema = new mongoose.Schema<ResumeScanDocument>(
         sectionName: String,
         score: {
           type: Number,
-          min: 1,
+          min: 0,
           max: 10,
         },
         weight: {
@@ -155,7 +155,7 @@ const resumeScanSchema = new mongoose.Schema<ResumeScanDocument>(
         sectionName: String,
         currentScore: {
           type: Number,
-          min: 1,
+          min: 0,
           max: 10,
         },
         issues: [String],
@@ -174,126 +174,126 @@ const resumeScanSchema = new mongoose.Schema<ResumeScanDocument>(
       },
     ],
 
-    // All benchmarks now have consistent structure: passed (boolean) and score (1-10)
+    // All benchmarks now have consistent structure: passed (boolean) and score (0-10)
     overallBenchmarks: {
       // Content Quality Benchmarks
       buzzwordPresence: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
       },
       roleClarity: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
       },
       quantifiedAchievements: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
       },
       actionVerbUsage: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
       },
       industryKeywords: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
       },
 
       // Structure & Format Benchmarks
       contactInfoComplete: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
       },
       professionalSummary: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
       },
       chronologicalOrder: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
       },
       consistentFormatting: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
       },
       optimalLength: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 }, // Changed min from 1 to 0
       },
 
       // ATS Compliance Benchmarks
       noImages: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       noTables: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       standardFonts: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       properHeadings: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       keywordDensity: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
 
       // Experience & Skills Benchmarks
       relevantExperience: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       skillsRelevance: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       leadershipExamples: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       teamworkHighlighted: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       problemSolvingExamples: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
 
       // Education & Certifications
       educationRelevance: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       certificationPresence: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       continuousLearning: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
 
       // Additional Quality Metrics
       grammarCheck: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       spellingCheck: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       readabilityScore: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
       uniquenessScore: {
         passed: { type: Boolean, default: false },
-        score: { type: Number, min: 1, max: 10, default: 1 },
+        score: { type: Number, min: 0, max: 10, default: 0 },
       },
     },
 
