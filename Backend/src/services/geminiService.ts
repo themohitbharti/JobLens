@@ -243,6 +243,16 @@ Be thorough in your analysis of all 20 benchmarks. ${
     allBenchmarks.forEach((benchmark) => {
       const result = benchmarkResults[benchmark];
 
+      // 🔥 SPECIAL HANDLING: Always use deterministic validation for contactInfoComplete
+      if (benchmark === "contactInfoComplete") {
+        const score = this.validateContactInfo(content.fullText);
+        processedResults[benchmark] = {
+          passed: score >= 7, // Pass if score is 7 or higher (out of 10)
+          score: score,
+        };
+        return; // Skip the normal processing for this benchmark
+      }
+
       if (result) {
         processedResults[benchmark] = {
           passed: result.passed || false,
@@ -275,6 +285,10 @@ Be thorough in your analysis of all 20 benchmarks. ${
 
     // Enhance score based on specific evidence and metrics
     switch (benchmark) {
+      // 🔥 FIXED: Make contactInfoComplete completely deterministic
+      case "contactInfoComplete":
+        return this.validateContactInfo(content.fullText);
+
       case "quantifiedAchievements":
         const achievementCount = result.achievementCount || 0;
         return Math.min(10, baseScore + Math.min(4, achievementCount));
@@ -291,20 +305,6 @@ Be thorough in your analysis of all 20 benchmarks. ${
       case "actionVerbUsage":
         const verbCount = result.verbCount || 0;
         return Math.min(10, baseScore + Math.min(3, Math.floor(verbCount / 3)));
-
-      // 🔥 FIXED: Handle contactInfoComplete properly
-      case "contactInfoComplete":
-        // If we have a specific completeness score, use it
-        if (
-          result.completenessScore &&
-          typeof result.completenessScore === "number"
-        ) {
-          return Math.min(10, result.completenessScore);
-        }
-        // Otherwise, use pass/fail logic with enhancement
-        return result.passed
-          ? Math.min(10, baseScore + 4)
-          : Math.max(0, baseScore - 2);
 
       // 🔥 FIXED: Handle professionalSummary properly
       case "professionalSummary":
@@ -391,6 +391,70 @@ Be thorough in your analysis of all 20 benchmarks. ${
     }
   }
 
+  // 🔥 NEW: Reliable contact info validation method
+  private validateContactInfo(text: string): number {
+    const lowerText = text.toLowerCase();
+    let score = 0;
+    const maxScore = 10;
+
+    // Email validation (worth 4 points)
+    const emailPatterns = [
+      /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, // Standard email
+      /\b\w+@\w+\.\w+/g, // Simple email pattern
+    ];
+
+    const hasEmail = emailPatterns.some((pattern) => pattern.test(text));
+    if (hasEmail) {
+      score += 4;
+    }
+
+    // Phone number validation (worth 3 points)
+    const phonePatterns = [
+      /(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g, // US format with optional country code
+      /(\+\d{1,3}[-.\s]?)?\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/g, // Simple format
+      /(\+\d{1,3}[-.\s]?)?\d{10}/g, // 10 digits
+      /\(\d{3}\)\s?\d{3}-\d{4}/g, // (123) 456-7890
+      /\d{3}-\d{3}-\d{4}/g, // 123-456-7890
+      /\d{3}\.\d{3}\.\d{4}/g, // 123.456.7890
+      /\+\d{1,3}\s?\d{1,14}/g, // International format
+    ];
+
+    const hasPhone = phonePatterns.some((pattern) => pattern.test(text));
+    if (hasPhone) {
+      score += 3;
+    }
+
+    // Name validation (worth 2 points) - check for common name indicators
+    const nameIndicators = [
+      /^[A-Z][a-z]+\s+[A-Z][a-z]+/m, // First Last format at line start
+      /name\s*:?\s*[A-Z][a-z]+/i, // "Name: John" format
+      /^[A-Z][A-Z\s]+$/m, // ALL CAPS name format
+    ];
+
+    const hasName =
+      nameIndicators.some((pattern) => pattern.test(text)) ||
+      text.split("\n")[0].match(/[A-Z][a-z]+\s+[A-Z][a-z]+/); // Name in first line
+
+    if (hasName) {
+      score += 2;
+    }
+
+    // Location validation (worth 1 point) - check for city, state, address
+    const locationPatterns = [
+      /\b[A-Z][a-z]+,\s*[A-Z]{2}\b/g, // City, ST format
+      /\b[A-Z][a-z]+,\s*[A-Z][a-z]+\b/g, // City, State format
+      /\d+\s+[A-Za-z\s]+(?:street|st|avenue|ave|road|rd|drive|dr|lane|ln|way|blvd|boulevard)/i, // Street address
+      /\b\d{5}(?:-\d{4})?\b/g, // ZIP code
+    ];
+
+    const hasLocation = locationPatterns.some((pattern) => pattern.test(text));
+    if (hasLocation) {
+      score += 1;
+    }
+
+    return Math.min(maxScore, score);
+  }
+
   private calculateFallbackScore(
     benchmark: string,
     content: ExtractedContent,
@@ -400,10 +464,9 @@ Be thorough in your analysis of all 20 benchmarks. ${
     const text = content.fullText.toLowerCase();
 
     switch (benchmark) {
+      // 🔥 FIXED: Use the same reliable validation for fallback
       case "contactInfoComplete":
-        const hasEmail = /@/.test(text);
-        const hasPhone = /\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/.test(text);
-        return (hasEmail ? 5 : 0) + (hasPhone ? 5 : 0);
+        return this.validateContactInfo(content.fullText);
 
       case "quantifiedAchievements":
         const numberMatches = text.match(/\d+%|\d+\+|\$\d+|\d+x/g) || [];
