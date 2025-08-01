@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser , logoutUser , refreshAccessToken , verifyOTP , changePassword , forgotPassword , resetPassword} from "../controllers/user.controllers";
+import { registerUser, loginUser , logoutUser , refreshAccessToken , verifyOTP , changePassword , forgotPassword , resetPassword, getUserStats} from "../controllers/user.controllers";
 import {verifyToken} from '../middlewares/verifyToken.middleware'
 import { validateInput } from "../middlewares/isValidInput.middleware";
 
@@ -20,5 +20,7 @@ router.post('/change-password' , verifyToken ,changePassword);
 router.post('/forgot-password' ,forgotPassword);
 
 router.post('/reset-password' , resetPassword)
+
+router.post('/resume-stats', verifyToken, getUserStats);
 
 export default router
