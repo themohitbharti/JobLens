@@ -468,7 +468,6 @@ const resetPassword = asyncHandler(
   }
 );
 
-
 const getUser = asyncHandler(async (req: CustomRequest, res: Response) => {
   const userId = req.user._id;
 
@@ -543,6 +542,57 @@ const editUserProfile = asyncHandler(
   }
 );
 
+const getUserStats = asyncHandler(async (req: CustomRequest, res: Response) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).lean();
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Interpret the improvement trend
+    const interpretTrend = (trend: number) => {
+      if (trend > 2)
+        return { status: "excellent", message: "Strong upward trend! 📈" };
+      if (trend > 0.5)
+        return { status: "good", message: "Steady improvement 📊" };
+      if (trend > -0.5)
+        return { status: "stable", message: "Consistent performance 📋" };
+      if (trend > -2)
+        return { status: "declining", message: "Slight decline 📉" };
+      return { status: "poor", message: "Needs attention 🔻" };
+    };
+
+    const trendInterpretation = interpretTrend(
+      user.resumeStats.improvementTrend
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "User stats retrieved successfully",
+      data: {
+        ...user.resumeStats,
+        trendInterpretation,
+        // Add percentage change from first to last scan
+        improvementPercentage:
+          user.resumeStats.improvementTrend > 0
+            ? `+${(user.resumeStats.improvementTrend * 10).toFixed(1)}%`
+            : `${(user.resumeStats.improvementTrend * 10).toFixed(1)}%`,
+      },
+    });
+  } catch (error) {
+    console.error("Error retrieving user stats:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
 export {
   registerUser,
   verifyOTP,
@@ -554,4 +604,5 @@ export {
   resetPassword,
   getUser,
   editUserProfile,
+  getUserStats,
 };

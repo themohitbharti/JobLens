@@ -33,6 +33,8 @@ export interface UserDocument extends mongoose.Document {
   canPerformScan(): Promise<boolean>;
   updateDailyScanCount(): Promise<void>;
   calculateWeeklyStats(): Promise<void>;
+  calculateImprovementTrend(): Promise<void>;
+  calculateTrendSlope(scores: number[]): number;
 }
 
 const userSchema = new mongoose.Schema<UserDocument>(
@@ -217,6 +219,49 @@ userSchema.methods.calculateWeeklyStats = async function () {
   } else {
     this.resumeStats.weeklyAvg = 0;
   }
+};
+
+userSchema.methods.calculateImprovementTrend = async function () {
+  const ResumeScan = mongoose.model("ResumeScan");
+
+  // Get last 10 scans to calculate trend
+  const recentScans = await ResumeScan.find({
+    userId: this._id,
+  })
+    .sort({ scanDate: -1 })
+    .limit(10)
+    .select("overallScore scanDate");
+
+  if (recentScans.length < 2) {
+    this.resumeStats.improvementTrend = 0;
+    return;
+  }
+
+  // Calculate trend using linear regression or simple comparison
+  const scores = recentScans.reverse().map((scan) => scan.overallScore);
+  const trend = this.calculateTrendSlope(scores);
+
+  this.resumeStats.improvementTrend = Math.round(trend * 100) / 100; // Round to 2 decimal places
+};
+
+userSchema.methods.calculateTrendSlope = function (scores: number[]) {
+  const n = scores.length;
+  if (n < 2) return 0;
+
+  // Simple linear regression slope calculation
+  const xValues = Array.from({ length: n }, (_, i) => i + 1);
+  const xMean = xValues.reduce((a, b) => a + b, 0) / n;
+  const yMean = scores.reduce((a, b) => a + b, 0) / n;
+
+  let numerator = 0;
+  let denominator = 0;
+
+  for (let i = 0; i < n; i++) {
+    numerator += (xValues[i] - xMean) * (scores[i] - yMean);
+    denominator += (xValues[i] - xMean) ** 2;
+  }
+
+  return denominator === 0 ? 0 : numerator / denominator;
 };
 
 export const User = mongoose.model<UserDocument>("User", userSchema);

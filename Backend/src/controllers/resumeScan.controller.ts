@@ -253,6 +253,7 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     }
 
     await user.calculateWeeklyStats();
+    await user.calculateImprovementTrend();
     await user.save();
 
     // Clean up uploaded file (success case)
