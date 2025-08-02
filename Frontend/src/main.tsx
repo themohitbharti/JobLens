@@ -1,10 +1,40 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+// import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./store/store.ts";
+import "./index.css";
+import App from "./App.tsx";
+// import { AuthLayout } from "./components/index.ts";
+// import {
+//   Home,
+//   Login,
+//   Signup,
+//   VerifyOTP,
+//   UploadItem,
+//   ProductDetails,
+//   UserProfile,
+//   UserProducts,
+// } from "./pages/index.ts";
+import { AuthProvider } from "./contexts/AuthProvider.tsx";
+// import Categories from "./pages/Discover.tsx";
+import { Toaster } from "react-hot-toast";
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+    ],
+  },
+]);
+
+createRoot(document.getElementById("root")!).render(
+  
+    <Provider store={store}>
+      <AuthProvider>
+          <RouterProvider router={router} />
+          <Toaster position="bottom-right" />
+      </AuthProvider>
+    </Provider>
+);
