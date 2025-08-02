@@ -6,7 +6,7 @@ import {
   login as loginAction,
   logout as logoutAction,
 } from "../store/authSlice";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "./AuthContexts";
 import { AppLoader } from "../components";
 import { User } from "../types";
 
