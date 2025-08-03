@@ -1,4 +1,4 @@
-// import Home from "./Home";
+import Home from "./Home";
 import Login from "./Login";
 import Signup from "./Signup";
 // import VerifyOTP from "./VerifyOTP";
@@ -9,7 +9,7 @@ import Signup from "./Signup";
 // import UserProducts from "./UserProducts";
 
 export {
-//   Home,
+  Home,
   Login,
   Signup,
 //   VerifyOTP,

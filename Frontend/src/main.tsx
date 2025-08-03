@@ -7,7 +7,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { AuthLayout } from "./components/index.ts";
 import {
-  // Home,
+  Home,
   Login,
   Signup,
   // VerifyOTP,
@@ -25,6 +25,14 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
+      {
+        path: "/",
+        element: (
+          <AuthLayout authentication={false}>
+            <Home />
+          </AuthLayout>
+        ),
+      },
       {
         path: "/login",
         element: (
