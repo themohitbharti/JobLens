@@ -35,8 +35,8 @@ export const AppLoader: React.FC = () => {
 
           {/* Large Magnifying Glass Circle */}
           <div className="absolute -right-2 -top-2 h-16 w-16 animate-pulse">
-            {/* Main Lens Circle */}
-            <div className="relative h-14 w-14 rounded-full border-[5px] border-black bg-gradient-to-br from-gray-100 to-gray-200 shadow-xl">
+            {/* Main Lens Circle - Changed to red theme */}
+            <div className="relative h-14 w-14 rounded-full border-[5px] border-black bg-gradient-to-br from-red-100 to-red-200 shadow-xl">
               {/* Glass effect */}
               <div className="absolute inset-1 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-transparent"></div>
 
@@ -60,14 +60,14 @@ export const AppLoader: React.FC = () => {
         {/* Brand Text */}
         <div className="text-center text-3xl font-bold tracking-wide">
           <span className="text-black">Job</span>
-          <span className="text-blue-600">Lens</span>
+          <span className="text-red-600">Lens</span>
         </div>
 
-        {/* Loading Dots */}
+        {/* Loading Dots - Changed to red theme */}
         <div className="mt-2 flex gap-2">
-          <span className="h-2 w-2 animate-bounce rounded-full bg-blue-500 [animation-delay:-0.3s]"></span>
-          <span className="h-2 w-2 animate-bounce rounded-full bg-blue-500 [animation-delay:-0.15s]"></span>
-          <span className="h-2 w-2 animate-bounce rounded-full bg-blue-500"></span>
+          <span className="h-2 w-2 animate-bounce rounded-full bg-red-500 [animation-delay:-0.3s]"></span>
+          <span className="h-2 w-2 animate-bounce rounded-full bg-red-500 [animation-delay:-0.15s]"></span>
+          <span className="h-2 w-2 animate-bounce rounded-full bg-red-500"></span>
         </div>
 
         {/* Loading Text */}

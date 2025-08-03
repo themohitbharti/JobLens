@@ -1,4 +1,3 @@
-import React from "react";
 
 interface LogoProps {
   size?: "small" | "default" | "large";
@@ -36,7 +35,7 @@ export const Logo: React.FC<LogoProps> = ({
           {/* J Curve */}
           <div className="absolute bottom-0 left-0 h-3 w-3 rounded-bl-lg border-b-[3px] border-l-[3px] border-slate-800"></div>
 
-          {/* Small Tie */}
+          {/* Small Tie - Changed to red theme */}
           <div className="absolute right-0.5 top-0.5 h-3 w-1">
             {/* Tie Knot */}
             <div className="relative h-1 w-1 rounded-sm bg-red-500">
@@ -57,10 +56,10 @@ export const Logo: React.FC<LogoProps> = ({
 
         {/* Magnifying Glass */}
         <div className="absolute -right-1 -top-1 h-10 w-8 rotate-12 transform">
-          {/* Lens Circle */}
-          <div className="relative h-6 w-6 rounded-full border-2 border-blue-600 bg-gradient-to-br from-blue-50 to-blue-100">
+          {/* Lens Circle - Changed to red theme */}
+          <div className="relative h-6 w-6 rounded-full border-2 border-red-600 bg-gradient-to-br from-red-50 to-red-100">
             {/* Inner lens ring */}
-            <div className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full border border-blue-700 bg-gradient-to-br from-transparent to-blue-50/30"></div>
+            <div className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full border border-red-700 bg-gradient-to-br from-transparent to-red-50/30"></div>
 
             {/* Lens reflections */}
             <div className="absolute left-1 top-1 h-1.5 w-1.5 rounded-full bg-white opacity-90"></div>
@@ -83,7 +82,7 @@ export const Logo: React.FC<LogoProps> = ({
       {size !== "small" && (
         <div className={`font-bold tracking-wide ${textSize}`}>
           <span className="text-slate-800">Job</span>
-          <span className="text-blue-600">Lens</span>
+          <span className="text-red-600">Lens</span>
         </div>
       )}
     </div>

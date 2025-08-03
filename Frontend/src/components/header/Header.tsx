@@ -9,9 +9,8 @@ const Header = () => {
   const navItems = [
     { name: "Home", path: "/" },
     { name: "Features", path: "/features" },
-    { name: "How It Works", path: "/how-it-works" },
-    { name: "Pricing", path: "/pricing" },
     { name: "FAQ", path: "/faq" },
+    { name: "Get Started", path: "/get-started" },
   ];
 
   const isActive = (path: string) => {
@@ -21,23 +20,23 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
       <Container>
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
+        <div className="flex h-20 items-center justify-between">
+          {/* Logo - Made bigger */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <Logo size="default" />
+              <Logo size="large" />
             </Link>
           </div>
 
-          {/* Navigation */}
-          <nav className="hidden items-center space-x-8 md:flex">
+          {/* Navigation - Made bigger with hover effects */}
+          <nav className="hidden items-center space-x-10 md:flex">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 to={item.path}
-                className={`text-sm font-medium transition-colors duration-200 hover:text-blue-600 ${
+                className={`relative text-base font-semibold transition-all duration-300 ease-out hover:-translate-y-1 hover:text-red-600 ${
                   isActive(item.path)
-                    ? "border-b-2 border-blue-600 pb-1 text-blue-600"
+                    ? "border-b-2 border-red-600 pb-1 text-red-600"
                     : "text-gray-700"
                 }`}
               >
@@ -46,30 +45,33 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Auth Buttons */}
-          <div className="flex items-center space-x-4">
+          {/* Auth Buttons - Made bigger */}
+          <div className="flex items-center space-x-6">
             <Link
               to="/login"
-              className="text-sm font-medium text-gray-700 transition-colors duration-200 hover:text-blue-600"
+              className="text-base font-semibold text-gray-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:text-red-600"
             >
               Login
             </Link>
             <Link to="/signup">
-              <Button className="bg-blue-600 px-6 py-2 text-sm text-white hover:bg-blue-700">
-                Get Started
+              <Button
+                variant="gradient"
+                className="px-8 py-3 text-base font-semibold text-white"
+              >
+                Sign Up
               </Button>
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Made bigger */}
           <div className="md:hidden">
             <button
               type="button"
-              className="text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="text-gray-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
               aria-label="Toggle navigation menu"
             >
               <svg
-                className="h-6 w-6"
+                className="h-8 w-8"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
