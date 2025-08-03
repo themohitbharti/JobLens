@@ -16,6 +16,7 @@ import { AppLoader } from "./common/AppLoader";
 
 // Header component
 import Header from "./header/Header";
+import Footer from './layout/Footer/Footer';
 
 export {
   // Auth
@@ -36,4 +37,5 @@ export {
 
   // Header
   Header,
+  Footer
 };

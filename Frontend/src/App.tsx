@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import "./App.css";
-import { Header } from "./components/index";
+import { Header, Footer } from "./components/index";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -11,7 +11,7 @@ function App() {
       <main className="flex-grow">
         <Outlet />
       </main>
-      {/* <Footer /> */}
+      <Footer />
       <ToastContainer />
     </div>
   );
