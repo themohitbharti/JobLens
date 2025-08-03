@@ -52,7 +52,7 @@ function Login() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-[calc(100vh-5rem)]">
       {/* Left side - Login Form */}
       <div className="flex flex-1 items-center justify-center bg-white px-8 py-12">
         <div className="w-full max-w-md">

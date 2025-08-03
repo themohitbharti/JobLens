@@ -9,7 +9,7 @@ import { AuthLayout } from "./components/index.ts";
 import {
   // Home,
   Login,
-  // Signup,
+  Signup,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -30,6 +30,14 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={false}>
             <Login />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/signup",
+        element: (
+          <AuthLayout authentication={false}>
+            <Signup />
           </AuthLayout>
         ),
       },
