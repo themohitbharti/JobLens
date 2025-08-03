@@ -7,12 +7,15 @@ import AuthLayout from "./auth/AuthLayout";
 // UI components
 import Button from "./ui/Button";
 import Input from "./ui/Input";
-import {Logo} from "./ui/Logo";
+import { Logo } from "./ui/Logo";
 import Container from "./ui/Container";
 
 // Common components
 import LoadingSpinner from "./common/LoadingSpinner";
 import { AppLoader } from "./common/AppLoader";
+
+// Header component
+import Header from "./header/Header";
 
 export {
   // Auth
@@ -30,4 +33,7 @@ export {
   // Common
   AppLoader,
   LoadingSpinner,
+
+  // Header
+  Header,
 };
