@@ -1,5 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Logo } from "../ui/Logo";
 import {
   HomeIcon,
@@ -10,6 +11,11 @@ import {
   CogIcon,
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
+import { logoutUser } from "../../api/auth";
+import { logout } from "../../store/authSlice";
+import { setAccessToken } from "../../api/axiosInstance";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 interface SidebarProps {
   className?: string;
@@ -17,7 +23,10 @@ interface SidebarProps {
 
 const Sidebar = ({ className = "" }: SidebarProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const navigationItems = [
     {
@@ -73,9 +82,42 @@ const Sidebar = ({ className = "" }: SidebarProps) => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const handleLogout = () => {
-    // Add logout logic here
-    console.log("Logging out...");
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+
+      // Call the logout API - this should invalidate the refresh token on the server
+      await logoutUser()
+        .then((res) => {
+          if (res.success) {
+            toast.success(res.message || "Logged out successfully");
+          }
+        })
+        .catch((error) => {
+          console.error("Logout API error:", error);
+          // Continue with local logout even if API call fails
+        })
+        .finally(() => {
+          // Always perform these actions regardless of API success/failure
+          // Clear the access token
+          setAccessToken(null);
+
+          // Update Redux state
+          dispatch(logout());
+
+          // Navigate to login page
+          navigate("/login");
+        });
+    } catch (error) {
+      console.error("Logout error:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Logout failed");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -157,26 +199,49 @@ const Sidebar = ({ className = "" }: SidebarProps) => {
               const Icon = item.icon;
               const active = isActive(item.href);
 
+              if (item.isLogout) {
+                return (
+                  <button
+                    key={item.name}
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
+                    className={`group flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                      isLoggingOut
+                        ? "cursor-not-allowed opacity-50"
+                        : "text-red-600 hover:bg-red-50 hover:text-red-700"
+                    }`}
+                  >
+                    <Icon
+                      className={`h-5 w-5 flex-shrink-0 transition-colors ${
+                        isLoggingOut
+                          ? "text-red-400"
+                          : "text-red-500 group-hover:text-red-600"
+                      }`}
+                    />
+                    {!isCollapsed && (
+                      <span className="ml-3 truncate">
+                        {isLoggingOut ? "Logging out..." : item.name}
+                      </span>
+                    )}
+                  </button>
+                );
+              }
+
               return (
                 <Link
                   key={item.name}
                   to={item.href}
-                  onClick={item.isLogout ? handleLogout : undefined}
                   className={`group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                     active
                       ? "bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-md"
-                      : item.isLogout
-                        ? "text-red-600 hover:bg-red-50 hover:text-red-700"
-                        : "text-gray-700 hover:bg-red-50 hover:text-red-600"
+                      : "text-gray-700 hover:bg-red-50 hover:text-red-600"
                   }`}
                 >
                   <Icon
                     className={`h-5 w-5 flex-shrink-0 transition-colors ${
                       active
                         ? "text-white"
-                        : item.isLogout
-                          ? "text-red-500 group-hover:text-red-600"
-                          : "text-gray-400 group-hover:text-red-500"
+                        : "text-gray-400 group-hover:text-red-500"
                     }`}
                   />
                   {!isCollapsed && (
