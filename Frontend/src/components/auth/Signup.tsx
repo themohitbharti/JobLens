@@ -11,7 +11,15 @@ interface SignupFormInputs {
   password: string;
 }
 
-export function Signup() {
+interface SignupProps {
+  onOTPSent?: (userData: {
+    email: string;
+    fullName: string;
+    password: string;
+  }) => void;
+}
+
+function Signup({ onOTPSent }: SignupProps) {
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -29,16 +37,28 @@ export function Signup() {
 
       if (res?.success) {
         setSuccessMsg(res.message); // "OTP sent to email..."
-        // Pass all user data to the verify-otp page
-        setTimeout(() => {
-          navigate("/verify-otp", {
-            state: {
+
+        // Use the callback if provided, otherwise navigate to separate route
+        if (onOTPSent) {
+          setTimeout(() => {
+            onOTPSent({
               email: data.email,
               fullName: data.fullName,
               password: data.password,
-            },
-          });
-        }, 2000);
+            });
+          }, 1500);
+        } else {
+          // Fallback to route navigation if no callback provided
+          setTimeout(() => {
+            navigate("/verify-otp", {
+              state: {
+                email: data.email,
+                fullName: data.fullName,
+                password: data.password,
+              },
+            });
+          }, 2000);
+        }
       } else {
         throw new Error(res.message || "Signup failed");
       }
