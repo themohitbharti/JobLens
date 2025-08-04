@@ -7,11 +7,13 @@ import Signup from "./Signup";
 // import Categories from "./Discover";
 // import UserProfile from "./UserProfile";
 // import UserProducts from "./UserProducts";
+import DashboardLayout from '../components/layout/DashboardLayout';
 
 export {
   Home,
   Login,
   Signup,
+  DashboardLayout
 //   VerifyOTP,
 //   UploadItem,
 //   ProductDetails,

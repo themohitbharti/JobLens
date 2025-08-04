@@ -34,7 +34,7 @@ function Login() {
 
         setAccessToken(accessToken);
         dispatch(loginAction(user));
-        navigate("/");
+        navigate("/dashboard");
       } else {
         throw new Error(res.message || "Login failed");
       }

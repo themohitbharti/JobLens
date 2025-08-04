@@ -14,9 +14,11 @@ import Container from "./ui/Container";
 import LoadingSpinner from "./common/LoadingSpinner";
 import { AppLoader } from "./common/AppLoader";
 
-// Header component
+// Layout components
 import Header from "./header/Header";
 import Footer from "./layout/Footer/Footer";
+import Sidebar from "./layout/Sidebar";
+import DashboardLayout from "./layout/DashboardLayout";
 
 // Home component
 import Home from "./Home/Home";
@@ -38,9 +40,11 @@ export {
   AppLoader,
   LoadingSpinner,
 
-  // Header
+  // Layout
   Header,
   Footer,
+  Sidebar,
+  DashboardLayout,
 
   // Home
   Home,

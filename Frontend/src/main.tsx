@@ -10,6 +10,7 @@ import {
   Home,
   Login,
   Signup,
+  DashboardLayout,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -46,6 +47,14 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={false}>
             <Signup />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/Dashboard",
+        element: (
+          <AuthLayout authentication={true}>
+            <DashboardLayout />
           </AuthLayout>
         ),
       },

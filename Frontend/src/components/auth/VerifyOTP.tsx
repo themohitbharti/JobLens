@@ -66,7 +66,7 @@ function VerifyOTP() {
 
             // Redirect to home page instead of login page
             setTimeout(() => {
-              navigate("/");
+              navigate("/dashboard");
             }, 2000);
           } else {
             throw new Error(loginResponse.message || "Auto-login failed");
