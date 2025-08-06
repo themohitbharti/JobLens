@@ -11,6 +11,7 @@ import helmet from "helmet";
 import userRoutes from "./routers/user.routes";
 import authRoutes from "./routers/auth.routes";
 import resumeScanRoutes from "./routers/resumeScan.routes";
+import linkedinScanRoutes from "./routers/linkedinScan.routes";
 import "./config/passport.setup";
 
 const app = express();
@@ -63,5 +64,6 @@ app.use(passport.session());
 app.use("/api/v1/user", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/api/v1/resume", resumeScanRoutes);
+app.use("/api/v1/linkedin", linkedinScanRoutes);
 
 export { app };
