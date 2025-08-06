@@ -6,20 +6,38 @@ const Home = () => {
   const [showPreview, setShowPreview] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-red-900">
+    <div 
+      className="min-h-screen"
+      style={{
+        background: "linear-gradient(135deg, hsl(0 0% 6%), hsl(345 84% 25%))"
+      }}
+    >
       {/* Hero Section */}
       <div className="relative overflow-hidden px-8 py-20 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <div className="grid items-center gap-16 lg:grid-cols-2">
             {/* Left Content */}
             <div className="text-center lg:text-left">
-              <div className="mb-6 inline-flex items-center rounded-full bg-red-500/10 px-4 py-2 text-sm font-medium text-red-400">
+              <div 
+                className="mb-6 inline-flex items-center rounded-full px-4 py-2 text-sm font-medium text-red-400"
+                style={{
+                  background: "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
+                  background: "rgba(239, 68, 68, 0.1)"
+                }}
+              >
                 ✨ Ready to transform your career?
               </div>
               
               <h1 className="mb-8 text-5xl font-bold leading-tight text-white lg:text-7xl">
                 Improve your{" "}
-                <span className="bg-gradient-to-r from-red-400 to-rose-400 bg-clip-text text-transparent">
+                <span 
+                  className="bg-clip-text text-transparent"
+                  style={{
+                    background: "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent"
+                  }}
+                >
                   resume
                 </span>
                 <br />
@@ -39,6 +57,10 @@ const Home = () => {
                   <Button
                     variant="gradient"
                     className="w-full px-8 py-4 text-lg font-semibold text-white sm:w-auto"
+                    style={{
+                      background: "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
+                      border: "none"
+                    }}
                   >
                     Get Started Free
                     <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,7 +88,12 @@ const Home = () => {
             {/* Right Content - Dashboard Preview */}
             <div className="relative">
               {/* Main Dashboard Card */}
-              <div className="relative z-10 rounded-2xl bg-gray-800/50 p-8 backdrop-blur-sm border border-gray-700">
+              <div 
+                className="relative z-10 rounded-2xl p-8 backdrop-blur-sm border border-gray-700"
+                style={{
+                  background: "linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 12%))"
+                }}
+              >
                 <div className="mb-6 flex items-center justify-between">
                   <div className="flex space-x-2">
                     <div className="h-3 w-3 rounded-full bg-red-500"></div>
@@ -81,7 +108,7 @@ const Home = () => {
                   <div className="relative mx-auto h-32 w-32">
                     <svg className="h-32 w-32 -rotate-90 transform">
                       <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-gray-700" />
-                      <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={`${78 * 3.51} 352`} className="text-red-500" />
+                      <circle cx="64" cy="64" r="56" stroke="hsl(0 84% 60%)" strokeWidth="8" fill="transparent" strokeDasharray={`${78 * 3.51} 352`} />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                       <span className="text-4xl font-bold text-white">78</span>
@@ -156,26 +183,67 @@ const Home = () => {
       </div>
 
       {/* Stats Section */}
-      <div className="border-t border-gray-700 bg-gray-900/50 px-8 py-16 lg:px-16">
+      <div 
+        className="border-t border-gray-700/30 px-8 py-16 lg:px-16"
+        style={{
+          background: "linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 12%))"
+        }}
+      >
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             <div className="text-center">
-              <div className="mb-2 text-4xl font-bold text-red-400">92%</div>
+              <div 
+                className="mb-2 text-4xl font-bold bg-clip-text text-transparent"
+                style={{
+                  background: "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent"
+                }}
+              >
+                92%
+              </div>
               <div className="text-sm font-medium text-gray-300">Success Rate</div>
               <div className="text-xs text-gray-500">Users who improved their score</div>
             </div>
             <div className="text-center">
-              <div className="mb-2 text-4xl font-bold text-red-400">5x</div>
+              <div 
+                className="mb-2 text-4xl font-bold bg-clip-text text-transparent"
+                style={{
+                  background: "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent"
+                }}
+              >
+                5x
+              </div>
               <div className="text-sm font-medium text-gray-300">More Interviews</div>
               <div className="text-xs text-gray-500">Average increase in callbacks</div>
             </div>
             <div className="text-center">
-              <div className="mb-2 text-4xl font-bold text-red-400">50k+</div>
+              <div 
+                className="mb-2 text-4xl font-bold bg-clip-text text-transparent"
+                style={{
+                  background: "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent"
+                }}
+              >
+                50k+
+              </div>
               <div className="text-sm font-medium text-gray-300">Resumes Analyzed</div>
               <div className="text-xs text-gray-500">And counting every day</div>
             </div>
             <div className="text-center">
-              <div className="mb-2 text-4xl font-bold text-red-400">24/7</div>
+              <div 
+                className="mb-2 text-4xl font-bold bg-clip-text text-transparent"
+                style={{
+                  background: "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent"
+                }}
+              >
+                24/7
+              </div>
               <div className="text-sm font-medium text-gray-300">AI Assistance</div>
               <div className="text-xs text-gray-500">Get feedback anytime, anywhere</div>
             </div>
@@ -189,7 +257,14 @@ const Home = () => {
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-4xl font-bold text-white lg:text-5xl">
               Why choose our{" "}
-              <span className="bg-gradient-to-r from-red-400 to-rose-400 bg-clip-text text-transparent">
+              <span 
+                className="bg-clip-text text-transparent"
+                style={{
+                  background: "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent"
+                }}
+              >
                 resume builder?
               </span>
             </h2>
@@ -200,8 +275,19 @@ const Home = () => {
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {/* Feature 1 */}
-            <div className="rounded-xl border border-gray-700 bg-gray-800/30 p-6 backdrop-blur-sm">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-red-500/20">
+            <div 
+              className="rounded-xl border border-gray-700/50 p-6 backdrop-blur-sm"
+              style={{
+                background: "linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 12%))"
+              }}
+            >
+              <div 
+                className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg"
+                style={{
+                  background: "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
+                  background: "rgba(239, 68, 68, 0.2)"
+                }}
+              >
                 <svg className="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
@@ -213,8 +299,18 @@ const Home = () => {
             </div>
 
             {/* Feature 2 */}
-            <div className="rounded-xl border border-gray-700 bg-gray-800/30 p-6 backdrop-blur-sm">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-red-500/20">
+            <div 
+              className="rounded-xl border border-gray-700/50 p-6 backdrop-blur-sm"
+              style={{
+                background: "linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 12%))"
+              }}
+            >
+              <div 
+                className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg"
+                style={{
+                  background: "rgba(239, 68, 68, 0.2)"
+                }}
+              >
                 <svg className="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -226,8 +322,18 @@ const Home = () => {
             </div>
 
             {/* Feature 3 */}
-            <div className="rounded-xl border border-gray-700 bg-gray-800/30 p-6 backdrop-blur-sm">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-red-500/20">
+            <div 
+              className="rounded-xl border border-gray-700/50 p-6 backdrop-blur-sm"
+              style={{
+                background: "linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 12%))"
+              }}
+            >
+              <div 
+                className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg"
+                style={{
+                  background: "rgba(239, 68, 68, 0.2)"
+                }}
+              >
                 <svg className="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -242,7 +348,12 @@ const Home = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="border-t border-gray-700 bg-gradient-to-r from-red-600 to-rose-600 px-8 py-20 lg:px-16">
+      <div 
+        className="border-t border-gray-700/30 px-8 py-20 lg:px-16"
+        style={{
+          background: "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))"
+        }}
+      >
         <div className="mx-auto max-w-4xl text-center">
           <div className="mb-6 inline-flex items-center rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white">
             ✨ Ready to transform your career?
@@ -264,7 +375,11 @@ const Home = () => {
             <Link to="/signup">
               <Button
                 variant="gradient"
-                className="w-full bg-white px-8 py-4 text-lg font-semibold text-red-600 hover:bg-gray-100 sm:w-auto"
+                className="w-full bg-white px-8 py-4 text-lg font-semibold hover:bg-gray-100 sm:w-auto"
+                style={{
+                  background: "white",
+                  color: "hsl(0 84% 60%)"
+                }}
               >
                 Get Started Free
                 <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,7 +401,12 @@ const Home = () => {
 
       {/* Before/After Comparison Section */}
       {showPreview && (
-        <div className="border-t border-gray-700 bg-gray-900 px-8 py-20 lg:px-16">
+        <div 
+          className="border-t border-gray-700/30 px-8 py-20 lg:px-16"
+          style={{
+            background: "linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 12%))"
+          }}
+        >
           <div className="mx-auto max-w-6xl">
             <h2 className="mb-12 text-center text-4xl font-bold text-white">
               See how JobLens improves your resume
