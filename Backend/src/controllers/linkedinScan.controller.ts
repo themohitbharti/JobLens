@@ -62,7 +62,7 @@ const scanLinkedinProfile = asyncHandler(async (req: CustomRequest, res: Respons
   let uploadedFilePath: string | null = null;
 
   try {
-    // Check if user can perform scan
+    // Check if user can perform scan (this already checks the 30 scans per day limit)
     const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(404).json({
@@ -75,7 +75,7 @@ const scanLinkedinProfile = asyncHandler(async (req: CustomRequest, res: Respons
     if (!canScan) {
       return res.status(429).json({
         success: false,
-        message: "Daily scan limit reached (30 scans per day)",
+        message: "Daily scan limit reached (30 scans per day for both resume and LinkedIn combined)",
       });
     }
 
@@ -224,7 +224,7 @@ const scanLinkedinProfile = asyncHandler(async (req: CustomRequest, res: Respons
     // Convert benchmark results for database storage
     const dbBenchmarkResults = scoringService.convertForDatabase(analysisResult.benchmarkResults);
 
-    // Create LinkedIn scan document (use safe preferences)
+    // Create LinkedIn scan document
     const linkedinScan = new LinkedinScan({
       userId: req.user._id,
       fileName: req.file.originalname,
@@ -247,17 +247,18 @@ const scanLinkedinProfile = asyncHandler(async (req: CustomRequest, res: Respons
 
     await linkedinScan.save();
 
-    // Update user scan counts and stats
-    await user.updateDailyScanCount();
-    user.resumeStats.totalScans += 1;
-    user.resumeStats.lastScanDate = new Date();
+    // Update user scan counts and stats for LINKEDIN only
+    await user.updateDailyScanCount('linkedin'); // Specify LinkedIn scan type
+    user.linkedinStats.totalScans += 1; // Update LinkedIn stats only
+    user.linkedinStats.lastScanDate = new Date();
 
-    if (calculatedOverallScore > user.resumeStats.bestScore) {
-      user.resumeStats.bestScore = calculatedOverallScore;
+    // Update best score if this LinkedIn scan is better
+    if (calculatedOverallScore > user.linkedinStats.bestScore) {
+      user.linkedinStats.bestScore = calculatedOverallScore;
     }
 
-    await user.calculateWeeklyStats();
-    await user.calculateImprovementTrend();
+    await user.calculateLinkedinStats(); // Calculate LinkedIn stats only
+    await user.calculateImprovementTrend('linkedin'); // Calculate LinkedIn trend only
     await user.save();
 
     // Clean up uploaded file (success case)
@@ -265,7 +266,7 @@ const scanLinkedinProfile = asyncHandler(async (req: CustomRequest, res: Respons
       safeDeleteFile(uploadedFilePath);
     }
 
-    // Return response with truncation info
+    // Return response
     return res.status(200).json({
       success: true,
       message: "LinkedIn profile analyzed successfully",

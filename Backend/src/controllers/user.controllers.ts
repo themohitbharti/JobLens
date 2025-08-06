@@ -163,15 +163,6 @@ const loginUser = asyncHandler(async (req: CustomRequest, res: Response) => {
     });
   }
 
-  // const schema= yup.object().shape({
-  //   email:yup.string().required(),
-  //   password:yup.string().required(),
-  // })
-
-  // const result = await schema.validate(req.body)
-
-  // const {email,password}=result
-
   const { email, password } = req.body;
 
   if (!email) {
@@ -542,7 +533,7 @@ const editUserProfile = asyncHandler(
   }
 );
 
-const getUserStats = asyncHandler(async (req: CustomRequest, res: Response) => {
+const getResumeStats = asyncHandler(async (req: CustomRequest, res: Response) => {
   const userId = req.user._id;
 
   try {
@@ -567,16 +558,16 @@ const getUserStats = asyncHandler(async (req: CustomRequest, res: Response) => {
       return { status: "poor", message: "Needs attention 🔻" };
     };
 
-    const trendInterpretation = interpretTrend(
+    const resumeTrendInterpretation = interpretTrend(
       user.resumeStats.improvementTrend
     );
 
     return res.status(200).json({
       success: true,
-      message: "User stats retrieved successfully",
+      message: "Resume stats retrieved successfully",
       data: {
         ...user.resumeStats,
-        trendInterpretation,
+        trendInterpretation: resumeTrendInterpretation,
         // Add percentage change from first to last scan
         improvementPercentage:
           user.resumeStats.improvementTrend > 0
@@ -585,7 +576,135 @@ const getUserStats = asyncHandler(async (req: CustomRequest, res: Response) => {
       },
     });
   } catch (error) {
-    console.error("Error retrieving user stats:", error);
+    console.error("Error retrieving resume stats:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+const getLinkedinStats = asyncHandler(async (req: CustomRequest, res: Response) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).lean();
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Interpret the improvement trend
+    const interpretTrend = (trend: number) => {
+      if (trend > 2)
+        return { status: "excellent", message: "Strong upward trend! 📈" };
+      if (trend > 0.5)
+        return { status: "good", message: "Steady improvement 📊" };
+      if (trend > -0.5)
+        return { status: "stable", message: "Consistent performance 📋" };
+      if (trend > -2)
+        return { status: "declining", message: "Slight decline 📉" };
+      return { status: "poor", message: "Needs attention 🔻" };
+    };
+
+    const linkedinTrendInterpretation = interpretTrend(
+      user.linkedinStats.improvementTrend
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "LinkedIn stats retrieved successfully",
+      data: {
+        ...user.linkedinStats,
+        trendInterpretation: linkedinTrendInterpretation,
+        // Add percentage change from first to last scan
+        improvementPercentage:
+          user.linkedinStats.improvementTrend > 0
+            ? `+${(user.linkedinStats.improvementTrend * 10).toFixed(1)}%`
+            : `${(user.linkedinStats.improvementTrend * 10).toFixed(1)}%`,
+      },
+    });
+  } catch (error) {
+    console.error("Error retrieving LinkedIn stats:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+const getCombinedStats = asyncHandler(async (req: CustomRequest, res: Response) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).lean();
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Interpret the improvement trend
+    const interpretTrend = (trend: number) => {
+      if (trend > 2)
+        return { status: "excellent", message: "Strong upward trend! 📈" };
+      if (trend > 0.5)
+        return { status: "good", message: "Steady improvement 📊" };
+      if (trend > -0.5)
+        return { status: "stable", message: "Consistent performance 📋" };
+      if (trend > -2)
+        return { status: "declining", message: "Slight decline 📉" };
+      return { status: "poor", message: "Needs attention 🔻" };
+    };
+
+    const resumeTrendInterpretation = interpretTrend(
+      user.resumeStats.improvementTrend
+    );
+
+    const linkedinTrendInterpretation = interpretTrend(
+      user.linkedinStats.improvementTrend
+    );
+
+    // Calculate combined stats
+    const combinedStats = {
+      totalScans: user.resumeStats.totalScans + user.linkedinStats.totalScans,
+      weeklyScans: user.resumeStats.weeklyScans + user.linkedinStats.weeklyScans,
+      bestOverallScore: Math.max(user.resumeStats.bestScore, user.linkedinStats.bestScore),
+      averageScore: user.resumeStats.totalScans + user.linkedinStats.totalScans > 0 
+        ? Math.round(((user.resumeStats.weeklyAvg * user.resumeStats.weeklyScans) + 
+                     (user.linkedinStats.weeklyAvg * user.linkedinStats.weeklyScans)) / 
+                    (user.resumeStats.weeklyScans + user.linkedinStats.weeklyScans))
+        : 0,
+    };
+
+    return res.status(200).json({
+      success: true,
+      message: "Combined stats retrieved successfully",
+      data: {
+        combined: combinedStats,
+        resume: {
+          ...user.resumeStats,
+          trendInterpretation: resumeTrendInterpretation,
+          improvementPercentage:
+            user.resumeStats.improvementTrend > 0
+              ? `+${(user.resumeStats.improvementTrend * 10).toFixed(1)}%`
+              : `${(user.resumeStats.improvementTrend * 10).toFixed(1)}%`,
+        },
+        linkedin: {
+          ...user.linkedinStats,
+          trendInterpretation: linkedinTrendInterpretation,
+          improvementPercentage:
+            user.linkedinStats.improvementTrend > 0
+              ? `+${(user.linkedinStats.improvementTrend * 10).toFixed(1)}%`
+              : `${(user.linkedinStats.improvementTrend * 10).toFixed(1)}%`,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error retrieving combined stats:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -604,5 +723,7 @@ export {
   resetPassword,
   getUser,
   editUserProfile,
-  getUserStats,
+  getResumeStats,        // Resume stats only
+  getLinkedinStats,    // LinkedIn stats only  
+  getCombinedStats,    // Both stats combined
 };

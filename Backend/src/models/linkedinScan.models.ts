@@ -42,37 +42,38 @@ export interface LinkedinScanDocument extends mongoose.Document {
     };
   }[];
 
-  // Comprehensive benchmark results - 20 core LinkedIn benchmarks
+  // Comprehensive benchmark results - 20 enhanced LinkedIn benchmarks
   overallBenchmarks: {
-    // Profile Completeness Benchmarks
-    profilePhotoPresent: { passed: boolean; score: number }; // 0-10
-    headlineOptimized: { passed: boolean; score: number }; // 0-10
-    summaryCompelling: { passed: boolean; score: number }; // 0-10
+    // Contact Information Benchmarks
     contactInfoComplete: { passed: boolean; score: number }; // 0-10
+    linkedinUrlPresent: { passed: boolean; score: number }; // 0-10
+    portfolioLinked: { passed: boolean; score: number }; // 0-10
 
-    // Content Quality Benchmarks
-    experienceDetailed: { passed: boolean; score: number }; // 0-10
-    quantifiedAchievements: { passed: boolean; score: number }; // 0-10
-    skillsRelevant: { passed: boolean; score: number }; // 0-10
+    // Professional Summary Benchmarks
+    professionalSummaryCompelling: { passed: boolean; score: number }; // 0-10
     industryKeywords: { passed: boolean; score: number }; // 0-10
+    careerGoalsClear: { passed: boolean; score: number }; // 0-10
+    personalBrandingStrong: { passed: boolean; score: number }; // 0-10
 
-    // Network & Engagement Benchmarks
-    connectionCount: { passed: boolean; score: number }; // 0-10
-    recommendationsPresent: { passed: boolean; score: number }; // 0-10
-    endorsementsReceived: { passed: boolean; score: number }; // 0-10
-    activityConsistent: { passed: boolean; score: number }; // 0-10
+    // Experience Quality Benchmarks (Enhanced)
+    experienceDetailed: { passed: boolean; score: number }; // 0-10
+    experienceQuantified: { passed: boolean; score: number }; // 0-10
+    roleProgressionClear: { passed: boolean; score: number }; // 0-10
+    jobTitlesOptimized: { passed: boolean; score: number }; // 0-10 - Hard skills in job titles
+    noEmploymentGaps: { passed: boolean; score: number }; // 0-10 - No unemployment indicators
+    roleDescriptionsPresent: { passed: boolean; score: number }; // 0-10 - Detailed job descriptions
 
-    // Professional Branding Benchmarks
-    customURL: { passed: boolean; score: number }; // 0-10
-    backgroundImage: { passed: boolean; score: number }; // 0-10
-    featuredSection: { passed: boolean; score: number }; // 0-10
-    volunteering: { passed: boolean; score: number }; // 0-10
-
-    // Education & Certifications
+    // Education & Skills Benchmarks
     educationComplete: { passed: boolean; score: number }; // 0-10
-    certificationsPresent: { passed: boolean; score: number }; // 0-10
-    coursesRelevant: { passed: boolean; score: number }; // 0-10
+    skillsRelevant: { passed: boolean; score: number }; // 0-10
+    technicalSkillsListed: { passed: boolean; score: number }; // 0-10
     languagesProficiency: { passed: boolean; score: number }; // 0-10
+
+    // Additional Value Benchmarks
+    certificationsPresent: { passed: boolean; score: number }; // 0-10
+    publicationsPresent: { passed: boolean; score: number }; // 0-10
+    volunteering: { passed: boolean; score: number }; // 0-10
+    achievementsHighlighted: { passed: boolean; score: number }; // 0-10
   };
 
   scanDate: Date;
@@ -168,36 +169,24 @@ const linkedinScanSchema = new mongoose.Schema<LinkedinScanDocument>(
       },
     ],
 
-    // 20 core benchmarks with consistent structure: passed (boolean) and score (0-10)
+    // 20 enhanced benchmarks with consistent structure: passed (boolean) and score (0-10)
     overallBenchmarks: {
-      // Profile Completeness Benchmarks
-      profilePhotoPresent: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      headlineOptimized: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      summaryCompelling: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
+      // Contact Information Benchmarks
       contactInfoComplete: {
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },
+      linkedinUrlPresent: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
+      portfolioLinked: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
 
-      // Content Quality Benchmarks
-      experienceDetailed: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      quantifiedAchievements: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      skillsRelevant: {
+      // Professional Summary Benchmarks
+      professionalSummaryCompelling: {
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },
@@ -205,35 +194,65 @@ const linkedinScanSchema = new mongoose.Schema<LinkedinScanDocument>(
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },
-
-      // Network & Engagement Benchmarks
-      connectionCount: {
+      careerGoalsClear: {
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },
-      recommendationsPresent: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      endorsementsReceived: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      activityConsistent: {
+      personalBrandingStrong: {
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },
 
-      // Professional Branding Benchmarks
-      customURL: {
+      // Experience Quality Benchmarks (Enhanced)
+      experienceDetailed: {
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },
-      backgroundImage: {
+      experienceQuantified: {
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },
-      featuredSection: {
+      roleProgressionClear: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
+      jobTitlesOptimized: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
+      noEmploymentGaps: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
+      roleDescriptionsPresent: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
+
+      // Education & Skills Benchmarks
+      educationComplete: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
+      skillsRelevant: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
+      technicalSkillsListed: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
+      languagesProficiency: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
+
+      // Additional Value Benchmarks
+      certificationsPresent: {
+        passed: { type: Boolean, default: false },
+        score: { type: Number, min: 0, max: 10, default: 0 },
+      },
+      publicationsPresent: {
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },
@@ -241,21 +260,7 @@ const linkedinScanSchema = new mongoose.Schema<LinkedinScanDocument>(
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },
-
-      // Education & Certifications
-      educationComplete: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      certificationsPresent: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      coursesRelevant: {
-        passed: { type: Boolean, default: false },
-        score: { type: Number, min: 0, max: 10, default: 0 },
-      },
-      languagesProficiency: {
+      achievementsHighlighted: {
         passed: { type: Boolean, default: false },
         score: { type: Number, min: 0, max: 10, default: 0 },
       },

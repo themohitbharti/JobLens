@@ -1,5 +1,16 @@
 import { Router } from "express";
-import { registerUser, loginUser , logoutUser , refreshAccessToken , verifyOTP , changePassword , forgotPassword , resetPassword, getUserStats} from "../controllers/user.controllers";
+import { 
+    registerUser,
+    loginUser, 
+    logoutUser , 
+    refreshAccessToken , 
+    verifyOTP , 
+    changePassword , 
+    forgotPassword , 
+    resetPassword, 
+    getResumeStats,
+    getLinkedinStats,
+    getCombinedStats,} from "../controllers/user.controllers";
 import {verifyToken} from '../middlewares/verifyToken.middleware'
 import { validateInput } from "../middlewares/isValidInput.middleware";
 
@@ -21,6 +32,9 @@ router.post('/forgot-password' ,forgotPassword);
 
 router.post('/reset-password' , resetPassword)
 
-router.post('/resume-stats', verifyToken, getUserStats);
+// Stats routes
+router.get("/resume-stats", verifyToken, getResumeStats);              // Resume stats only
+router.get("/linkedin-stats", verifyToken, getLinkedinStats); // LinkedIn stats only
+router.get("/combined-stats", verifyToken, getCombinedStats); // Both stats combined
 
 export default router

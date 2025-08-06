@@ -81,69 +81,84 @@ ${content.fullText}
 **SECTIONS FOUND:**
 ${content.sections.map(s => `- ${s.sectionName}: ${s.content.substring(0, 200)}...`).join('\n')}
 
-**ANALYZE AGAINST THESE 20 LINKEDIN BENCHMARKS:**
+**ANALYZE AGAINST THESE 20 ENHANCED LINKEDIN BENCHMARKS:**
 
-**Profile Completeness:**
-1. profilePhotoPresent - Professional photo visible
-2. headlineOptimized - Compelling, keyword-rich headline
-3. summaryCompelling - Engaging about section with value proposition
-4. contactInfoComplete - Complete contact information
+**Contact Information Quality:**
+1. contactInfoComplete - Email, LinkedIn URL, and location present
+2. linkedinUrlPresent - Custom or standard LinkedIn URL included
+3. portfolioLinked - Portfolio/website link included
 
-**Content Quality:**
-5. experienceDetailed - Detailed work experience with achievements
-6. quantifiedAchievements - Measurable results and metrics
-7. skillsRelevant - Industry-relevant skills listed
-8. industryKeywords - Strategic use of industry keywords
+**Professional Summary Quality:**
+4. professionalSummaryCompelling - Engaging summary with value proposition
+5. industryKeywords - Strategic use of industry-relevant keywords
+6. careerGoalsClear - Clear career direction and goals stated
+7. personalBrandingStrong - Strong personal brand messaging
 
-**Network & Engagement:**
-9. connectionCount - Adequate professional connections (mentioned/visible)
-10. recommendationsPresent - Professional recommendations received
-11. endorsementsReceived - Skills endorsed by network
-12. activityConsistent - Evidence of regular LinkedIn activity
+**Experience Quality (Enhanced):**
+8. experienceDetailed - Detailed work experience descriptions
+9. experienceQuantified - Measurable achievements and metrics (numbers, percentages, results)
+10. roleProgressionClear - Clear career progression shown
+11. jobTitlesOptimized - Job titles include relevant hard skills and are not vague
+12. noEmploymentGaps - No unexplained gaps or unemployment indicators
+13. roleDescriptionsPresent - Each role has comprehensive description, not just title
 
-**Professional Branding:**
-13. customURL - Custom LinkedIn URL
-14. backgroundImage - Professional background banner
-15. featuredSection - Showcased work/content in featured section
-16. volunteering - Volunteer experience highlighted
+**Education & Skills:**
+14. educationComplete - Complete education information
+15. skillsRelevant - Industry-relevant skills listed and organized
+16. technicalSkillsListed - Technical competencies highlighted
+17. languagesProficiency - Language skills documented
 
-**Education & Development:**
-17. educationComplete - Complete education information
-18. certificationsPresent - Relevant professional certifications
-19. coursesRelevant - Continuous learning courses
-20. languagesProficiency - Language skills listed
+**Additional Value:**
+18. certificationsPresent - Professional certifications included
+19. publicationsPresent - Publications or thought leadership content
+20. volunteering - Volunteer experience or community involvement
+21. achievementsHighlighted - Notable achievements and recognitions
 
-**IMPORTANT: For each benchmark, analyze the content and provide:**
-1. Whether it passes (boolean)
-2. A detailed scoring explanation (0-10 scale)
-3. Specific evidence from the profile
+**IMPORTANT: For experience section, specifically look for:**
+- Job titles with technical/hard skills (not vague like "Coordinator" or "Assistant")
+- Detailed role descriptions (not just company name and title)
+- Quantified achievements with numbers, percentages, dollar amounts
+- No gaps between positions or explanations for gaps
+- Clear progression in responsibility and skills
 
 **Provide JSON response:**
 {
   "benchmarkResults": {
-    "profilePhotoPresent": { 
+    "contactInfoComplete": { 
       "passed": boolean,
-      "evidence": "evidence of professional photo or mention",
+      "evidence": "what contact info is present",
       "scoreRationale": "scoring explanation",
       "matchPercentage": number
     },
-    "headlineOptimized": { 
+    "jobTitlesOptimized": { 
       "passed": boolean, 
-      "evidence": "specific headline content found",
-      "scoreRationale": "why this deserves X/10 score",
+      "evidence": "analysis of job title quality and technical skills inclusion",
+      "scoreRationale": "why job titles are strong/weak",
+      "matchPercentage": number
+    },
+    "noEmploymentGaps": { 
+      "passed": boolean, 
+      "evidence": "employment continuity analysis",
+      "scoreRationale": "gap assessment",
+      "matchPercentage": number
+    },
+    "roleDescriptionsPresent": { 
+      "passed": boolean, 
+      "evidence": "quality of role descriptions",
+      "scoreRationale": "description completeness",
       "matchPercentage": number
     },
     ... (all 20 benchmarks)
   },
   "sectionAnalysis": [
     {
-      "sectionName": "Profile Header",
+      "sectionName": "Contact Information",
       "score": number,
       "issues": ["specific issues found"],
       "suggestions": ["specific improvement suggestions"]
     },
     {
-      "sectionName": "About Section",
+      "sectionName": "Professional Summary",
       "score": number,
       "issues": ["specific issues found"],
       "suggestions": ["specific improvement suggestions"]
@@ -151,8 +166,8 @@ ${content.sections.map(s => `- ${s.sectionName}: ${s.content.substring(0, 200)}.
     {
       "sectionName": "Experience",
       "score": number,
-      "issues": ["specific issues found"],
-      "suggestions": ["specific improvement suggestions"]
+      "issues": ["job title issues", "description gaps", "missing quantification", "employment gaps"],
+      "suggestions": ["optimize job titles with hard skills", "add detailed descriptions", "quantify achievements", "explain any gaps"]
     },
     {
       "sectionName": "Education",
@@ -161,13 +176,7 @@ ${content.sections.map(s => `- ${s.sectionName}: ${s.content.substring(0, 200)}.
       "suggestions": ["specific improvement suggestions"]
     },
     {
-      "sectionName": "Skills",
-      "score": number,
-      "issues": ["specific issues found"],
-      "suggestions": ["specific improvement suggestions"]
-    },
-    {
-      "sectionName": "Network & Engagement",
+      "sectionName": "Skills & Languages",
       "score": number,
       "issues": ["specific issues found"],
       "suggestions": ["specific improvement suggestions"]
@@ -195,13 +204,12 @@ ${content.sections.map(s => `- ${s.sectionName}: ${s.content.substring(0, 200)}.
   }
 }
 
-**Focus on LinkedIn-specific optimization factors:**
-- Profile completeness and professional presentation
-- Content quality and achievement quantification
-- Network engagement and social proof
-- Industry keyword optimization
-- Professional branding elements
-- Continuous learning demonstration
+**Focus on LinkedIn-specific optimization factors based on actual PDF content:**
+- Job title optimization with hard skills
+- Employment continuity and professional progression
+- Quantified impact and achievements
+- Complete role descriptions
+- Contact information completeness and professionalism
 
 Provide specific, actionable feedback for ${preferences.targetJobTitle} in ${preferences.targetIndustry}.
 `;
@@ -230,13 +238,14 @@ Provide specific, actionable feedback for ${preferences.targetJobTitle} in ${pre
     analysisData: any,
     content: ExtractedContent
   ): LinkedinAnalysisResult {
-    // Ensure all required LinkedIn benchmarks exist
+    // Ensure all required LinkedIn benchmarks exist (20 enhanced ones)
     const requiredBenchmarks = [
-      "profilePhotoPresent", "headlineOptimized", "summaryCompelling", "contactInfoComplete",
-      "experienceDetailed", "quantifiedAchievements", "skillsRelevant", "industryKeywords",
-      "connectionCount", "recommendationsPresent", "endorsementsReceived", "activityConsistent",
-      "customURL", "backgroundImage", "featuredSection", "volunteering",
-      "educationComplete", "certificationsPresent", "coursesRelevant", "languagesProficiency"
+      "contactInfoComplete", "linkedinUrlPresent", "portfolioLinked",
+      "professionalSummaryCompelling", "industryKeywords", "careerGoalsClear", "personalBrandingStrong",
+      "experienceDetailed", "experienceQuantified", "roleProgressionClear", 
+      "jobTitlesOptimized", "noEmploymentGaps", "roleDescriptionsPresent",
+      "educationComplete", "skillsRelevant", "technicalSkillsListed", "languagesProficiency",
+      "certificationsPresent", "publicationsPresent", "volunteering", "achievementsHighlighted"
     ];
 
     const benchmarkResults: any = {};
@@ -278,12 +287,11 @@ Provide specific, actionable feedback for ${preferences.targetJobTitle} in ${pre
 
   private ensureAllLinkedinSections(sectionAnalysis: any[]): any[] {
     const requiredSections = [
-      "Profile Header",
-      "About Section", 
+      "Contact Information",
+      "Professional Summary", 
       "Experience",
       "Education",
-      "Skills",
-      "Network & Engagement",
+      "Skills & Languages",
       "Additional Sections"
     ];
 
@@ -306,13 +314,14 @@ Provide specific, actionable feedback for ${preferences.targetJobTitle} in ${pre
   private createFallbackResponse(content: ExtractedContent): LinkedinAnalysisResult {
     const fallbackBenchmarks: any = {};
     
-    // Create fallback for all benchmarks
+    // Create fallback for enhanced benchmarks
     const requiredBenchmarks = [
-      "profilePhotoPresent", "headlineOptimized", "summaryCompelling", "contactInfoComplete",
-      "experienceDetailed", "quantifiedAchievements", "skillsRelevant", "industryKeywords",
-      "connectionCount", "recommendationsPresent", "endorsementsReceived", "activityConsistent",
-      "customURL", "backgroundImage", "featuredSection", "volunteering",
-      "educationComplete", "certificationsPresent", "coursesRelevant", "languagesProficiency"
+      "contactInfoComplete", "linkedinUrlPresent", "portfolioLinked",
+      "professionalSummaryCompelling", "industryKeywords", "careerGoalsClear", "personalBrandingStrong",
+      "experienceDetailed", "experienceQuantified", "roleProgressionClear", 
+      "jobTitlesOptimized", "noEmploymentGaps", "roleDescriptionsPresent",
+      "educationComplete", "skillsRelevant", "technicalSkillsListed", "languagesProficiency",
+      "certificationsPresent", "publicationsPresent", "volunteering", "achievementsHighlighted"
     ];
 
     requiredBenchmarks.forEach(benchmark => {

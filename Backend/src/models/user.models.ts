@@ -15,25 +15,37 @@ export interface UserDocument extends mongoose.Document {
 
   dailyScans: {
     date: Date;
-    count: number;
+    totalCount: number; // Total scans (resume + LinkedIn)
+    resumeCount: number; // Resume scans only
+    linkedinCount: number; // LinkedIn scans only
   }[];
 
   resumeStats: {
-    totalScans: number;
-    weeklyScans: number;
-    weeklyAvg: number;
-    bestScore: number;
-    lastScanDate?: Date;
-    improvementTrend: number;
+    totalScans: number; // Resume scans only
+    weeklyScans: number; // Resume weekly scans
+    weeklyAvg: number; // Average score for resume scans
+    bestScore: number; // Best resume score
+    lastScanDate?: Date; // Last resume scan date
+    improvementTrend: number; // Trend based on resume scans only
+  };
+
+  linkedinStats: {
+    totalScans: number; // LinkedIn scans only
+    weeklyScans: number; // LinkedIn weekly scans
+    weeklyAvg: number; // Average score for LinkedIn scans
+    bestScore: number; // Best LinkedIn score
+    lastScanDate?: Date; // Last LinkedIn scan date
+    improvementTrend: number; // Trend based on LinkedIn scans only
   };
 
   isPasswordCorrect(password: string): Promise<boolean>;
   generateAccessToken(): Promise<string>;
   generateRefreshToken(): Promise<string>;
   canPerformScan(): Promise<boolean>;
-  updateDailyScanCount(): Promise<void>;
-  calculateWeeklyStats(): Promise<void>;
-  calculateImprovementTrend(): Promise<void>;
+  updateDailyScanCount(scanType: 'resume' | 'linkedin'): Promise<void>;
+  calculateResumeStats(): Promise<void>;
+  calculateLinkedinStats(): Promise<void>;
+  calculateImprovementTrend(scanType: 'resume' | 'linkedin'): Promise<void>;
   calculateTrendSlope(scores: number[]): number;
 }
 
@@ -82,7 +94,15 @@ const userSchema = new mongoose.Schema<UserDocument>(
           type: Date,
           default: Date.now,
         },
-        count: {
+        totalCount: {
+          type: Number,
+          default: 0,
+        },
+        resumeCount: {
+          type: Number,
+          default: 0,
+        },
+        linkedinCount: {
           type: Number,
           default: 0,
         },
@@ -90,6 +110,30 @@ const userSchema = new mongoose.Schema<UserDocument>(
     ],
 
     resumeStats: {
+      totalScans: {
+        type: Number,
+        default: 0,
+      },
+      weeklyScans: {
+        type: Number,
+        default: 0,
+      },
+      weeklyAvg: {
+        type: Number,
+        default: 0,
+      },
+      bestScore: {
+        type: Number,
+        default: 0,
+      },
+      lastScanDate: Date,
+      improvementTrend: {
+        type: Number,
+        default: 0,
+      },
+    },
+
+    linkedinStats: {
       totalScans: {
         type: Number,
         default: 0,
@@ -138,9 +182,7 @@ userSchema.methods.generateAccessToken = async function () {
       _id: this._id,
       email: this.email,
     },
-
     config.ACCESS_TOKEN_SECRET,
-
     {
       expiresIn: "1d",
     }
@@ -152,9 +194,7 @@ userSchema.methods.generateRefreshToken = async function () {
     {
       _id: this._id,
     },
-
     config.REFRESH_TOKEN_SECRET,
-
     {
       expiresIn: "10d",
     }
@@ -171,10 +211,10 @@ userSchema.methods.canPerformScan = async function () {
     return scanDate.getTime() === today.getTime();
   });
 
-  return !todayScans || todayScans.count < 30;
+  return !todayScans || todayScans.totalCount < 30;
 };
 
-userSchema.methods.updateDailyScanCount = async function () {
+userSchema.methods.updateDailyScanCount = async function (scanType: 'resume' | 'linkedin') {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -185,9 +225,20 @@ userSchema.methods.updateDailyScanCount = async function () {
   });
 
   if (todayIndex >= 0) {
-    this.dailyScans[todayIndex].count += 1;
+    this.dailyScans[todayIndex].totalCount += 1;
+    if (scanType === 'resume') {
+      this.dailyScans[todayIndex].resumeCount += 1;
+    } else {
+      this.dailyScans[todayIndex].linkedinCount += 1;
+    }
   } else {
-    this.dailyScans.push({ date: today, count: 1 });
+    const newScan = { 
+      date: today, 
+      totalCount: 1, 
+      resumeCount: scanType === 'resume' ? 1 : 0, 
+      linkedinCount: scanType === 'linkedin' ? 1 : 0 
+    };
+    this.dailyScans.push(newScan);
   }
 
   const thirtyDaysAgo = new Date();
@@ -197,35 +248,61 @@ userSchema.methods.updateDailyScanCount = async function () {
   );
 };
 
-userSchema.methods.calculateWeeklyStats = async function () {
+userSchema.methods.calculateResumeStats = async function () {
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
   const ResumeScan = mongoose.model("ResumeScan");
 
-  const weeklyScans = await ResumeScan.find({
+  // Get resume scans from the last 7 days
+  const weeklyResumeScans = await ResumeScan.find({
     userId: this._id,
     scanDate: { $gte: sevenDaysAgo },
   });
 
-  this.resumeStats.weeklyScans = weeklyScans.length;
+  this.resumeStats.weeklyScans = weeklyResumeScans.length;
 
-  if (weeklyScans.length > 0) {
-    const totalScore = weeklyScans.reduce(
+  if (weeklyResumeScans.length > 0) {
+    const totalScore = weeklyResumeScans.reduce(
       (sum: number, scan: any) => sum + scan.overallScore,
       0
     );
-    this.resumeStats.weeklyAvg = Math.round(totalScore / weeklyScans.length);
+    this.resumeStats.weeklyAvg = Math.round(totalScore / weeklyResumeScans.length);
   } else {
     this.resumeStats.weeklyAvg = 0;
   }
 };
 
-userSchema.methods.calculateImprovementTrend = async function () {
-  const ResumeScan = mongoose.model("ResumeScan");
+userSchema.methods.calculateLinkedinStats = async function () {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-  // Get last 10 scans to calculate trend
-  const recentScans = await ResumeScan.find({
+  const LinkedinScan = mongoose.model("LinkedinScan");
+
+  // Get LinkedIn scans from the last 7 days
+  const weeklyLinkedinScans = await LinkedinScan.find({
+    userId: this._id,
+    scanDate: { $gte: sevenDaysAgo },
+  });
+
+  this.linkedinStats.weeklyScans = weeklyLinkedinScans.length;
+
+  if (weeklyLinkedinScans.length > 0) {
+    const totalScore = weeklyLinkedinScans.reduce(
+      (sum: number, scan: any) => sum + scan.overallScore,
+      0
+    );
+    this.linkedinStats.weeklyAvg = Math.round(totalScore / weeklyLinkedinScans.length);
+  } else {
+    this.linkedinStats.weeklyAvg = 0;
+  }
+};
+
+userSchema.methods.calculateImprovementTrend = async function (scanType: 'resume' | 'linkedin') {
+  const ScanModel = mongoose.model(scanType === 'resume' ? "ResumeScan" : "LinkedinScan");
+
+  // Get last 10 scans of specific type to calculate trend
+  const recentScans = await ScanModel.find({
     userId: this._id,
   })
     .sort({ scanDate: -1 })
@@ -233,15 +310,25 @@ userSchema.methods.calculateImprovementTrend = async function () {
     .select("overallScore scanDate");
 
   if (recentScans.length < 2) {
-    this.resumeStats.improvementTrend = 0;
+    if (scanType === 'resume') {
+      this.resumeStats.improvementTrend = 0;
+    } else {
+      this.linkedinStats.improvementTrend = 0;
+    }
     return;
   }
 
-  // Calculate trend using linear regression or simple comparison
-  const scores = recentScans.reverse().map((scan) => scan.overallScore);
+  // Calculate trend using linear regression
+  const scores = recentScans.reverse().map((scan: any) => scan.overallScore);
   const trend = this.calculateTrendSlope(scores);
 
-  this.resumeStats.improvementTrend = Math.round(trend * 100) / 100; // Round to 2 decimal places
+  const roundedTrend = Math.round(trend * 100) / 100; // Round to 2 decimal places
+  
+  if (scanType === 'resume') {
+    this.resumeStats.improvementTrend = roundedTrend;
+  } else {
+    this.linkedinStats.improvementTrend = roundedTrend;
+  }
 };
 
 userSchema.methods.calculateTrendSlope = function (scores: number[]) {

@@ -31,39 +31,35 @@ export class LinkedinScoringService {
   private getSectionWeights(experienceLevel: string) {
     const weights = {
       entry: {
-        "Profile Header": 0.25,
-        "About Section": 0.20,
-        "Experience": 0.20,
+        "Contact Information": 0.20,
+        "Professional Summary": 0.25,
+        "Experience": 0.25,
         "Education": 0.15,
-        "Skills": 0.10,
-        "Network & Engagement": 0.05,
+        "Skills & Languages": 0.10,
         "Additional Sections": 0.05,
       },
       mid: {
-        "Profile Header": 0.20,
-        "About Section": 0.18,
-        "Experience": 0.25,
+        "Contact Information": 0.15,
+        "Professional Summary": 0.20,
+        "Experience": 0.35,
         "Education": 0.10,
-        "Skills": 0.12,
-        "Network & Engagement": 0.10,
+        "Skills & Languages": 0.15,
         "Additional Sections": 0.05,
       },
       senior: {
-        "Profile Header": 0.15,
-        "About Section": 0.20,
-        "Experience": 0.30,
+        "Contact Information": 0.10,
+        "Professional Summary": 0.25,
+        "Experience": 0.40,
         "Education": 0.08,
-        "Skills": 0.12,
-        "Network & Engagement": 0.10,
+        "Skills & Languages": 0.12,
         "Additional Sections": 0.05,
       },
       executive: {
-        "Profile Header": 0.15,
-        "About Section": 0.25,
-        "Experience": 0.35,
+        "Contact Information": 0.10,
+        "Professional Summary": 0.30,
+        "Experience": 0.45,
         "Education": 0.05,
-        "Skills": 0.10,
-        "Network & Engagement": 0.07,
+        "Skills & Languages": 0.07,
         "Additional Sections": 0.03,
       },
     };
@@ -75,29 +71,30 @@ export class LinkedinScoringService {
   private getIndustryWeights(industry: string): IndustryWeights {
     const industryWeights: IndustryWeightsConfig = {
       Technology: {
-        skillsRelevant: 1.2,
-        certificationsPresent: 1.3,
-        activityConsistent: 1.1,
+        skillsRelevant: 1.3,
+        experienceQuantified: 1.2,
+        certificationsPresent: 1.2,
+        technicalSkillsListed: 1.3,
       },
       Finance: {
-        quantifiedAchievements: 1.3,
+        experienceQuantified: 1.4,
+        professionalSummaryCompelling: 1.2,
         certificationsPresent: 1.2,
-        recommendationsPresent: 1.1,
       },
       Healthcare: {
         certificationsPresent: 1.4,
         educationComplete: 1.2,
-        volunteering: 1.1,
+        languagesProficiency: 1.1,
       },
       Marketing: {
-        featuredSection: 1.3,
-        activityConsistent: 1.2,
+        professionalSummaryCompelling: 1.3,
+        portfolioLinked: 1.2,
         industryKeywords: 1.1,
       },
       Sales: {
-        quantifiedAchievements: 1.3,
-        recommendationsPresent: 1.2,
-        connectionCount: 1.1,
+        experienceQuantified: 1.3,
+        professionalSummaryCompelling: 1.2,
+        contactInfoComplete: 1.1,
       },
       General: {},
     };
@@ -207,44 +204,42 @@ export class LinkedinScoringService {
     return this.calculateSectionScore(sectionName, benchmarkResults, targetJobTitle, experienceLevel);
   }
 
-  // Get benchmarks relevant to each LinkedIn section
+  // Get benchmarks relevant to each LinkedIn section (Enhanced with experience benchmarks)
   getSectionBenchmarks(sectionName: string): string[] {
     const sectionBenchmarkMap = {
-      "Profile Header": [
-        "profilePhotoPresent",
-        "headlineOptimized",
+      "Contact Information": [
         "contactInfoComplete",
-        "customURL"
+        "linkedinUrlPresent",
+        "portfolioLinked"
       ],
-      "About Section": [
-        "summaryCompelling",
+      "Professional Summary": [
+        "professionalSummaryCompelling",
         "industryKeywords",
-        "quantifiedAchievements"
+        "careerGoalsClear",
+        "personalBrandingStrong"
       ],
       "Experience": [
         "experienceDetailed",
-        "quantifiedAchievements",
+        "experienceQuantified",
+        "roleProgressionClear",
+        "jobTitlesOptimized",
+        "noEmploymentGaps",
+        "roleDescriptionsPresent",
         "industryKeywords"
       ],
       "Education": [
-        "educationComplete",
-        "coursesRelevant"
+        "educationComplete"
       ],
-      "Skills": [
+      "Skills & Languages": [
         "skillsRelevant",
-        "endorsementsReceived"
-      ],
-      "Network & Engagement": [
-        "connectionCount",
-        "recommendationsPresent",
-        "activityConsistent"
+        "technicalSkillsListed",
+        "languagesProficiency"
       ],
       "Additional Sections": [
-        "backgroundImage",
-        "featuredSection",
-        "volunteering",
         "certificationsPresent",
-        "languagesProficiency"
+        "publicationsPresent",
+        "volunteering",
+        "achievementsHighlighted"
       ]
     };
 
@@ -261,19 +256,19 @@ export class LinkedinScoringService {
     // Higher importance for certain sections based on role
     const jobTitleSectionImportance = {
       developer: {
-        "Skills": "high",
+        "Skills & Languages": "high",
         "Experience": "high",
         "Additional Sections": "medium",
       },
       manager: {
         "Experience": "high",
-        "About Section": "high",
-        "Network & Engagement": "medium",
+        "Professional Summary": "high",
+        "Additional Sections": "medium",
       },
       sales: {
         "Experience": "high",
-        "Network & Engagement": "high",
-        "About Section": "medium",
+        "Professional Summary": "high",
+        "Contact Information": "medium",
       },
     };
 

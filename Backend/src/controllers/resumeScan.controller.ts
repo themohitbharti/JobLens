@@ -257,17 +257,18 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
 
     await resumeScan.save();
 
-    // Update user scan counts and stats
-    await user.updateDailyScanCount();
-    user.resumeStats.totalScans += 1;
+    // Update user scan counts and stats for RESUME only
+    await user.updateDailyScanCount('resume'); // Specify resume scan type
+    user.resumeStats.totalScans += 1; // Update resume stats only
     user.resumeStats.lastScanDate = new Date();
 
+    // Update best score if this resume scan is better
     if (calculatedOverallScore > user.resumeStats.bestScore) {
       user.resumeStats.bestScore = calculatedOverallScore;
     }
 
-    await user.calculateWeeklyStats();
-    await user.calculateImprovementTrend();
+    await user.calculateResumeStats(); // Calculate resume stats only
+    await user.calculateImprovementTrend('resume'); // Calculate resume trend only
     await user.save();
 
     // Clean up uploaded file (success case)
@@ -445,8 +446,8 @@ const compareResumes = asyncHandler(async (req: CustomRequest, res: Response) =>
     // Calculate processing time
     const processingTime = Date.now() - startTime;
 
-    // Update user scan count (comparison counts as 1 scan)
-    await user.updateDailyScanCount();
+    // Update user scan count (comparison counts as 1 resume scan)
+    await user.updateDailyScanCount('resume');
 
     // Clean up uploaded files
     safeDeleteFiles(uploadedFilePaths);
@@ -479,4 +480,4 @@ const compareResumes = asyncHandler(async (req: CustomRequest, res: Response) =>
   }
 });
 
-export { scanResume , compareResumes};
+export { scanResume , compareResumes };
