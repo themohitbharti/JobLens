@@ -1,20 +1,19 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Logo } from "../ui/Logo";
 import Button from "../ui/Button";
 import Container from "../ui/Container";
 
 const Header = () => {
-  const location = useLocation();
 
-  const navItems = [
-    { name: "Home", path: "/" },
-    { name: "Features", path: "/features" },
-    { name: "FAQ", path: "/faq" },
-    { name: "Get Started", path: "/get-started" },
-  ];
-
-  const isActive = (path: string) => {
-    return location.pathname === path;
+  // Function to scroll to sections
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   };
 
   return (
@@ -30,19 +29,30 @@ const Header = () => {
 
           {/* Navigation - Made bigger with hover effects */}
           <nav className="hidden items-center space-x-10 md:flex">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`relative text-base font-semibold transition-all duration-300 ease-out hover:-translate-y-1 hover:text-red-600 ${
-                  isActive(item.path)
-                    ? "border-b-2 border-red-600 pb-1 text-red-600"
-                    : "text-gray-700"
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
+            <button
+              onClick={() => scrollToSection("home")}
+              className="relative text-base font-semibold transition-all duration-300 ease-out hover:-translate-y-1 hover:text-red-600"
+            >
+              Home
+            </button>
+            <button
+              onClick={() => scrollToSection("features")}
+              className="relative text-base font-semibold transition-all duration-300 ease-out hover:-translate-y-1 hover:text-red-600"
+            >
+              Features
+            </button>
+            <button
+              onClick={() => scrollToSection("faq")}
+              className="relative text-base font-semibold transition-all duration-300 ease-out hover:-translate-y-1 hover:text-red-600"
+            >
+              FAQ
+            </button>
+            <button
+              onClick={() => scrollToSection("contact")}
+              className="relative text-base font-semibold transition-all duration-300 ease-out hover:-translate-y-1 hover:text-red-600"
+            >
+              Contact
+            </button>
           </nav>
 
           {/* Auth Buttons - Made bigger */}

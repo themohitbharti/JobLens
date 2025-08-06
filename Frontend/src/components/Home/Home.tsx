@@ -4,6 +4,44 @@ import { Button } from "../index";
 
 const Home = () => {
   const [showPreview, setShowPreview] = useState(false);
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+
+  const faqs = [
+    {
+      question: "How does JobLens AI analyze my resume?",
+      answer:
+        "Our AI uses advanced natural language processing and machine learning algorithms trained on thousands of successful resumes. It analyzes content quality, formatting, keyword optimization, ATS compatibility, and compares your resume against industry standards to provide personalized feedback.",
+    },
+    {
+      question: "Is my personal information secure?",
+      answer:
+        "Absolutely. We use enterprise-grade security measures including SSL encryption, secure cloud storage, and strict data privacy protocols. Your resume data is never shared with third parties, and you can delete your information at any time.",
+    },
+    {
+      question: "What file formats does JobLens support?",
+      answer:
+        "JobLens supports PDF, Word (.docx), and plain text formats. We recommend uploading your resume as a PDF for the most accurate analysis, as this preserves formatting and ensures consistency across different systems.",
+    },
+    {
+      question: "How accurate is the resume scoring?",
+      answer:
+        "Our scoring system has been trained on over 50,000 successful resumes and validated by recruiting professionals. The accuracy rate is over 92% when compared to human recruiter assessments. However, remember that our tool is meant to complement, not replace, human judgment.",
+    },
+    {
+      question: "Can I use JobLens for different job roles?",
+      answer:
+        "Yes! JobLens can analyze resumes for various industries and job levels, from entry-level positions to executive roles. Our AI adapts its analysis based on the role you're targeting and provides relevant suggestions for each specific position.",
+    },
+    {
+      question: "What's included in the free plan?",
+      answer:
+        "The free plan includes one resume analysis per month, basic scoring, and general improvement suggestions. Premium plans offer unlimited analyses, detailed feedback, ATS optimization, LinkedIn profile reviews, and priority support.",
+    },
+  ];
+
+  const toggleFAQ = (index: number) => {
+    setOpenFAQ(openFAQ === index ? null : index);
+  };
 
   return (
     <div
@@ -13,7 +51,7 @@ const Home = () => {
       }}
     >
       {/* Hero Section */}
-      <div className="relative overflow-hidden px-8 py-20 lg:px-16">
+      <div id="home" className="relative overflow-hidden px-8 py-20 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <div className="grid items-center gap-16 lg:grid-cols-2">
             {/* Left Content */}
@@ -21,8 +59,6 @@ const Home = () => {
               <div
                 className="mb-6 inline-flex items-center rounded-full px-4 py-2 text-sm font-medium text-red-400"
                 style={{
-                  // background:
-                  //   "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
                   background: "rgba(239, 68, 68, 0.1)",
                 }}
               >
@@ -266,6 +302,7 @@ const Home = () => {
 
       {/* Stats Section - WHITE */}
       <div
+        id="stats"
         className="border-t border-gray-200 px-8 py-16 lg:px-16"
         style={{
           background: "white",
@@ -355,6 +392,7 @@ const Home = () => {
 
       {/* Features Section - CHANGED TO WHITE with animations */}
       <div
+        id="features"
         className="border-t border-gray-200 px-8 py-20 lg:px-16"
         style={{
           background: "white",
@@ -497,11 +535,130 @@ const Home = () => {
         </div>
       </div>
 
-      {/* CTA Section - USING HERO SECTION GRADIENT */}
+      {/* FAQ Section - HERO GRADIENT THEME */}
       <div
-        className="border-t border-gray-200 px-8 py-20 lg:px-16"
+        id="faq"
+        className="border-t border-gray-700/30 px-8 py-20 lg:px-16"
         style={{
           background: "linear-gradient(135deg, hsl(0 0% 6%), hsl(345 84% 25%))",
+        }}
+      >
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-16 text-center">
+            <div
+              className="mb-6 inline-flex items-center rounded-full px-4 py-2 text-sm font-medium text-red-400"
+              style={{
+                background: "rgba(239, 68, 68, 0.1)",
+              }}
+            >
+              ❓ Got questions?
+            </div>
+
+            <h2 className="mb-4 text-4xl font-bold text-white lg:text-5xl">
+              Frequently Asked{" "}
+              <span
+                className="bg-clip-text text-transparent"
+                style={{
+                  background:
+                    "linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 65%))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Questions
+              </span>
+            </h2>
+            <p className="text-xl text-gray-300">
+              Everything you need to know about JobLens and how it works
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="rounded-xl border border-gray-700/50 backdrop-blur-sm transition-all duration-300 hover:border-red-400/50"
+                style={{
+                  background: "rgba(255, 255, 255, 0.05)",
+                }}
+              >
+                <button
+                  onClick={() => toggleFAQ(index)}
+                  className="flex w-full items-center justify-between p-6 text-left transition-colors duration-300 hover:bg-white/5"
+                >
+                  <h3 className="pr-4 text-lg font-semibold text-white">
+                    {faq.question}
+                  </h3>
+                  <div
+                    className={`flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 ${
+                      openFAQ === index
+                        ? "rotate-45 bg-red-500"
+                        : "bg-white/10 hover:bg-white/20"
+                    }`}
+                  >
+                    <svg
+                      className="h-4 w-4 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                  </div>
+                </button>
+
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    openFAQ === index
+                      ? "max-h-96 opacity-100"
+                      : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <div className="border-t border-gray-700/30 p-6 pt-4">
+                    <p className="leading-relaxed text-gray-300">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="mb-4 text-gray-400">
+              Still have questions? We're here to help!
+            </p>
+            <button className="inline-flex items-center text-red-400 transition-colors duration-300 hover:text-red-300">
+              Contact our support team
+              <svg
+                className="ml-2 h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section - WHITE THEME */}
+      <div
+        id="contact"
+        className="border-t border-gray-200 px-8 py-20 lg:px-16"
+        style={{
+          background: "white",
         }}
       >
         <div className="mx-auto max-w-4xl text-center">
@@ -515,7 +672,7 @@ const Home = () => {
             ✨ Ready to transform your career?
           </div>
 
-          <h2 className="mb-6 text-4xl font-bold text-white lg:text-6xl">
+          <h2 className="mb-6 text-4xl font-bold text-gray-800 lg:text-6xl">
             Start building your{" "}
             <span
               className="bg-clip-text text-transparent"
@@ -531,7 +688,7 @@ const Home = () => {
             today
           </h2>
 
-          <p className="mb-8 text-xl text-gray-300">
+          <p className="mb-8 text-xl text-gray-600">
             Join thousands of professionals who have already improved their
             resumes and landed their dream jobs
           </p>
@@ -564,7 +721,7 @@ const Home = () => {
               </Button>
             </Link>
 
-            <button className="flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-300 transition-all duration-300 hover:scale-105 hover:text-white">
+            <button className="flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-600 transition-all duration-300 hover:scale-105 hover:text-gray-800">
               <svg
                 className="mr-2 h-5 w-5 transition-transform duration-300 hover:scale-110"
                 fill="none"
@@ -582,7 +739,7 @@ const Home = () => {
             </button>
           </div>
 
-          <p className="mt-6 text-sm text-gray-400">
+          <p className="mt-6 text-sm text-gray-500">
             No credit card required • Free forever plan available
           </p>
         </div>
@@ -591,4 +748,5 @@ const Home = () => {
   );
 };
 
-export default Home;
+// Export the scrollToSection function for use in header
+export { Home as default, Home };
