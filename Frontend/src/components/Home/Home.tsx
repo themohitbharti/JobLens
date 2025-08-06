@@ -748,5 +748,4 @@ const Home = () => {
   );
 };
 
-// Export the scrollToSection function for use in header
-export { Home as default, Home };
+export default Home;
