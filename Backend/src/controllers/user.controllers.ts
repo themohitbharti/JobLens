@@ -537,13 +537,18 @@ const getResumeStats = asyncHandler(async (req: CustomRequest, res: Response) =>
   const userId = req.user._id;
 
   try {
-    const user = await User.findById(userId).lean();
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
+
+    // Calculate current resume stats
+    await user.calculateResumeStats();
+    await user.calculateImprovementTrend('resume');
+    await user.save();
 
     // Interpret the improvement trend
     const interpretTrend = (trend: number) => {
@@ -559,20 +564,25 @@ const getResumeStats = asyncHandler(async (req: CustomRequest, res: Response) =>
     };
 
     const resumeTrendInterpretation = interpretTrend(
-      user.resumeStats.improvementTrend
+      user.resumeStats.improvementTrend || 0
     );
 
     return res.status(200).json({
       success: true,
       message: "Resume stats retrieved successfully",
       data: {
-        ...user.resumeStats,
+        totalScans: user.resumeStats.totalScans || 0,
+        weeklyScans: user.resumeStats.weeklyScans || 0,
+        weeklyAvg: user.resumeStats.weeklyAvg || 0,
+        bestScore: user.resumeStats.bestScore || 0,
+        lastScanDate: user.resumeStats.lastScanDate || null,
+        improvementTrend: user.resumeStats.improvementTrend || 0,
         trendInterpretation: resumeTrendInterpretation,
         // Add percentage change from first to last scan
         improvementPercentage:
-          user.resumeStats.improvementTrend > 0
-            ? `+${(user.resumeStats.improvementTrend * 10).toFixed(1)}%`
-            : `${(user.resumeStats.improvementTrend * 10).toFixed(1)}%`,
+          (user.resumeStats.improvementTrend || 0) > 0
+            ? `+${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`
+            : `${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`,
       },
     });
   } catch (error) {
@@ -588,13 +598,31 @@ const getLinkedinStats = asyncHandler(async (req: CustomRequest, res: Response) 
   const userId = req.user._id;
 
   try {
-    const user = await User.findById(userId).lean();
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
+
+    // Initialize LinkedIn stats if they don't exist
+    if (!user.linkedinStats) {
+      user.linkedinStats = {
+        totalScans: 0,
+        weeklyScans: 0,
+        weeklyAvg: 0,
+        bestScore: 0,
+        lastScanDate: undefined,
+        improvementTrend: 0,
+      };
+      await user.save();
+    }
+
+    // Calculate current LinkedIn stats
+    await user.calculateLinkedinStats();
+    await user.calculateImprovementTrend('linkedin');
+    await user.save();
 
     // Interpret the improvement trend
     const interpretTrend = (trend: number) => {
@@ -610,20 +638,25 @@ const getLinkedinStats = asyncHandler(async (req: CustomRequest, res: Response) 
     };
 
     const linkedinTrendInterpretation = interpretTrend(
-      user.linkedinStats.improvementTrend
+      user.linkedinStats.improvementTrend || 0
     );
 
     return res.status(200).json({
       success: true,
       message: "LinkedIn stats retrieved successfully",
       data: {
-        ...user.linkedinStats,
+        totalScans: user.linkedinStats.totalScans || 0,
+        weeklyScans: user.linkedinStats.weeklyScans || 0,
+        weeklyAvg: user.linkedinStats.weeklyAvg || 0,
+        bestScore: user.linkedinStats.bestScore || 0,
+        lastScanDate: user.linkedinStats.lastScanDate || null,
+        improvementTrend: user.linkedinStats.improvementTrend || 0,
         trendInterpretation: linkedinTrendInterpretation,
         // Add percentage change from first to last scan
         improvementPercentage:
-          user.linkedinStats.improvementTrend > 0
-            ? `+${(user.linkedinStats.improvementTrend * 10).toFixed(1)}%`
-            : `${(user.linkedinStats.improvementTrend * 10).toFixed(1)}%`,
+          (user.linkedinStats.improvementTrend || 0) > 0
+            ? `+${((user.linkedinStats.improvementTrend || 0) * 10).toFixed(1)}%`
+            : `${((user.linkedinStats.improvementTrend || 0) * 10).toFixed(1)}%`,
       },
     });
   } catch (error) {
@@ -639,13 +672,32 @@ const getCombinedStats = asyncHandler(async (req: CustomRequest, res: Response) 
   const userId = req.user._id;
 
   try {
-    const user = await User.findById(userId).lean();
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
+
+    // Initialize LinkedIn stats if they don't exist
+    if (!user.linkedinStats) {
+      user.linkedinStats = {
+        totalScans: 0,
+        weeklyScans: 0,
+        weeklyAvg: 0,
+        bestScore: 0,
+        lastScanDate: undefined,
+        improvementTrend: 0,
+      };
+    }
+
+    // Calculate current stats for both
+    await user.calculateResumeStats();
+    await user.calculateLinkedinStats();
+    await user.calculateImprovementTrend('resume');
+    await user.calculateImprovementTrend('linkedin');
+    await user.save();
 
     // Interpret the improvement trend
     const interpretTrend = (trend: number) => {
@@ -661,22 +713,25 @@ const getCombinedStats = asyncHandler(async (req: CustomRequest, res: Response) 
     };
 
     const resumeTrendInterpretation = interpretTrend(
-      user.resumeStats.improvementTrend
+      user.resumeStats.improvementTrend || 0
     );
 
     const linkedinTrendInterpretation = interpretTrend(
-      user.linkedinStats.improvementTrend
+      user.linkedinStats.improvementTrend || 0
     );
 
     // Calculate combined stats
+    const totalScans = (user.resumeStats.totalScans || 0) + (user.linkedinStats.totalScans || 0);
+    const totalWeeklyScans = (user.resumeStats.weeklyScans || 0) + (user.linkedinStats.weeklyScans || 0);
+    
     const combinedStats = {
-      totalScans: user.resumeStats.totalScans + user.linkedinStats.totalScans,
-      weeklyScans: user.resumeStats.weeklyScans + user.linkedinStats.weeklyScans,
-      bestOverallScore: Math.max(user.resumeStats.bestScore, user.linkedinStats.bestScore),
-      averageScore: user.resumeStats.totalScans + user.linkedinStats.totalScans > 0 
-        ? Math.round(((user.resumeStats.weeklyAvg * user.resumeStats.weeklyScans) + 
-                     (user.linkedinStats.weeklyAvg * user.linkedinStats.weeklyScans)) / 
-                    (user.resumeStats.weeklyScans + user.linkedinStats.weeklyScans))
+      totalScans,
+      weeklyScans: totalWeeklyScans,
+      bestOverallScore: Math.max(user.resumeStats.bestScore || 0, user.linkedinStats.bestScore || 0),
+      averageScore: totalWeeklyScans > 0 
+        ? Math.round((((user.resumeStats.weeklyAvg || 0) * (user.resumeStats.weeklyScans || 0)) + 
+                     ((user.linkedinStats.weeklyAvg || 0) * (user.linkedinStats.weeklyScans || 0))) / 
+                    totalWeeklyScans)
         : 0,
     };
 
@@ -686,20 +741,30 @@ const getCombinedStats = asyncHandler(async (req: CustomRequest, res: Response) 
       data: {
         combined: combinedStats,
         resume: {
-          ...user.resumeStats,
+          totalScans: user.resumeStats.totalScans || 0,
+          weeklyScans: user.resumeStats.weeklyScans || 0,
+          weeklyAvg: user.resumeStats.weeklyAvg || 0,
+          bestScore: user.resumeStats.bestScore || 0,
+          lastScanDate: user.resumeStats.lastScanDate || null,
+          improvementTrend: user.resumeStats.improvementTrend || 0,
           trendInterpretation: resumeTrendInterpretation,
           improvementPercentage:
-            user.resumeStats.improvementTrend > 0
-              ? `+${(user.resumeStats.improvementTrend * 10).toFixed(1)}%`
-              : `${(user.resumeStats.improvementTrend * 10).toFixed(1)}%`,
+            (user.resumeStats.improvementTrend || 0) > 0
+              ? `+${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`
+              : `${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`,
         },
         linkedin: {
-          ...user.linkedinStats,
+          totalScans: user.linkedinStats.totalScans || 0,
+          weeklyScans: user.linkedinStats.weeklyScans || 0,
+          weeklyAvg: user.linkedinStats.weeklyAvg || 0,
+          bestScore: user.linkedinStats.bestScore || 0,
+          lastScanDate: user.linkedinStats.lastScanDate || null,
+          improvementTrend: user.linkedinStats.improvementTrend || 0,
           trendInterpretation: linkedinTrendInterpretation,
           improvementPercentage:
-            user.linkedinStats.improvementTrend > 0
-              ? `+${(user.linkedinStats.improvementTrend * 10).toFixed(1)}%`
-              : `${(user.linkedinStats.improvementTrend * 10).toFixed(1)}%`,
+            (user.linkedinStats.improvementTrend || 0) > 0
+              ? `+${((user.linkedinStats.improvementTrend || 0) * 10).toFixed(1)}%`
+              : `${((user.linkedinStats.improvementTrend || 0) * 10).toFixed(1)}%`,
         },
       },
     });
@@ -724,6 +789,6 @@ export {
   getUser,
   editUserProfile,
   getResumeStats,        // Resume stats only
-  getLinkedinStats,    // LinkedIn stats only  
-  getCombinedStats,    // Both stats combined
+  getLinkedinStats,      // LinkedIn stats only  
+  getCombinedStats,      // Both stats combined
 };

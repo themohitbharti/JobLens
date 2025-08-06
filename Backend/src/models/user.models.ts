@@ -47,6 +47,7 @@ export interface UserDocument extends mongoose.Document {
   calculateLinkedinStats(): Promise<void>;
   calculateImprovementTrend(scanType: 'resume' | 'linkedin'): Promise<void>;
   calculateTrendSlope(scores: number[]): number;
+  initializeLinkedinStats(): void;
 }
 
 const userSchema = new mongoose.Schema<UserDocument>(
@@ -150,7 +151,10 @@ const userSchema = new mongoose.Schema<UserDocument>(
         type: Number,
         default: 0,
       },
-      lastScanDate: Date,
+      lastScanDate: {
+        type: Date,
+        default: null,
+      },
       improvementTrend: {
         type: Number,
         default: 0,
@@ -273,7 +277,23 @@ userSchema.methods.calculateResumeStats = async function () {
   }
 };
 
+userSchema.methods.initializeLinkedinStats = function() {
+  if (!this.linkedinStats) {
+    this.linkedinStats = {
+      totalScans: 0,
+      weeklyScans: 0,
+      weeklyAvg: 0,
+      bestScore: 0,
+      lastScanDate: null,
+      improvementTrend: 0,
+    };
+  }
+};
+
 userSchema.methods.calculateLinkedinStats = async function () {
+  // Ensure LinkedIn stats are initialized
+  this.initializeLinkedinStats();
+
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -299,6 +319,11 @@ userSchema.methods.calculateLinkedinStats = async function () {
 };
 
 userSchema.methods.calculateImprovementTrend = async function (scanType: 'resume' | 'linkedin') {
+  // Ensure stats are initialized
+  if (scanType === 'linkedin') {
+    this.initializeLinkedinStats();
+  }
+
   const ScanModel = mongoose.model(scanType === 'resume' ? "ResumeScan" : "LinkedinScan");
 
   // Get last 10 scans of specific type to calculate trend
