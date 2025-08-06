@@ -9,6 +9,7 @@ import { GeminiAnalysisService } from "../services/geminiService";
 import { DeterministicScoringService } from "../services/scoringService";
 import { ResumeScan } from "../models/resumeScan.models";
 import { User } from "../models/user.models";
+import { ResumeComparisonService } from "../services/resumeComparisonService";
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -55,6 +56,19 @@ const safeDeleteFile = (filePath: string) => {
   } catch (error) {
     console.error(`❌ Error deleting file ${filePath}:`, error);
   }
+};
+
+const safeDeleteFiles = (filePaths: string[]) => {
+  filePaths.forEach(filePath => {
+    try {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log(`✅ File deleted: ${filePath}`);
+      }
+    } catch (error) {
+      console.error(`❌ Error deleting file ${filePath}:`, error);
+    }
+  });
 };
 
 const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
@@ -314,4 +328,155 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
   }
 });
 
-export { scanResume };
+const compareResumes = asyncHandler(async (req: CustomRequest, res: Response) => {
+  const startTime = Date.now();
+  let uploadedFilePaths: string[] = [];
+
+  try {
+    // Check if user can perform comparison
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const canScan = await user.canPerformScan();
+    if (!canScan) {
+      return res.status(429).json({
+        success: false,
+        message: "Daily scan limit reached (30 scans per day)",
+      });
+    }
+
+    // Validate file uploads
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    if (!files?.resume1?.[0] || !files?.resume2?.[0]) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload both resume files (PDF format)",
+      });
+    }
+
+    const resume1File = files.resume1[0];
+    const resume2File = files.resume2[0];
+    
+    // Store file paths for cleanup
+    uploadedFilePaths = [resume1File.path, resume2File.path];
+
+    // Extract comparison preferences from request body with defaults
+    const {
+      targetIndustry,
+      experienceLevel,
+      targetJobTitle,
+      keywords,
+    } = req.body;
+
+    const comparisonPreferences = {
+      targetIndustry: targetIndustry?.trim() || "General",
+      experienceLevel: experienceLevel?.trim() || "mid",
+      targetJobTitle: targetJobTitle?.trim() || "General Position",
+      keywords: keywords
+        ? keywords.split(",").map((k: string) => k.trim())
+        : [],
+    };
+
+    // Extract text from both PDFs
+    const [extractedContent1, extractedContent2] = await Promise.all([
+      extractTextFromPDF(resume1File.path),
+      extractTextFromPDF(resume2File.path)
+    ]);
+
+    console.log(`📊 Comparison Stats:`, {
+      resume1: {
+        words: extractedContent1.metadata.wordCount,
+        sections: extractedContent1.sections.length
+      },
+      resume2: {
+        words: extractedContent2.metadata.wordCount,
+        sections: extractedContent2.sections.length
+      }
+    });
+
+    // Analyze both resumes using existing services
+    const geminiService = new GeminiAnalysisService();
+    const scoringService = new DeterministicScoringService();
+    const comparisonService = new ResumeComparisonService();
+
+    // Get analysis for both resumes
+    const [analysis1, analysis2] = await Promise.all([
+      geminiService.analyzeResume(extractedContent1, comparisonPreferences),
+      geminiService.analyzeResume(extractedContent2, comparisonPreferences)
+    ]);
+
+    // Calculate scores for both resumes
+    const score1 = scoringService.calculateOverallScore(
+      analysis1.benchmarkResults,
+      comparisonPreferences.targetJobTitle,
+      comparisonPreferences.experienceLevel,
+      comparisonPreferences.targetIndustry
+    );
+
+    const score2 = scoringService.calculateOverallScore(
+      analysis2.benchmarkResults,
+      comparisonPreferences.targetJobTitle,
+      comparisonPreferences.experienceLevel,
+      comparisonPreferences.targetIndustry
+    );
+
+    // Generate comprehensive comparison
+    const comparisonResult = await comparisonService.compareResumes(
+      {
+        fileName: resume1File.originalname,
+        extractedContent: extractedContent1,
+        analysis: analysis1,
+        score: score1
+      },
+      {
+        fileName: resume2File.originalname,
+        extractedContent: extractedContent2,
+        analysis: analysis2,
+        score: score2
+      },
+      comparisonPreferences
+    );
+
+    // Calculate processing time
+    const processingTime = Date.now() - startTime;
+
+    // Update user scan count (comparison counts as 1 scan)
+    await user.updateDailyScanCount();
+
+    // Clean up uploaded files
+    safeDeleteFiles(uploadedFilePaths);
+
+    // Return comprehensive comparison result
+    return res.status(200).json({
+      success: true,
+      message: "Resumes compared successfully",
+      data: {
+        ...comparisonResult,
+        processingTime,
+        usedPreferences: comparisonPreferences,
+        comparisonDate: new Date().toISOString(),
+      },
+    });
+
+  } catch (error: any) {
+    console.error("Resume comparison error:", error);
+
+    // Clean up files in error case
+    if (uploadedFilePaths.length > 0) {
+      safeDeleteFiles(uploadedFilePaths);
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to compare resumes",
+      error: error.message,
+    });
+  }
+});
+
+export { scanResume , compareResumes};
