@@ -11,6 +11,7 @@ import {
   Login,
   Signup,
   DashboardLayout,
+  ResumeScan,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -55,6 +56,14 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={true}>
             <DashboardLayout />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/resume-scan",
+        element: (
+          <AuthLayout authentication={true}>
+            <ResumeScan />
           </AuthLayout>
         ),
       },

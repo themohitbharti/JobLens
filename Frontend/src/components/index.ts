@@ -23,6 +23,11 @@ import DashboardLayout from "./layout/DashboardLayout";
 // Home component
 import Home from "./Home/Home";
 
+// Resume Scan
+import ScanStatistics from "./resume/ScanStatistics";
+import FeaturesList from "./resume/FeaturesList";
+import VisualElements from "./resume/VisualElements";
+import ResumeUpload from "./resume/ResumeUpload"
 export {
   // Auth
   Login,
@@ -48,4 +53,10 @@ export {
 
   // Home
   Home,
+
+  //Resume Scan
+  ScanStatistics,
+  FeaturesList,
+  VisualElements,
+  ResumeUpload
 };

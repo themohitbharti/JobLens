@@ -8,12 +8,14 @@ import Signup from "./Signup";
 // import UserProfile from "./UserProfile";
 // import UserProducts from "./UserProducts";
 import DashboardLayout from '../components/layout/DashboardLayout';
+import ResumeScan from "./ResumeScan";
 
 export {
   Home,
   Login,
   Signup,
-  DashboardLayout
+  DashboardLayout,
+  ResumeScan,
 //   VerifyOTP,
 //   UploadItem,
 //   ProductDetails,
