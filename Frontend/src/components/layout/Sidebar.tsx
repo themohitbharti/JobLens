@@ -15,83 +15,164 @@ interface SidebarProps {
 // Custom SVG Icons
 const DashboardIcon = () => (
   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
   </svg>
 );
 
+// --- Resume Scan Icon: Bold, clear document with magnifier ---
 const ResumeScanIcon = () => (
-  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-    {/* Scanner beam */}
-    <path d="M7 12h10v1H7z" opacity="0.7"/>
-    <path d="M7 14h6v1H7z" opacity="0.5"/>
-  </svg>
+  <img
+    src="/copy.png"
+    alt="Resume"
+    className="h-8 w-8 rounded object-contain"
+    draggable={false}
+  />
 );
 
+// --- Resume Stats Icon: Bold document with bar chart ---
 const ResumeStatsIcon = () => (
-  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-  </svg>
+  <img
+    src="/graph-report.png"
+    alt="Resume"
+    className="h-8 w-8 rounded object-contain"
+    draggable={false}
+  />
 );
 
+// --- Compare Resumes Icon: Two bold documents with VS badge ---
 const CompareResumesIcon = () => (
-  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-    {/* VS indicator */}
-    <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.6"/>
-    <text x="12" y="13" textAnchor="middle" fontSize="8" fill="white">VS</text>
-  </svg>
+  <img
+    src="/compare.png"
+    alt="Resume"
+    className="h-8 w-8 rounded object-contain"
+    draggable={false}
+  />
 );
 
 const LinkedInBuilderIcon = () => (
-  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-    {/* LinkedIn square base */}
-    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-    {/* Builder/edit indicator */}
-    <path d="M16 2l2 2-10 10-2-2z" stroke="white" strokeWidth="0.8" fill="white" opacity="0.8"/>
-    <circle cx="17" cy="3" r="1" fill="#0077b5" stroke="white" strokeWidth="0.5"/>
+  <svg className="h-8 w-8" viewBox="0 0 32 32">
+    <rect width="32" height="32" rx="6" fill="#0077B5" />
+    <text
+      x="16"
+      y="22"
+      textAnchor="middle"
+      fontWeight="bold"
+      fontSize="16"
+      fill="white"
+      fontFamily="Arial, Helvetica, sans-serif"
+    >
+      in
+    </text>
   </svg>
 );
 
 const LinkedInCompareIcon = () => (
-  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-    {/* Left LinkedIn profile */}
-    <path d="M10 2H2C1.45 2 1 2.45 1 3v8c0 .55.45 1 1 1h8c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-2 7H4V6h4v3zm0-4H4V4h4v1z" />
-    {/* Right LinkedIn profile */}
-    <path d="M22 2h-8c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1h8c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-2 7h-4V6h4v3zm0-4h-4V4h4v1z" />
-    {/* VS indicator between them */}
-    <circle cx="12" cy="7" r="1.5" fill="#0077b5"/>
-    <text x="12" y="8" textAnchor="middle" fontSize="6" fill="white">VS</text>
-    {/* Connection lines */}
-    <path d="M10 7h2M14 7h2" stroke="currentColor" strokeWidth="1" opacity="0.5"/>
+  <svg className="h-8 w-8" viewBox="0 0 40 40" fill="none">
+    {/* Bottom-left LinkedIn */}
+    <rect
+      x="3"
+      y="20"
+      width="14"
+      height="14"
+      rx="3"
+      fill="#0077B5"
+      stroke="#222"
+      strokeWidth="2"
+    />
+    <text
+      x="10"
+      y="31"
+      textAnchor="middle"
+      fontWeight="bold"
+      fontSize="9"
+      fill="#fff"
+      fontFamily="Arial, Helvetica, sans-serif"
+    >
+      in
+    </text>
+    {/* Top-right LinkedIn */}
+    <rect
+      x="23"
+      y="4"
+      width="14"
+      height="14"
+      rx="3"
+      fill="#0077B5"
+      stroke="#222"
+      strokeWidth="2"
+    />
+    <text
+      x="30"
+      y="15"
+      textAnchor="middle"
+      fontWeight="bold"
+      fontSize="9"
+      fill="#fff"
+      fontFamily="Arial, Helvetica, sans-serif"
+    >
+      in
+    </text>
+    {/* Small v in the center */}
+    <text
+      x="20"
+      y="25"
+      textAnchor="middle"
+      fontWeight="bold"
+      fontSize="10"
+      fill="#222"
+      fontFamily="Arial, Helvetica, sans-serif"
+      style={{ userSelect: "none" }}
+    >
+      v
+    </text>
   </svg>
 );
 
+// --- LinkedIn Stats Icon: Bar chart over LinkedIn logo ---
 const LinkedInStatsIcon = () => (
-  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-    {/* LinkedIn base */}
-    <rect x="2" y="2" width="20" height="14" rx="2" fill="currentColor" opacity="0.2"/>
-    <path d="M20.447 14h-3.554v-3.569c0-.828-.027-1.837-1.052-1.837-.853 0-1.136.845-1.136 1.739V14H11.351V7h2.414v.961h.046c.277-.5.937-1.05 1.93-1.05 2.061 0 2.444 1.37 2.444 3.155V14zM7.337 5.933c-.744 0-1.263-.626-1.263-1.265 0-.638.52-1.263 1.263-1.263.74 0 1.264.625 1.264 1.263 0 .639-.525 1.265-1.264 1.265zM8.782 14H5.555V7h3.227v7z"/>
-    {/* Stats bars */}
-    <rect x="3" y="17" width="2" height="4" fill="#0077b5"/>
-    <rect x="6" y="19" width="2" height="2" fill="#0077b5"/>
-    <rect x="9" y="16" width="2" height="5" fill="#0077b5"/>
-    <rect x="12" y="18" width="2" height="3" fill="#0077b5"/>
-    <rect x="15" y="15" width="2" height="6" fill="#0077b5"/>
-    <rect x="18" y="17" width="2" height="4" fill="#0077b5"/>
-  </svg>
+  <img
+    src="/social.png"
+    alt="Resume"
+    className="h-8 w-8 rounded object-contain"
+    draggable={false}
+  />
 );
 
 const SettingsIcon = () => (
-  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+  <svg
+    className="h-5 w-5"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+    />
   </svg>
 );
 
 const LogoutIcon = () => (
-  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+  <svg
+    className="h-5 w-5"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+    />
   </svg>
 );
 
@@ -266,11 +347,13 @@ const Sidebar = ({ className = "" }: SidebarProps) => {
                     : "text-gray-700 hover:bg-red-50 hover:text-red-600"
                 }`}
               >
-                <div className={`flex-shrink-0 transition-colors ${
-                  active
-                    ? "text-white"
-                    : "text-gray-400 group-hover:text-red-500"
-                }`}>
+                <div
+                  className={`flex-shrink-0 transition-colors ${
+                    active
+                      ? "text-white"
+                      : "text-gray-400 group-hover:text-red-500"
+                  }`}
+                >
                   <Icon />
                 </div>
                 {!isCollapsed && (
@@ -305,11 +388,13 @@ const Sidebar = ({ className = "" }: SidebarProps) => {
                         : "text-red-600 hover:bg-red-50 hover:text-red-700"
                     }`}
                   >
-                    <div className={`flex-shrink-0 transition-colors ${
-                      isLoggingOut
-                        ? "text-red-400"
-                        : "text-red-500 group-hover:text-red-600"
-                    }`}>
+                    <div
+                      className={`flex-shrink-0 transition-colors ${
+                        isLoggingOut
+                          ? "text-red-400"
+                          : "text-red-500 group-hover:text-red-600"
+                      }`}
+                    >
                       <Icon />
                     </div>
                     {!isCollapsed && (
@@ -331,11 +416,13 @@ const Sidebar = ({ className = "" }: SidebarProps) => {
                       : "text-gray-700 hover:bg-red-50 hover:text-red-600"
                   }`}
                 >
-                  <div className={`flex-shrink-0 transition-colors ${
-                    active
-                      ? "text-white"
-                      : "text-gray-400 group-hover:text-red-500"
-                  }`}>
+                  <div
+                    className={`flex-shrink-0 transition-colors ${
+                      active
+                        ? "text-white"
+                        : "text-gray-400 group-hover:text-red-500"
+                    }`}
+                  >
                     <Icon />
                   </div>
                   {!isCollapsed && (
