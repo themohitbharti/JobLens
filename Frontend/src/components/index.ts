@@ -15,7 +15,7 @@ import LoadingSpinner from "./common/LoadingSpinner";
 import { AppLoader } from "./common/AppLoader";
 
 // Layout components
-import Header from "./header/Header";
+import Header from "./layout/Header/Header";
 import Footer from "./layout/Footer/Footer";
 import Sidebar from "./layout/Sidebar";
 import DashboardLayout from "./layout/DashboardLayout";
