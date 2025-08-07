@@ -255,109 +255,25 @@ function Signup({ onOTPSent }: SignupProps) {
       </div>
 
       {/* Right side - Illustration */}
-      <div className="hidden flex-1 items-center justify-center bg-gradient-to-r from-red-500 via-red-600 to-rose-500 lg:flex">
-        <div className="max-w-md text-center text-white">
-          <div className="mb-8">
-            {/* User Registration illustration SVG */}
-            <svg
-              className="mx-auto h-64 w-64"
-              viewBox="0 0 400 400"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Background circle */}
-              <circle
-                cx="200"
-                cy="200"
-                r="150"
-                fill="white"
-                fillOpacity="0.1"
-                stroke="white"
-                strokeWidth="2"
-                strokeOpacity="0.3"
-              />
-
-              {/* User Icon */}
-              <circle cx="200" cy="160" r="40" fill="white" fillOpacity="0.9" />
-              <circle cx="200" cy="145" r="15" fill="#ef4444" />
-              <path
-                d="M170 185 Q200 170 230 185"
-                fill="#ef4444"
-                fillOpacity="0.8"
-              />
-
-              {/* Document/Form behind user */}
-              <rect
-                x="140"
-                y="220"
-                width="120"
-                height="100"
-                rx="8"
-                fill="white"
-                fillOpacity="0.95"
-                stroke="white"
-                strokeWidth="2"
-              />
-
-              {/* Form fields */}
-              <rect x="150" y="235" width="80" height="4" fill="#ef4444" />
-              <rect x="150" y="245" width="60" height="3" fill="#6b7280" />
-
-              <rect x="150" y="260" width="70" height="4" fill="#ef4444" />
-              <rect x="150" y="270" width="90" height="3" fill="#6b7280" />
-
-              <rect x="150" y="285" width="75" height="4" fill="#ef4444" />
-              <rect x="150" y="295" width="85" height="3" fill="#6b7280" />
-
-              {/* Checkmark indicating successful registration */}
-              <circle cx="320" cy="120" r="25" fill="white" fillOpacity="0.9" />
-              <path
-                d="M310 120 L318 128 L330 110"
-                stroke="#ef4444"
-                strokeWidth="4"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-
-              {/* Floating elements - stars/sparkles */}
-              <circle cx="120" cy="80" r="3" fill="white" fillOpacity="0.6" />
-              <circle cx="300" cy="70" r="4" fill="white" fillOpacity="0.5" />
-              <circle cx="350" cy="180" r="2" fill="white" fillOpacity="0.7" />
-              <circle cx="80" cy="150" r="3" fill="white" fillOpacity="0.4" />
-              <circle cx="320" cy="320" r="3" fill="white" fillOpacity="0.6" />
-              <circle cx="100" cy="330" r="2" fill="white" fillOpacity="0.5" />
-
-              {/* Plus signs indicating adding new user */}
-              <g stroke="white" strokeWidth="3" fill="none" opacity="0.7">
-                <path
-                  d="M90 200 L90 210 M85 205 L95 205"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M340 250 L340 260 M335 255 L345 255"
-                  strokeLinecap="round"
-                />
-              </g>
-
-              {/* Connection lines */}
-              <path
-                d="M200 200 Q250 220 300 180"
-                stroke="white"
-                strokeWidth="2"
-                fill="none"
-                opacity="0.4"
-                strokeDasharray="5,5"
-              />
-            </svg>
-          </div>
-
-          <h2 className="mb-4 text-3xl font-bold">
-            Join thousands of professionals and showcase your talent!
+      <div className="relative hidden flex-1 items-center justify-center bg-gradient-to-r from-red-500 via-red-600 to-rose-500 lg:flex">
+        {/* Full background image */}
+        <img
+          src="/resume-hero-image (1).jpg"
+          alt="Resume Hero"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ zIndex: 0 }}
+        />
+        {/* Overlay card */}
+        <div className="relative z-10 mx-auto flex w-[90%] max-w-xl flex-col items-center justify-center rounded-2xl bg-white/40 p-8 shadow-2xl backdrop-blur-lg">
+          <h2 className="mb-4 text-center text-3xl font-extrabold text-white drop-shadow-lg md:text-4xl">
+            Continue your journey
+            <br />
+            of resume building excellence
           </h2>
-
-          <p className="text-lg opacity-90">
-            Create your account and start building the career you deserve
+          <p className="text-center text-lg font-medium text-white opacity-95 drop-shadow-lg md:text-xl">
+            Create professional resumes that stand out
+            <br />
+            and unlock new opportunities with every application!
           </p>
         </div>
       </div>

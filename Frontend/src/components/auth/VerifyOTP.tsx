@@ -145,7 +145,9 @@ function VerifyOTPForm({ userData, onBack }: VerifyOTPFormProps) {
 
           {/* Heading */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Verify Your Account</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Verify Your Account
+            </h1>
             <p className="mt-2 text-gray-600">
               Please enter the OTP sent to {email}
             </p>
@@ -211,75 +213,26 @@ function VerifyOTPForm({ userData, onBack }: VerifyOTPFormProps) {
         </div>
       </div>
 
-      {/* Right side - Same illustration as signup */}
-      <div className="hidden flex-1 items-center justify-center bg-gradient-to-r from-red-500 via-red-600 to-rose-500 lg:flex">
-        <div className="max-w-md text-center text-white">
-          <div className="mb-8">
-            {/* Verification illustration SVG */}
-            <svg
-              className="mx-auto h-64 w-64"
-              viewBox="0 0 400 400"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Background circle */}
-              <circle
-                cx="200"
-                cy="200"
-                r="150"
-                fill="white"
-                fillOpacity="0.1"
-                stroke="white"
-                strokeWidth="2"
-                strokeOpacity="0.3"
-              />
-
-              {/* Email icon */}
-              <rect
-                x="140"
-                y="160"
-                width="120"
-                height="80"
-                rx="8"
-                fill="white"
-                fillOpacity="0.9"
-              />
-              <path
-                d="M140 160 L200 200 L260 160"
-                stroke="#ef4444"
-                strokeWidth="3"
-                fill="none"
-              />
-
-              {/* OTP code visualization */}
-              <rect x="160" y="180" width="15" height="20" rx="3" fill="#ef4444" />
-              <rect x="185" y="180" width="15" height="20" rx="3" fill="#ef4444" />
-              <rect x="210" y="180" width="15" height="20" rx="3" fill="#ef4444" />
-              <rect x="235" y="180" width="15" height="20" rx="3" fill="#ef4444" />
-
-              {/* Checkmark */}
-              <circle cx="300" cy="120" r="25" fill="white" fillOpacity="0.9" />
-              <path
-                d="M290 120 L298 128 L310 110"
-                stroke="#ef4444"
-                strokeWidth="4"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-
-              {/* Floating elements */}
-              <circle cx="120" cy="80" r="3" fill="white" fillOpacity="0.6" />
-              <circle cx="320" cy="320" r="3" fill="white" fillOpacity="0.6" />
-            </svg>
-          </div>
-
-          <h2 className="mb-4 text-3xl font-bold">
-            Almost there!
+      {/* Right side - Illustration */}
+      <div className="relative hidden flex-1 items-center justify-center bg-gradient-to-r from-red-500 via-red-600 to-rose-500 lg:flex">
+        {/* Full background image */}
+        <img
+          src="/resume-hero-image (1).jpg"
+          alt="Resume Hero"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ zIndex: 0 }}
+        />
+        {/* Overlay card */}
+        <div className="relative z-10 mx-auto flex w-[90%] max-w-xl flex-col items-center justify-center rounded-2xl bg-white/40 p-8 shadow-2xl backdrop-blur-lg">
+          <h2 className="mb-4 text-center text-3xl font-extrabold text-white drop-shadow-lg md:text-4xl">
+            Continue your journey
+            <br />
+            of resume building excellence
           </h2>
-
-          <p className="text-lg opacity-90">
-            Check your email and enter the verification code to complete your registration
+          <p className="text-center text-lg font-medium text-white opacity-95 drop-shadow-lg md:text-xl">
+            Create professional resumes that stand out
+            <br />
+            and unlock new opportunities with every application!
           </p>
         </div>
       </div>
