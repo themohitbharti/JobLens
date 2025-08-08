@@ -5,13 +5,14 @@ import { Provider } from "react-redux";
 import store from "./store/store.ts";
 import "./index.css";
 import App from "./App.tsx";
-import { AuthLayout, Dashboard} from "./components/index.ts";
+import { AuthLayout, Dashboard } from "./components/index.ts";
 import {
   Home,
   Login,
   Signup,
   DashboardLayout,
   ResumeScan,
+  ResumeScanResult, // Add this import
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
           {
             path: "/resume-scan",
             element: <ResumeScan />,
+          },
+          {
+            path: "/resume-scan-result/:scanId", // Add this route
+            element: <ResumeScanResult />,
           },
           // Add more dashboard routes here
           {
