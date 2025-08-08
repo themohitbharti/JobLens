@@ -5,14 +5,13 @@ import { Provider } from "react-redux";
 import store from "./store/store.ts";
 import "./index.css";
 import App from "./App.tsx";
-import { AuthLayout } from "./components/index.ts";
+import { AuthLayout, Dashboard} from "./components/index.ts";
 import {
   Home,
   Login,
   Signup,
   DashboardLayout,
   ResumeScan,
-  Dashboard,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,

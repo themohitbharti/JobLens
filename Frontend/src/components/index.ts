@@ -18,7 +18,7 @@ import { AppLoader } from "./common/AppLoader";
 import Header from "./layout/Header/Header";
 import Footer from "./layout/Footer/Footer";
 import Sidebar from "./layout/Sidebar";
-import DashboardLayout from "./layout/DashboardLayout";
+import Dashboard from "./layout/Dashboard";
 
 // Home component
 import Home from "./Home/Home";
@@ -49,7 +49,7 @@ export {
   Header,
   Footer,
   Sidebar,
-  DashboardLayout,
+  Dashboard,
 
   // Home
   Home,

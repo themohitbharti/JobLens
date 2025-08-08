@@ -7,9 +7,8 @@ import Signup from "./Signup";
 // import Categories from "./Discover";
 // import UserProfile from "./UserProfile";
 // import UserProducts from "./UserProducts";
-import DashboardLayout from '../components/layout/DashboardLayout';
+import DashboardLayout from './Dashboard';
 import ResumeScan from "./ResumeScan";
-import Dashboard from './Dashboard';
 
 export {
   Home,
@@ -17,7 +16,6 @@ export {
   Signup,
   DashboardLayout,
   ResumeScan,
-  Dashboard
 //   VerifyOTP,
 //   UploadItem,
 //   ProductDetails,
