@@ -1,10 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-
 import authSlice from "./authSlice";
+import resumeScanSlice from "./resumeScanSlice";
 
 const store = configureStore({
   reducer: {
     auth: authSlice,
+    resumeScan: resumeScanSlice,
   },
 });
 

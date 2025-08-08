@@ -13,6 +13,7 @@ import {
   DashboardLayout,
   ResumeScan,
   ResumeScanResult, // Add this import
+  SectionAnalysisDetail,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
           {
             path: "/resume-scan-result/:scanId", // Add this route
             element: <ResumeScanResult />,
+          },
+          {
+            path: "/resume-scan-result/:scanId/section/:sectionName", // Add section detail route
+            element: <SectionAnalysisDetail />,
           },
           // Add more dashboard routes here
           {

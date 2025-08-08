@@ -23,19 +23,17 @@ interface DetailedFeedback {
 interface SectionAnalysisProps {
   sectionScores: SectionScore[];
   detailedFeedback: DetailedFeedback[];
+  onSectionClick?: (sectionName: string) => void;
+  isMainView?: boolean;
 }
 
 const SectionAnalysis: React.FC<SectionAnalysisProps> = ({
   sectionScores,
   detailedFeedback,
+  onSectionClick,
+  isMainView = false,
 }) => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
-
-//   const getScoreColor = (score: number) => {
-//     if (score >= 8) return "text-green-600";
-//     if (score >= 6) return "text-yellow-600";
-//     return "text-red-600";
-//   };
 
   const getScoreBadgeColor = (score: number) => {
     if (score >= 8) return "bg-green-100 text-green-800";
@@ -43,6 +41,133 @@ const SectionAnalysis: React.FC<SectionAnalysisProps> = ({
     return "bg-red-100 text-red-800";
   };
 
+  const getScoreBarColor = (score: number) => {
+    if (score >= 8) return "bg-gradient-to-r from-green-500 to-emerald-500";
+    if (score >= 6) return "bg-gradient-to-r from-yellow-500 to-orange-500";
+    return "bg-gradient-to-r from-red-500 to-rose-500";
+  };
+
+  if (isMainView) {
+    return (
+      <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-xl">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-bold text-gray-900">Section Analysis</h2>
+          <p className="text-gray-600">
+            Click on any section to see detailed analysis and improvements
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {sectionScores.map((section) => {
+            const feedback = detailedFeedback.find(
+              (f) => f.sectionName === section.sectionName,
+            );
+            const issuesCount = feedback?.issues.length || 0;
+
+            return (
+              <button
+                key={section.sectionName}
+                onClick={() => onSectionClick?.(section.sectionName)}
+                className="group relative rounded-xl border border-gray-200 bg-gray-50 p-6 text-left transition-all hover:scale-[1.02] hover:bg-white hover:shadow-lg active:scale-[0.98]"
+              >
+                {/* Section Header */}
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900 transition-colors group-hover:text-red-600">
+                    {section.sectionName}
+                  </h3>
+                  <span
+                    className={`rounded-full px-3 py-1 text-sm font-medium ${getScoreBadgeColor(
+                      section.score,
+                    )}`}
+                  >
+                    {section.score}/10
+                  </span>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mb-4">
+                  <div className="h-3 w-full rounded-full bg-gray-200">
+                    <div
+                      className={`h-3 rounded-full ${getScoreBarColor(section.score)}`}
+                      style={{ width: `${(section.score / 10) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Quick Stats */}
+                <div className="flex items-center justify-between text-sm text-gray-600">
+                  <span className="flex items-center">
+                    {issuesCount > 0 ? (
+                      <>
+                        <svg
+                          className="mr-1 h-4 w-4 text-amber-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.498 0L4.316 15.5c-.77.833.192 2.5 1.732 2.5z"
+                          />
+                        </svg>
+                        {issuesCount} issue
+                        {issuesCount !== 1 ? "s" : ""}
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="mr-1 h-4 w-4 text-green-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        All good
+                      </>
+                    )}
+                  </span>
+                  <svg
+                    className="h-4 w-4 text-gray-400 transition-colors group-hover:text-red-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+
+                {/* Hover Effect Overlay */}
+                <div className="pointer-events-none absolute inset-0 rounded-xl border-2 border-transparent transition-colors group-hover:border-red-200" />
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Call to Action */}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-600">
+            💡 Click on sections with lower scores to get detailed improvement
+            suggestions
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Original expandable view (if needed elsewhere)
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
       <div className="mb-6">

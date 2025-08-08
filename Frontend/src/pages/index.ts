@@ -9,7 +9,8 @@ import Signup from "./Signup";
 // import UserProducts from "./UserProducts";
 import DashboardLayout from "./Dashboard";
 import ResumeScan from "./ResumeScan";
-import ResumeScanResult from "./ResumeScanResult"; // Add this line
+import ResumeScanResult from "./ResumeScanResult";
+import SectionAnalysisDetail from "./SectionAnalysisDetail"; // Add this line
 
 export {
   Home,
@@ -17,7 +18,8 @@ export {
   Signup,
   DashboardLayout,
   ResumeScan,
-  ResumeScanResult, // Add this line
+  ResumeScanResult,
+  SectionAnalysisDetail, // Add this line
   //   VerifyOTP,
   //   UploadItem,
   //   ProductDetails,

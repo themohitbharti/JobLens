@@ -1,158 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "../store/store";
+import {
+  fetchResumeScanResult,
+  setSidebarCollapsed,
+} from "../store/resumeScanSlice";
 import {
   ScoreOverview,
   SectionAnalysis,
-  BenchmarkResults,
-  ImprovementSuggestions,
-  ScanMetrics,
   LoadingSpinner,
 } from "../components/resume/index";
-
-interface ResumeScanData {
-  success: boolean;
-  message: string;
-  data: {
-    scanId: string;
-    overallScore: number;
-    sectionScores: SectionScore[];
-    detailedFeedback: DetailedFeedback[];
-    benchmarkResults: Record<string, BenchmarkResult>;
-    processingTime: number;
-    improvementPotential: number;
-    sectionsFound: string[];
-    usedPreferences: UsedPreferences;
-    contentInfo: ContentInfo;
-  };
-}
-
-interface SectionScore {
-  sectionName: string;
-  score: number;
-  weight: number;
-}
-
-interface DetailedFeedback {
-  sectionName: string;
-  currentScore: number;
-  issues: string[];
-  aiSuggestion?: AISuggestion;
-  benchmarkResults: Record<string, BenchmarkResult>;
-  _id: string;
-}
-
-interface AISuggestion {
-  originalText: string;
-  improvedText: string;
-  explanation: string;
-  improvementType: string;
-}
-
-interface BenchmarkResult {
-  passed: boolean;
-  score: number;
-}
-
-interface UsedPreferences {
-  targetIndustry: string;
-  experienceLevel: string;
-  targetJobTitle: string;
-  isUsingDefaults: {
-    industry: boolean;
-    experienceLevel: boolean;
-    jobTitle: boolean;
-  };
-}
-
-interface ContentInfo {
-  originalWordCount: number;
-  processedWordCount: number;
-  wasTruncated: boolean;
-  estimatedTokensUsed: number;
-}
 
 const ResumeScanResult: React.FC = () => {
   const { scanId } = useParams<{ scanId: string }>();
   const navigate = useNavigate();
-  const [scanData, setScanData] = useState<ResumeScanData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { scanData, loading, error } = useSelector(
+    (state: RootState) => state.resumeScan,
+  );
 
   useEffect(() => {
-    const fetchScanResult = async () => {
-      try {
-        // Replace with actual API call
-        // const response = await fetch(`/api/resume-scan/${scanId}`);
-        // const data = await response.json();
-
-        // Mock data for now - replace with actual API call
-        const mockData: ResumeScanData = {
-          success: true,
-          message: "Resume analyzed successfully",
-          data: {
-            scanId: scanId || "6895d092aa95e23c0ba152c5",
-            overallScore: 83,
-            sectionScores: [
-              { sectionName: "Contact Information", score: 10, weight: 1 },
-              { sectionName: "Professional Summary", score: 4, weight: 1 },
-              { sectionName: "Work Experience", score: 8, weight: 1 },
-              { sectionName: "Skills", score: 8, weight: 1 },
-              { sectionName: "Education", score: 10, weight: 1 },
-              { sectionName: "Projects", score: 8, weight: 1 },
-              { sectionName: "Certifications", score: 2, weight: 1 },
-              { sectionName: "Achievements", score: 6, weight: 1 },
-            ],
-            detailedFeedback: [], // Add mock detailed feedback
-            benchmarkResults: {}, // Add mock benchmark results
-            processingTime: 18347,
-            improvementPotential: 17,
-            sectionsFound: [
-              "Education",
-              "Work Experience",
-              "Projects",
-              "Professional Summary",
-              "Skills",
-            ],
-            usedPreferences: {
-              targetIndustry: "Technology",
-              experienceLevel: "entry",
-              targetJobTitle: "Software Engineer",
-              isUsingDefaults: {
-                industry: false,
-                experienceLevel: false,
-                jobTitle: false,
-              },
-            },
-            contentInfo: {
-              originalWordCount: 435,
-              processedWordCount: 435,
-              wasTruncated: false,
-              estimatedTokensUsed: 867,
-            },
-          },
-        };
-
-        setScanData(mockData);
-      } catch (err) {
-        setError("Failed to load scan results");
-        console.error("Error fetching scan result:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    // Collapse sidebar when entering result page
+    dispatch(setSidebarCollapsed(true));
 
     if (scanId) {
-      fetchScanResult();
+      // Always fetch the data when the component mounts
+      dispatch(fetchResumeScanResult(scanId));
     } else {
       navigate("/resume-scan");
     }
-  }, [scanId, navigate]);
+  }, [scanId, navigate, dispatch]);
+
+  const handleSectionClick = (sectionName: string) => {
+    navigate(
+      `/resume-scan-result/${scanId}/section/${encodeURIComponent(sectionName)}`,
+    );
+  };
 
   if (loading) {
     return <LoadingSpinner />;
   }
 
-  if (error || !scanData?.success) {
+  if (error || !scanData) {
     return (
       <div className="flex min-h-96 items-center justify-center">
         <div className="text-center">
@@ -187,8 +78,6 @@ const ResumeScanResult: React.FC = () => {
       </div>
     );
   }
-
-  const { data } = scanData;
 
   return (
     <div className="relative min-h-full">
@@ -232,40 +121,32 @@ const ResumeScanResult: React.FC = () => {
             <button className="rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50">
               Download Report
             </button>
-            <button className="rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700">
+            <button
+              onClick={() => navigate("/resume-scan")}
+              className="rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700"
+            >
               Scan Another Resume
             </button>
           </div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Left Column - Score Overview & Metrics */}
-          <div className="space-y-6">
-            <ScoreOverview
-              overallScore={data.overallScore}
-              improvementPotential={data.improvementPotential}
-              sectionScores={data.sectionScores}
-            />
-            <ScanMetrics
-              processingTime={data.processingTime}
-              contentInfo={data.contentInfo}
-              usedPreferences={data.usedPreferences}
-            />
-          </div>
+        {/* Main Content - Centered Layout */}
+        <div className="mx-auto max-w-4xl space-y-8">
+          {/* Main Score Overview - Wide and Prominent */}
+          <ScoreOverview
+            overallScore={scanData.overallScore}
+            improvementPotential={scanData.improvementPotential}
+            sectionScores={scanData.sectionScores}
+            isMainView={true}
+          />
 
-          {/* Middle Column - Section Analysis */}
-          <div className="space-y-6 lg:col-span-2">
-            <SectionAnalysis
-              sectionScores={data.sectionScores}
-              detailedFeedback={data.detailedFeedback}
-            />
-            <BenchmarkResults benchmarkResults={data.benchmarkResults} />
-            <ImprovementSuggestions
-              detailedFeedback={data.detailedFeedback}
-              improvementPotential={data.improvementPotential}
-            />
-          </div>
+          {/* Section Analysis - Clickable Cards */}
+          <SectionAnalysis
+            sectionScores={scanData.sectionScores}
+            detailedFeedback={scanData.detailedFeedback}
+            onSectionClick={handleSectionClick}
+            isMainView={true}
+          />
         </div>
       </div>
     </div>

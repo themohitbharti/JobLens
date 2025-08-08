@@ -10,12 +10,14 @@ interface ScoreOverviewProps {
   overallScore: number;
   improvementPotential: number;
   sectionScores: SectionScore[];
+  isMainView?: boolean;
 }
 
 const ScoreOverview: React.FC<ScoreOverviewProps> = ({
   overallScore,
   improvementPotential,
   sectionScores,
+  isMainView = false,
 }) => {
   const getScoreColor = (score: number) => {
     if (score >= 8) return "text-green-600";
@@ -29,10 +31,114 @@ const ScoreOverview: React.FC<ScoreOverviewProps> = ({
     return "bg-gradient-to-r from-red-500 to-rose-500";
   };
 
-  const circumference = 2 * Math.PI * 45;
+  const circumference = 2 * Math.PI * (isMainView ? 65 : 45);
   const strokeDasharray = circumference;
   const strokeDashoffset = circumference - (overallScore / 100) * circumference;
 
+  if (isMainView) {
+    return (
+      <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-xl">
+        <div className="text-center">
+          <h2 className="mb-2 text-3xl font-bold text-gray-900">
+            Resume Score
+          </h2>
+          <p className="mb-8 text-gray-600">Your overall performance rating</p>
+
+          {/* Large Circular Score Display */}
+          <div className="relative mb-8 flex justify-center">
+            <svg
+              className="h-48 w-48 -rotate-90 transform"
+              viewBox="0 0 140 140"
+            >
+              <circle
+                cx="70"
+                cy="70"
+                r="65"
+                stroke="currentColor"
+                strokeWidth="8"
+                fill="none"
+                className="text-gray-200"
+              />
+              <circle
+                cx="70"
+                cy="70"
+                r="65"
+                stroke="currentColor"
+                strokeWidth="8"
+                fill="none"
+                strokeDasharray={strokeDasharray}
+                strokeDashoffset={strokeDashoffset}
+                className={getScoreColor(overallScore / 10)}
+                strokeLinecap="round"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center">
+                <div
+                  className={`text-5xl font-bold ${getScoreColor(overallScore / 10)}`}
+                >
+                  {overallScore}
+                </div>
+                <div className="text-lg font-medium text-gray-600">
+                  out of 100
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Score Status */}
+          <div className="mb-8">
+            {overallScore >= 85 ? (
+              <div className="mx-auto w-fit rounded-full bg-green-100 px-6 py-3 text-green-800">
+                <span className="text-lg font-semibold">🎉 Excellent</span>
+                <p className="mt-1 text-sm">Top 5% of resumes</p>
+              </div>
+            ) : overallScore >= 70 ? (
+              <div className="mx-auto w-fit rounded-full bg-yellow-100 px-6 py-3 text-yellow-800">
+                <span className="text-lg font-semibold">👍 Good</span>
+                <p className="mt-1 text-sm">Above average performance</p>
+              </div>
+            ) : (
+              <div className="mx-auto w-fit rounded-full bg-red-100 px-6 py-3 text-red-800">
+                <span className="text-lg font-semibold">💪 Needs Work</span>
+                <p className="mt-1 text-sm">Room for improvement</p>
+              </div>
+            )}
+          </div>
+
+          {/* Improvement Potential */}
+          <div className="rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
+            <div className="mb-2 flex items-center justify-center">
+              <svg
+                className="mr-2 h-6 w-6 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              <span className="text-xl font-semibold text-blue-900">
+                Improvement Potential
+              </span>
+            </div>
+            <div className="mb-1 text-3xl font-bold text-blue-600">
+              +{improvementPotential} points
+            </div>
+            <p className="text-blue-700">
+              Potential score after implementing AI suggestions
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Original compact view for sidebar
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
       <div className="mb-6 text-center">
@@ -75,38 +181,6 @@ const ScoreOverview: React.FC<ScoreOverviewProps> = ({
             <div className="text-sm font-medium text-gray-600">out of 100</div>
           </div>
         </div>
-      </div>
-
-      {/* Score Status */}
-      <div className="mb-6 text-center">
-        {overallScore >= 85 ? (
-          <div className="rounded-full bg-green-100 px-4 py-2 text-green-800">
-            <span className="font-medium">Excellent</span> - Top 5% of resumes
-          </div>
-        ) : overallScore >= 70 ? (
-          <div className="rounded-full bg-yellow-100 px-4 py-2 text-yellow-800">
-            <span className="font-medium">Good</span> - Above average
-          </div>
-        ) : (
-          <div className="rounded-full bg-red-100 px-4 py-2 text-red-800">
-            <span className="font-medium">Needs Work</span> - Below average
-          </div>
-        )}
-      </div>
-
-      {/* Improvement Potential */}
-      <div className="mb-6 rounded-lg bg-blue-50 p-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-blue-900">
-            Improvement Potential
-          </span>
-          <span className="text-lg font-bold text-blue-600">
-            +{improvementPotential} points
-          </span>
-        </div>
-        <p className="mt-1 text-xs text-blue-700">
-          Potential score after implementing suggestions
-        </p>
       </div>
 
       {/* Section Breakdown */}
