@@ -480,4 +480,46 @@ const compareResumes = asyncHandler(async (req: CustomRequest, res: Response) =>
   }
 });
 
-export { scanResume , compareResumes };
+const getResumeScanById = asyncHandler(async (req: CustomRequest, res: Response) => {
+  try {
+    const { scanId } = req.params;
+
+    // Validate scanId format
+    if (!scanId || !scanId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid scan ID format",
+      });
+    }
+
+    // Find the resume scan by ID and ensure it belongs to the authenticated user
+    const resumeScan = await ResumeScan.findOne({
+      _id: scanId,
+      userId: req.user._id
+    });
+
+    if (!resumeScan) {
+      return res.status(404).json({
+        success: false,
+        message: "Resume scan not found or you don't have permission to access it",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Resume scan retrieved successfully",
+      data: resumeScan,
+    });
+
+  } catch (error: any) {
+    console.error("Get resume scan error:", error);
+    
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve resume scan",
+      error: error.message,
+    });
+  }
+});
+
+export { scanResume, compareResumes, getResumeScanById };
