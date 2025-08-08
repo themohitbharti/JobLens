@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "../components";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const [stats] = useState({
@@ -132,25 +133,27 @@ const Dashboard = () => {
           Quick Actions
         </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Button
-            variant="gradient"
-            className="flex items-center justify-center py-3"
-          >
-            <svg
-              className="mr-2 h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <Link to="/resume-scan">
+            <Button
+              variant="gradient"
+              className="flex w-full items-center justify-center py-3"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            New Resume Scan
-          </Button>
+              <svg
+                className="mr-2 h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              New Resume Scan
+            </Button>
+          </Link>
 
           <Button
             variant="outline"

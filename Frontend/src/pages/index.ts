@@ -9,6 +9,7 @@ import Signup from "./Signup";
 // import UserProducts from "./UserProducts";
 import DashboardLayout from '../components/layout/DashboardLayout';
 import ResumeScan from "./ResumeScan";
+import Dashboard from './Dashboard';
 
 export {
   Home,
@@ -16,6 +17,7 @@ export {
   Signup,
   DashboardLayout,
   ResumeScan,
+  Dashboard
 //   VerifyOTP,
 //   UploadItem,
 //   ProductDetails,

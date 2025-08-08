@@ -12,6 +12,7 @@ import {
   Signup,
   DashboardLayout,
   ResumeScan,
+  Dashboard,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -51,32 +52,59 @@ const router = createBrowserRouter([
           </AuthLayout>
         ),
       },
+      // Dashboard routes with permanent sidebar
       {
-        path: "/Dashboard",
+        path: "/",
         element: (
           <AuthLayout authentication={true}>
             <DashboardLayout />
           </AuthLayout>
         ),
-      },
-      {
-        path: "/resume-scan",
-        element: (
-          <AuthLayout authentication={true}>
-            <ResumeScan />
-          </AuthLayout>
-        ),
+        children: [
+          {
+            path: "/dashboard",
+            element: <Dashboard />,
+          },
+          {
+            path: "/resume-scan",
+            element: <ResumeScan />,
+          },
+          // Add more dashboard routes here
+          {
+            path: "/resume-stats",
+            element: <div>Resume Stats Coming Soon</div>,
+          },
+          {
+            path: "/compare-resumes",
+            element: <div>Compare Resumes Coming Soon</div>,
+          },
+          {
+            path: "/linkedin-builder",
+            element: <div>LinkedIn Builder Coming Soon</div>,
+          },
+          {
+            path: "/compare-linkedin",
+            element: <div>Compare LinkedIn Coming Soon</div>,
+          },
+          {
+            path: "/linkedin-stats",
+            element: <div>LinkedIn Stats Coming Soon</div>,
+          },
+          {
+            path: "/settings",
+            element: <div>Settings Coming Soon</div>,
+          },
+        ],
       },
     ],
   },
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  
-    <Provider store={store}>
-      <AuthProvider>
-          <RouterProvider router={router} />
-          <Toaster position="bottom-right" />
-      </AuthProvider>
-    </Provider>
+  <Provider store={store}>
+    <AuthProvider>
+      <RouterProvider router={router} />
+      <Toaster position="bottom-right" />
+    </AuthProvider>
+  </Provider>,
 );
