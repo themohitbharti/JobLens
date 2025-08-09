@@ -1,8 +1,13 @@
-import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import type { RootState, AppDispatch } from "../../store/store";
 import { uploadAndAnalyzeResume } from "../../store/resumeScanSlice";
+import {
+  updateScansLeft,
+  updateLastResume,
+  fetchResumeStats,
+} from "../../store/authSlice";
 import toast from "react-hot-toast";
 
 interface ResumePreferences {
@@ -20,70 +25,28 @@ const ResumeUpload: React.FC = () => {
     targetJobTitle: "",
   });
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
-  const { loading, error, uploadProgress } = useSelector(
-    (state: RootState) => state.resumeScan,
-  );
+  const { loading } = useSelector((state: RootState) => state.resumeScan);
+  const { user } = useSelector((state: RootState) => state.auth);
 
-  // Extract file validation logic into a separate function
-  const validateAndSetFile = (file: File) => {
-    // Validate file type
-    const allowedTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
+  const scansLeft = user?.scansLeft ?? 30;
 
-    if (!allowedTypes.includes(file.type)) {
-      toast.error("Please upload a PDF, DOC, or DOCX file");
-      return;
-    }
-
-    // Validate file size (10MB max)
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File size should not exceed 10MB");
-      return;
-    }
-
-    setSelectedFile(file);
-    toast.success("File selected successfully");
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      validateAndSetFile(file);
-    }
-  };
-
-  const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {
-    event.preventDefault();
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLLabelElement>) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files?.[0];
-    if (file) {
-      validateAndSetFile(file);
-    }
-  };
-
-  const handlePreferenceChange = (
-    field: keyof ResumePreferences,
-    value: string,
-  ) => {
-    setPreferences((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  // Fetch user stats on component mount
+  useEffect(() => {
+    dispatch(fetchResumeStats());
+  }, [dispatch]);
 
   const handleUpload = async () => {
     if (!selectedFile) {
       toast.error("Please select a file first");
+      return;
+    }
+
+    // Check scans left before uploading
+    if (scansLeft <= 0) {
+      toast.error("Daily scan limit reached. Please try again tomorrow.");
       return;
     }
 
@@ -105,10 +68,16 @@ const ResumeUpload: React.FC = () => {
         uploadAndAnalyzeResume(requestData),
       ).unwrap();
 
-      console.log(result);
+      // Update Redux state after successful upload
+      dispatch(updateScansLeft(Math.max(0, scansLeft - 1)));
+      dispatch(
+        updateLastResume({
+          scanId: result.scanId,
+          overallScore: result.overallScore,
+          scanDate: new Date().toISOString(),
+        }),
+      );
 
-      // Make sure the result is stored in Redux
-      // Then navigate to results page
       toast.success("Resume analyzed successfully!");
       navigate(`/resume-scan-result/${result.scanId}`);
     } catch (error: unknown) {
@@ -126,20 +95,38 @@ const ResumeUpload: React.FC = () => {
       experienceLevel: "",
       targetJobTitle: "",
     });
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
   };
 
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       {/* Upload Section */}
       <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+        {/* Scans Left Indicator */}
+        <div className="mb-4 flex items-center justify-between">
+          <span className="text-sm text-gray-600">Daily scans remaining:</span>
+          <span
+            className={`text-sm font-semibold ${scansLeft > 5 ? "text-green-600" : scansLeft > 0 ? "text-yellow-600" : "text-red-600"}`}
+          >
+            {scansLeft}/30
+          </span>
+        </div>
+
         <div className="text-center">
-          <div className="mb-6 flex justify-center">
-            <div className="rounded-full bg-red-100 p-4">
+          <h2 className="mb-4 text-2xl font-bold text-gray-900">
+            Upload Your Resume
+          </h2>
+          <p className="mb-8 text-gray-600">
+            Get instant AI-powered feedback and improve your resume score
+          </p>
+
+          {/* File Upload Area */}
+          <div
+            className="mb-6 rounded-lg border-2 border-dashed border-gray-300 p-8 transition-colors hover:border-red-400"
+            onClick={() => document.getElementById("file-input")?.click()}
+          >
+            <div className="flex flex-col items-center">
               <svg
-                className="h-12 w-12 text-red-600"
+                className="mb-4 h-12 w-12 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -151,205 +138,138 @@ const ResumeUpload: React.FC = () => {
                   d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                 />
               </svg>
+              <p className="mb-2 text-sm text-gray-500">
+                <span className="font-semibold">Click to upload</span> or drag
+                and drop
+              </p>
+              <p className="text-xs text-gray-500">PDF, DOC, DOCX (MAX. 5MB)</p>
             </div>
-          </div>
-
-          <h2 className="mb-4 text-2xl font-bold text-gray-900">
-            Upload Your Resume
-          </h2>
-
-          <p className="mb-6 text-gray-600">
-            Drop your resume file here or click to browse
-          </p>
-
-          {/* File Input */}
-          <div className="mb-6">
             <input
-              ref={fileInputRef}
+              id="file-input"
               type="file"
-              accept=".pdf,.doc,.docx"
-              onChange={handleFileChange}
-              disabled={loading}
               className="hidden"
-              id="resume-upload"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
             />
-            <label
-              htmlFor="resume-upload"
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              className={`inline-flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed px-6 py-8 text-center transition-all duration-300 ${
-                loading
-                  ? "cursor-not-allowed border-gray-300 bg-gray-50"
-                  : selectedFile
-                    ? "border-green-300 bg-green-50"
-                    : "border-red-300 bg-red-50 hover:border-red-400 hover:bg-red-100"
-              }`}
-            >
-              <div>
-                <svg
-                  className={`mx-auto mb-4 h-12 w-12 ${
-                    selectedFile ? "text-green-400" : "text-red-400"
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-                <p
-                  className={`text-lg font-medium ${
-                    selectedFile ? "text-green-700" : "text-gray-700"
-                  }`}
-                >
-                  {selectedFile
-                    ? `Selected: ${selectedFile.name}`
-                    : loading
-                      ? "Processing..."
-                      : "Choose file or drag and drop"}
-                </p>
-                <p className="text-sm text-gray-500">
-                  PDF, DOC, DOCX up to 10MB
-                </p>
-              </div>
-            </label>
           </div>
 
-          {/* Upload Progress */}
-          {loading && (
+          {selectedFile && (
             <div className="mb-4">
-              <div className="mb-2 flex items-center justify-center">
-                <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-red-200 border-t-red-600"></div>
-                <p className="text-sm text-gray-600">
-                  Analyzing resume... {uploadProgress}%
-                </p>
+              <div className="mb-2 text-sm text-green-600">
+                Selected: {selectedFile.name}
               </div>
-              <div className="h-2 w-full rounded-full bg-gray-200">
-                <div
-                  className="h-2 rounded-full bg-red-600 transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
-            </div>
-          )}
 
-          {/* Error Display */}
-          {error && (
-            <div className="mb-4 rounded-lg bg-red-50 p-4">
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
-          )}
-
-          {/* File Selected Actions */}
-          {selectedFile && !loading && (
-            <div className="mb-6 space-y-3">
+              {/* Preferences Toggle */}
               <button
                 onClick={() => setShowPreferences(!showPreferences)}
-                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="mb-4 text-sm text-blue-600 underline hover:text-blue-700"
               >
-                {showPreferences ? "Hide" : "Show"} Advanced Options
+                {showPreferences ? "Hide" : "Show"} Analysis Preferences
               </button>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={resetUpload}
-                  className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                >
-                  Reset
-                </button>
-                <button
-                  onClick={handleUpload}
-                  disabled={loading}
-                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Analyze Resume
-                </button>
-              </div>
             </div>
           )}
 
-          {/* Advanced Preferences */}
-          {showPreferences && (
-            <div className="rounded-lg bg-gray-50 p-4 text-left">
-              <h3 className="mb-4 text-lg font-semibold text-gray-900">
+          {/* Preferences Section */}
+          {showPreferences && selectedFile && (
+            <div className="mb-6 rounded-lg bg-gray-50 p-4 text-left">
+              <h3 className="mb-3 text-sm font-semibold text-gray-900">
                 Analysis Preferences (Optional)
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                  <label className="mb-1 block text-xs font-medium text-gray-700">
                     Target Industry
                   </label>
-                  <select
+                  <input
+                    type="text"
+                    placeholder="e.g., Technology, Healthcare"
                     value={preferences.targetIndustry}
                     onChange={(e) =>
-                      handlePreferenceChange("targetIndustry", e.target.value)
+                      setPreferences((prev) => ({
+                        ...prev,
+                        targetIndustry: e.target.value,
+                      }))
                     }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-                  >
-                    <option value="">Select Industry</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Education">Education</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Sales">Sales</option>
-                    <option value="Consulting">Consulting</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Other">Other</option>
-                  </select>
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                  />
                 </div>
-
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                  <label className="mb-1 block text-xs font-medium text-gray-700">
                     Experience Level
                   </label>
                   <select
                     value={preferences.experienceLevel}
                     onChange={(e) =>
-                      handlePreferenceChange("experienceLevel", e.target.value)
+                      setPreferences((prev) => ({
+                        ...prev,
+                        experienceLevel: e.target.value,
+                      }))
                     }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                   >
-                    <option value="">Select Experience Level</option>
+                    <option value="">Select experience level</option>
                     <option value="entry">Entry Level (0-2 years)</option>
                     <option value="mid">Mid Level (3-5 years)</option>
                     <option value="senior">Senior Level (6-10 years)</option>
                     <option value="executive">Executive (10+ years)</option>
                   </select>
                 </div>
-
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                  <label className="mb-1 block text-xs font-medium text-gray-700">
                     Target Job Title
                   </label>
                   <input
                     type="text"
+                    placeholder="e.g., Software Engineer, Marketing Manager"
                     value={preferences.targetJobTitle}
                     onChange={(e) =>
-                      handlePreferenceChange("targetJobTitle", e.target.value)
+                      setPreferences((prev) => ({
+                        ...prev,
+                        targetJobTitle: e.target.value,
+                      }))
                     }
-                    placeholder="e.g., Software Engineer, Marketing Manager"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
                   />
                 </div>
               </div>
+              <button
+                onClick={resetUpload}
+                className="mt-3 text-xs text-gray-500 hover:text-gray-700"
+              >
+                Reset All
+              </button>
             </div>
           )}
+
+          {/* Upload Button */}
+          <button
+            onClick={handleUpload}
+            disabled={!selectedFile || loading || scansLeft <= 0}
+            className={`w-full rounded-lg px-4 py-3 font-medium transition-colors ${
+              !selectedFile || loading || scansLeft <= 0
+                ? "cursor-not-allowed bg-gray-300 text-gray-500"
+                : "bg-gradient-to-r from-red-500 to-rose-500 text-white hover:from-red-600 hover:to-rose-600"
+            }`}
+          >
+            {loading
+              ? "Analyzing..."
+              : scansLeft <= 0
+                ? "Daily Limit Reached"
+                : "Analyze Resume"}
+          </button>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="space-y-8">
-        {/* Features List */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-8">
-          <div className="mb-6 flex items-center">
-            <div className="mr-4 rounded-full bg-blue-100 p-3">
+      <div className="space-y-6">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
+          <h3 className="mb-4 text-lg font-semibold text-gray-900">
+            What You'll Get
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-start">
               <svg
-                className="h-6 w-6 text-blue-600"
+                className="mr-3 mt-0.5 h-5 w-5 text-green-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -358,68 +278,61 @@ const ResumeUpload: React.FC = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  d="M5 13l4 4L19 7"
                 />
               </svg>
+              <div>
+                <h4 className="font-medium text-gray-900">
+                  AI-Powered Analysis
+                </h4>
+                <p className="text-sm text-gray-600">
+                  Comprehensive scoring across multiple dimensions
+                </p>
+              </div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              What You'll Get
-            </h2>
+            <div className="flex items-start">
+              <svg
+                className="mr-3 mt-0.5 h-5 w-5 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <div>
+                <h4 className="font-medium text-gray-900">Detailed Feedback</h4>
+                <p className="text-sm text-gray-600">
+                  Section-by-section improvement suggestions
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <svg
+                className="mr-3 mt-0.5 h-5 w-5 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <div>
+                <h4 className="font-medium text-gray-900">ATS Optimization</h4>
+                <p className="text-sm text-gray-600">
+                  Ensure your resume passes applicant tracking systems
+                </p>
+              </div>
+            </div>
           </div>
-
-          <ul className="space-y-4">
-            {[
-              "AI-Powered Resume Analysis",
-              "ATS Compatibility Score",
-              "Section-by-Section Feedback",
-              "Keyword Optimization Tips",
-              "Industry-Specific Suggestions",
-              "Improvement Recommendations",
-              "Downloadable Report",
-            ].map((feature, idx) => (
-              <li key={idx} className="flex items-center text-gray-700">
-                <span className="mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-600">
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </span>
-                <span className="text-base font-medium">{feature}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Tips Card */}
-        <div className="rounded-2xl border border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-8">
-          <h3 className="mb-4 text-xl font-bold text-gray-900">💡 Pro Tips</h3>
-          <ul className="space-y-2 text-gray-700">
-            <li className="flex items-start">
-              <span className="mr-2 mt-1 text-blue-500">•</span>
-              Upload your resume in PDF format for best results
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2 mt-1 text-blue-500">•</span>
-              Ensure your resume is up-to-date before scanning
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2 mt-1 text-blue-500">•</span>
-              Provide target job details for personalized feedback
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2 mt-1 text-blue-500">•</span>
-              Review all suggestions carefully before applying
-            </li>
-          </ul>
         </div>
       </div>
     </div>
