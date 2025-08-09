@@ -21,7 +21,7 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isLoggedIn,
+    (state: RootState) => state.auth.isAuthenticated,
   );
   const user = useSelector((state: RootState) => state.auth.user);
 

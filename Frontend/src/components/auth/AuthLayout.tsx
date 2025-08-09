@@ -12,7 +12,7 @@ interface ProtectedProps {
 const Protected = ({ children, authentication = true }: ProtectedProps) => {
   const navigate = useNavigate();
   const [loader, setLoader] = useState(true);
-  const authStatus = useSelector((state: RootState) => state.auth.isLoggedIn);
+  const authStatus = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   useEffect(() => {
     // Only redirect if authentication is required AND user is not logged in
