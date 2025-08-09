@@ -14,7 +14,16 @@ const Dashboard = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="border-b border-gray-200 pb-4">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <h1 
+        className="mr-8 bg-clip-text text-5xl font-extrabold text-transparent"
+        style={{
+                  background:
+                    "linear-gradient(135deg, hsl(0 114% 50%), hsl(195 54% 49%))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+        >
+          Dashboard</h1>
         <p className="mt-2 text-gray-600">
           Welcome back! Here's your resume optimization overview.
         </p>

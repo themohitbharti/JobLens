@@ -25,31 +25,6 @@ const Header = () => {
   );
   const user = useSelector((state: RootState) => state.auth.user);
 
-  const getPageTitle = () => {
-    const path = location.pathname;
-    switch (path) {
-      case "/Dashboard":
-      case "/dashboard":
-        return "Dashboard";
-      case "/resume-scan":
-        return "Resume Scan";
-      case "/resume-stats":
-        return "Resume Stats";
-      case "/compare-resumes":
-        return "Compare Resumes";
-      case "/linkedin-builder":
-        return "LinkedIn Builder";
-      case "/compare-linkedin":
-        return "Compare LinkedIn";
-      case "/linkedin-stats":
-        return "LinkedIn Stats";
-      case "/settings":
-        return "Settings";
-      default:
-        return "";
-    }
-  };
-
   const navigateToSection = (sectionId: string) => {
     if (location.pathname === "/") {
       const element = document.getElementById(sectionId);
@@ -114,36 +89,8 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Page Title (not on home page) */}
-          {location.pathname !== "/" && getPageTitle() && (
-            <div className="flex items-center">
-              <h1
-                className="mr-8 bg-clip-text text-5xl font-extrabold text-transparent"
-                style={{
-                  background:
-                    "linear-gradient(135deg, hsl(0 114% 50%), hsl(195 54% 49%))",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                {getPageTitle()}
-              </h1>
-            </div>
-          )}
-
           {/* Navigation - always visible */}
-          <nav
-            className={`flex items-center space-x-8 transition-all duration-300 ${
-              location.pathname === "/"
-                ? "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                : isAuthenticated
-                  ? "ml-16 mr-auto"
-                  : "mx-auto"
-            } `}
-            style={
-              location.pathname === "/" ? { position: "absolute" } : undefined
-            }
-          >
+          <nav className="flex flex-1 items-center justify-center space-x-8 transition-all duration-300">
             {NAV_LINKS.map((link) => (
               <button
                 key={link.section}
@@ -152,7 +99,6 @@ const Header = () => {
               >
                 {link.label}
                 <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-gradient-to-r from-red-500 to-rose-500 transition-all duration-300 ease-out group-hover:w-full"></span>
-                <span className="absolute inset-0 rounded-lg bg-red-500/0 transition-all duration-300 ease-out group-hover:bg-red-500/5"></span>
               </button>
             ))}
           </nav>
