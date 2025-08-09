@@ -578,11 +578,17 @@ const getResumeStats = asyncHandler(async (req: CustomRequest, res: Response) =>
         lastScanDate: user.resumeStats.lastScanDate || null,
         improvementTrend: user.resumeStats.improvementTrend || 0,
         trendInterpretation: resumeTrendInterpretation,
-        // Add percentage change from first to last scan
         improvementPercentage:
           (user.resumeStats.improvementTrend || 0) > 0
             ? `+${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`
             : `${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`,
+        // Handle optional lastResume for new users
+        lastResume: user.lastResume ? {
+          scanId: user.lastResume.scanId.toString(),
+          overallScore: user.lastResume.overallScore,
+          scanDate: user.lastResume.scanDate.toISOString(),
+        } : null,
+        scansLeft: user.scansLeft || user.calculateScansLeft(),
       },
     });
   } catch (error) {
@@ -752,6 +758,12 @@ const getCombinedStats = asyncHandler(async (req: CustomRequest, res: Response) 
             (user.resumeStats.improvementTrend || 0) > 0
               ? `+${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`
               : `${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`,
+          // Handle optional lastResume for new users
+          lastResume: user.lastResume ? {
+            scanId: user.lastResume.scanId.toString(),
+            overallScore: user.lastResume.overallScore,
+            scanDate: user.lastResume.scanDate.toISOString(),
+          } : null,
         },
         linkedin: {
           totalScans: user.linkedinStats.totalScans || 0,
@@ -766,6 +778,7 @@ const getCombinedStats = asyncHandler(async (req: CustomRequest, res: Response) 
               ? `+${((user.linkedinStats.improvementTrend || 0) * 10).toFixed(1)}%`
               : `${((user.linkedinStats.improvementTrend || 0) * 10).toFixed(1)}%`,
         },
+        scansLeft: user.scansLeft || user.calculateScansLeft(),
       },
     });
   } catch (error) {

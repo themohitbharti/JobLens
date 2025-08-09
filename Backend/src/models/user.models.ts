@@ -15,28 +15,37 @@ export interface UserDocument extends mongoose.Document {
 
   dailyScans: {
     date: Date;
-    totalCount: number; // Total scans (resume + LinkedIn)
-    resumeCount: number; // Resume scans only
-    linkedinCount: number; // LinkedIn scans only
+    totalCount: number;
+    resumeCount: number;
+    linkedinCount: number;
   }[];
 
   resumeStats: {
-    totalScans: number; // Resume scans only
-    weeklyScans: number; // Resume weekly scans
-    weeklyAvg: number; // Average score for resume scans
-    bestScore: number; // Best resume score
-    lastScanDate?: Date; // Last resume scan date
-    improvementTrend: number; // Trend based on resume scans only
+    totalScans: number;
+    weeklyScans: number;
+    weeklyAvg: number;
+    bestScore: number;
+    lastScanDate?: Date;
+    improvementTrend: number;
   };
 
   linkedinStats: {
-    totalScans: number; // LinkedIn scans only
-    weeklyScans: number; // LinkedIn weekly scans
-    weeklyAvg: number; // Average score for LinkedIn scans
-    bestScore: number; // Best LinkedIn score
-    lastScanDate?: Date; // Last LinkedIn scan date
-    improvementTrend: number; // Trend based on LinkedIn scans only
+    totalScans: number;
+    weeklyScans: number;
+    weeklyAvg: number;
+    bestScore: number;
+    lastScanDate?: Date;
+    improvementTrend: number;
   };
+
+  // Make lastResume completely optional for new users
+  lastResume?: {
+    scanId: mongoose.Types.ObjectId;
+    overallScore: number;
+    scanDate: Date;
+  };
+
+  scansLeft: number; // Daily scans remaining (calculated field)
 
   isPasswordCorrect(password: string): Promise<boolean>;
   generateAccessToken(): Promise<string>;
@@ -48,6 +57,8 @@ export interface UserDocument extends mongoose.Document {
   calculateImprovementTrend(scanType: 'resume' | 'linkedin'): Promise<void>;
   calculateTrendSlope(scores: number[]): number;
   initializeLinkedinStats(): void;
+  updateLastResume(scanId: mongoose.Types.ObjectId, overallScore: number): Promise<void>;
+  calculateScansLeft(): number;
 }
 
 const userSchema = new mongoose.Schema<UserDocument>(
@@ -160,6 +171,32 @@ const userSchema = new mongoose.Schema<UserDocument>(
         default: 0,
       },
     },
+
+    // New fields - make lastResume completely optional
+    lastResume: {
+      scanId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ResumeScan",
+        required: false,
+      },
+      overallScore: {
+        type: Number,
+        min: 0,
+        max: 100,
+        required: false,
+      },
+      scanDate: {
+        type: Date,
+        required: false,
+      },
+    },
+
+    scansLeft: {
+      type: Number,
+      default: 30,
+      min: 0,
+      max: 30,
+    },
   },
   { timestamps: true }
 );
@@ -250,6 +287,9 @@ userSchema.methods.updateDailyScanCount = async function (scanType: 'resume' | '
   this.dailyScans = this.dailyScans.filter(
     (scan: any) => scan.date >= thirtyDaysAgo
   );
+
+  // Update scansLeft after updating daily scan count
+  this.scansLeft = this.calculateScansLeft();
 };
 
 userSchema.methods.calculateResumeStats = async function () {
@@ -374,6 +414,74 @@ userSchema.methods.calculateTrendSlope = function (scores: number[]) {
   }
 
   return denominator === 0 ? 0 : numerator / denominator;
+};
+
+userSchema.methods.calculateScansLeft = function () {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const todayScans = this.dailyScans.find((scan: any) => {
+    const scanDate = new Date(scan.date);
+    scanDate.setHours(0, 0, 0, 0);
+    return scanDate.getTime() === today.getTime();
+  });
+
+  const usedScans = todayScans ? todayScans.totalCount : 0;
+  return Math.max(0, 30 - usedScans);
+};
+
+userSchema.methods.updateLastResume = async function (scanId: mongoose.Types.ObjectId, overallScore: number) {
+  this.lastResume = {
+    scanId: scanId,
+    overallScore: overallScore,
+    scanDate: new Date(),
+  };
+  // Mark the field as modified to ensure it gets saved
+  this.markModified('lastResume');
+};
+
+// Update canPerformScan method to also update scansLeft
+userSchema.methods.canPerformScan = async function () {
+  this.scansLeft = this.calculateScansLeft();
+  return this.scansLeft > 0;
+};
+
+// Update updateDailyScanCount to also update scansLeft
+userSchema.methods.updateDailyScanCount = async function (scanType: 'resume' | 'linkedin') {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const todayIndex = this.dailyScans.findIndex((scan: any) => {
+    const scanDate = new Date(scan.date);
+    scanDate.setHours(0, 0, 0, 0);
+    return scanDate.getTime() === today.getTime();
+  });
+
+  if (todayIndex >= 0) {
+    this.dailyScans[todayIndex].totalCount += 1;
+    if (scanType === 'resume') {
+      this.dailyScans[todayIndex].resumeCount += 1;
+    } else {
+      this.dailyScans[todayIndex].linkedinCount += 1;
+    }
+  } else {
+    const newScan = { 
+      date: today, 
+      totalCount: 1, 
+      resumeCount: scanType === 'resume' ? 1 : 0, 
+      linkedinCount: scanType === 'linkedin' ? 1 : 0 
+    };
+    this.dailyScans.push(newScan);
+  }
+
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  this.dailyScans = this.dailyScans.filter(
+    (scan: any) => scan.date >= thirtyDaysAgo
+  );
+
+  // Update scansLeft after updating daily scan count
+  this.scansLeft = this.calculateScansLeft();
 };
 
 export const User = mongoose.model<UserDocument>("User", userSchema);

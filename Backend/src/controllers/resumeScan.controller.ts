@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -90,6 +91,10 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       return res.status(429).json({
         success: false,
         message: "Daily scan limit reached (30 scans per day)",
+        data: {
+          scansLeft: user.scansLeft,
+          dailyLimit: 30,
+        },
       });
     }
 
@@ -266,6 +271,9 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     if (calculatedOverallScore > user.resumeStats.bestScore) {
       user.resumeStats.bestScore = calculatedOverallScore;
     }
+
+    // Update lastResume with current scan (fix TypeScript error)
+    await user.updateLastResume(resumeScan._id as mongoose.Types.ObjectId, calculatedOverallScore);
 
     await user.calculateResumeStats(); // Calculate resume stats only
     await user.calculateImprovementTrend('resume'); // Calculate resume trend only
