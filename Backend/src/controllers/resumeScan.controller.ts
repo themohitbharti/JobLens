@@ -460,6 +460,8 @@ const compareResumes = asyncHandler(async (req: CustomRequest, res: Response) =>
     // Clean up uploaded files
     safeDeleteFiles(uploadedFilePaths);
 
+    console.log(comparisonResult);
+
     // Return comprehensive comparison result
     return res.status(200).json({
       success: true,
