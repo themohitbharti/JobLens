@@ -84,6 +84,18 @@ export interface CombinedStatsResponse {
     scansLeft: number;
   };
 }
+export interface LastResumeScoresResponse {
+  success: boolean;
+  message: string;
+  data: {
+    totalScans: number;
+    scores: Array<{
+      scanId: string;
+      overallScore: number;
+      scanDate: string;
+    }>;
+  };
+}
 
 // Export the data type for reuse in Redux
 export type CombinedStatsData = CombinedStatsResponse["data"];
@@ -98,6 +110,12 @@ export const userAPI = {
   // Get combined statistics
   getCombinedStats: async (): Promise<CombinedStatsResponse> => {
     const response = await axiosInstance.get("/user/combined-stats");
+    return response.data;
+  },
+
+  // Get last resume scores for chart
+  getLastResumeScores: async (): Promise<LastResumeScoresResponse> => {
+    const response = await axiosInstance.get("/user/last-resume-scores");
     return response.data;
   },
 };

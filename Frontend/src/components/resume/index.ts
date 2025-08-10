@@ -7,3 +7,4 @@ export { default as ScanMetrics } from "./ScanMetrics";
 export { default as BenchmarkResults } from "./BenchmarkResults";
 export { default as ImprovementSuggestions } from "./ImprovementSuggestions";
 export { default as LoadingSpinner } from "./LoadingSpinner";
+export { default as ScoreChart } from "./ScoreChart";

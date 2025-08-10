@@ -87,3 +87,57 @@ export interface LinkedinStatsData {
   lastLinkedins: LastLinkedin[];
   scansLeft: number;
 }
+export interface ResumeScoreHistory {
+  scanId: string;
+  overallScore: number;
+  scanDate: string;
+}
+
+export interface LastResumeScoresData {
+  totalScans: number;
+  scores: ResumeScoreHistory[];
+}
+
+export interface CombinedStatsData {
+  combined: {
+    totalScans: number;
+    weeklyScans: number;
+    weeklyAvg: number;
+    bestScore: number;
+    improvementTrend: number;
+    trendInterpretation: {
+      status: string;
+      message: string;
+    };
+    improvementPercentage: string;
+  };
+  resume: {
+    totalScans: number;
+    weeklyScans: number;
+    weeklyAvg: number;
+    bestScore: number;
+    lastScanDate: string | null;
+    improvementTrend: number;
+    trendInterpretation: {
+      status: string;
+      message: string;
+    };
+    improvementPercentage: string;
+    lastResumes: LastResume[];
+  };
+  linkedin: {
+    totalScans: number;
+    weeklyScans: number;
+    weeklyAvg: number;
+    bestScore: number;
+    lastScanDate: string | null;
+    improvementTrend: number;
+    trendInterpretation: {
+      status: string;
+      message: string;
+    };
+    improvementPercentage: string;
+    lastLinkedins: LastLinkedin[];
+  };
+  scansLeft: number;
+}

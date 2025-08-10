@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../store/store";
-import { fetchResumeStats } from "../store/authSlice";
+import { fetchResumeStats, fetchLastResumeScores } from "../store/authSlice";
 import type { ResumeStatsData } from "../types";
+import ScoreChart from "../components/resume/ScoreChart";
 
 const ResumeStats = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { resumeStatsData } = useSelector((state: RootState) => state.auth);
+  const { resumeStatsData, lastResumeScores, loading } = useSelector(
+    (state: RootState) => state.auth,
+  );
   const [stats, setStats] = useState<ResumeStatsData | null>(null);
 
   useEffect(() => {
     dispatch(fetchResumeStats());
+    dispatch(fetchLastResumeScores());
   }, [dispatch]);
 
   useEffect(() => {
@@ -439,7 +443,7 @@ const ResumeStats = () => {
 
         {/* Bottom Section */}
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Score History Trend */}
+          {/* Score History Trend - Updated */}
           <div className="rounded-2xl bg-white p-6 shadow-lg">
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 p-2">
@@ -462,45 +466,10 @@ const ResumeStats = () => {
               </h2>
             </div>
 
-            <div className="relative h-64 rounded-lg bg-gradient-to-br from-indigo-50 to-purple-50 p-4">
-              <div className="absolute inset-4 flex items-end justify-between">
-                <div className="text-center">
-                  <div className="h-16 w-2 rounded bg-gradient-to-t from-red-500 to-pink-500 opacity-80"></div>
-                  <span className="mt-1 block text-xs text-gray-600">Jan</span>
-                </div>
-                <div className="text-center">
-                  <div className="h-20 w-2 rounded bg-gradient-to-t from-red-500 to-pink-500 opacity-80"></div>
-                  <span className="mt-1 block text-xs text-gray-600">Feb</span>
-                </div>
-                <div className="text-center">
-                  <div className="h-24 w-2 rounded bg-gradient-to-t from-red-500 to-pink-500 opacity-80"></div>
-                  <span className="mt-1 block text-xs text-gray-600">Mar</span>
-                </div>
-                <div className="text-center">
-                  <div className="h-28 w-2 rounded bg-gradient-to-t from-red-500 to-pink-500 opacity-80"></div>
-                  <span className="mt-1 block text-xs text-gray-600">Apr</span>
-                </div>
-                <div className="text-center">
-                  <div className="h-32 w-2 rounded bg-gradient-to-t from-red-500 to-pink-500 opacity-80"></div>
-                  <span className="mt-1 block text-xs text-gray-600">May</span>
-                </div>
-                <div className="text-center">
-                  <div className="h-36 w-2 rounded bg-gradient-to-t from-red-500 to-pink-500 opacity-80"></div>
-                  <span className="mt-1 block text-xs text-gray-600">Jun</span>
-                </div>
-                <div className="text-center">
-                  <div className="h-40 w-2 rounded bg-gradient-to-t from-red-500 to-pink-500"></div>
-                  <span className="mt-1 block text-xs text-gray-600">Jul</span>
-                </div>
-              </div>
-              <div className="absolute left-4 top-4 text-sm text-gray-600">
-                <div>100</div>
-                <div className="mt-8">75</div>
-                <div className="mt-8">50</div>
-                <div className="mt-8">25</div>
-                <div className="mt-8">0</div>
-              </div>
-            </div>
+            <ScoreChart
+              scores={lastResumeScores?.scores || []}
+              loading={loading}
+            />
           </div>
 
           {/* Trending Skills */}

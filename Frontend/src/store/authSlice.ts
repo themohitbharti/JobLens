@@ -1,6 +1,15 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { userAPI, CombinedStatsData } from "../api/userApis";
-import { User, ResumeStatsData } from "../types";
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
+import { userAPI } from "../api/userApis";
+import type {
+  User,
+  ResumeStatsData,
+  CombinedStatsData,
+  LastResumeScoresData,
+} from "../types";
 import { getResumeStats } from "../api/resumeStatsAPI";
 
 // Define a type for the minimum required user data
@@ -41,22 +50,45 @@ export const fetchCombinedStats = createAsyncThunk(
   },
 );
 
+// Async thunk for fetching last resume scores
+export const fetchLastResumeScores = createAsyncThunk(
+  "auth/fetchLastResumeScores",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await userAPI.getLastResumeScores();
+      if (!response.success) {
+        throw new Error(response.message || "Failed to fetch resume scores");
+      }
+      return response.data;
+    } catch (error: unknown) {
+      if (error instanceof Error) return rejectWithValue(error.message);
+      return rejectWithValue("Unknown error occurred");
+    }
+  },
+);
+
 interface AuthState {
   user: User | null;
-  resumeStatsData: ResumeStatsData | null;
-  combinedStatsData: CombinedStatsData | null; // Now properly typed
+  accessToken: string | null;
+  refreshToken: string | null;
+  isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
-  isAuthenticated: boolean;
+  resumeStatsData: ResumeStatsData | null;
+  combinedStatsData: CombinedStatsData | null;
+  lastResumeScores: LastResumeScoresData | null;
 }
 
 const initialState: AuthState = {
   user: null,
-  resumeStatsData: null,
-  combinedStatsData: null,
+  accessToken: null,
+  refreshToken: null,
+  isAuthenticated: false,
   loading: false,
   error: null,
-  isAuthenticated: false,
+  resumeStatsData: null,
+  combinedStatsData: null,
+  lastResumeScores: null,
 };
 
 const authSlice = createSlice({
@@ -72,6 +104,7 @@ const authSlice = createSlice({
       state.user = null;
       state.resumeStatsData = null;
       state.combinedStatsData = null;
+      state.lastResumeScores = null; // Clear this as well on logout
     },
     updateUser: (state, action: PayloadAction<User>) => {
       if (state.user) {
@@ -126,6 +159,9 @@ const authSlice = createSlice({
     clearCombinedStats: (state) => {
       state.combinedStatsData = null;
     },
+    clearLastResumeScores: (state) => {
+      state.lastResumeScores = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -168,7 +204,19 @@ const authSlice = createSlice({
           state.loading = false;
           state.error = action.payload as string;
         },
-      );
+      )
+      // Fetch last resume scores
+      .addCase(fetchLastResumeScores.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchLastResumeScores.fulfilled, (state, action) => {
+        state.loading = false;
+        state.lastResumeScores = action.payload;
+      })
+      .addCase(fetchLastResumeScores.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
@@ -177,9 +225,10 @@ export const {
   logout,
   updateUser,
   updateScansLeft,
-  updateLastResumes, // Updated name
-  updateLastLinkedins, // New action
+  updateLastResumes,
+  updateLastLinkedins,
   clearResumeStats,
   clearCombinedStats,
+  clearLastResumeScores,
 } = authSlice.actions;
 export default authSlice.reducer;
