@@ -56,6 +56,93 @@ export interface ResumeScanResponse {
   };
 }
 
+interface CompareResumeResponse {
+  success: boolean;
+  message: string;
+  data: {
+    winner: {
+      resume: string;
+      fileName: string;
+      scoreDifference: number;
+    };
+    scores: {
+      resume1: {
+        fileName: string;
+        overallScore: number;
+        rank: number;
+      };
+      resume2: {
+        fileName: string;
+        overallScore: number;
+        rank: number;
+      };
+    };
+    keyDifferences: {
+      resume1Advantages: string[];
+      resume2Advantages: string[];
+      commonWeaknesses: string[];
+      improvementOpportunities: string[];
+    };
+    benchmarkComparison: Array<{
+      benchmark: string;
+      resume1: {
+        score: number;
+        passed: boolean;
+        status: string;
+      };
+      resume2: {
+        score: number;
+        passed: boolean;
+        status: string;
+      };
+      difference: number;
+      importance: string;
+    }>;
+    sectionComparison: Array<{
+      sectionName: string;
+      resume1: {
+        score: number;
+        hasSection: boolean;
+        status: string;
+      };
+      resume2: {
+        score: number;
+        hasSection: boolean;
+        status: string;
+      };
+      difference: number;
+      keyDifferences: string[];
+    }>;
+    recommendations: {
+      forResume1: string[];
+      forResume2: string[];
+      generalAdvice: string[];
+    };
+    detailedInsights: {
+      strongestAreas: {
+        resume1: string[];
+        resume2: string[];
+      };
+      weakestAreas: {
+        resume1: string[];
+        resume2: string[];
+      };
+      competitiveAdvantages: {
+        resume1: string[];
+        resume2: string[];
+      };
+    };
+    processingTime: number;
+    usedPreferences: {
+      targetIndustry: string;
+      experienceLevel: string;
+      targetJobTitle: string;
+      keywords: string[];
+    };
+    comparisonDate: string;
+  };
+}
+
 export const resumeScanAPI = {
   // Upload resume and get analysis result
   uploadAndAnalyze: async (
@@ -90,6 +177,19 @@ export const resumeScanAPI = {
   // Get existing scan result by ID (if needed for refresh/reload)
   getScanResult: async (scanId: string): Promise<ResumeScanResponse> => {
     const response = await axiosInstance.get(`resume/scan/${scanId}`);
+    return response.data;
+  },
+};
+
+export const resumeCompareAPI = {
+  compareResumes: async (
+    formData: FormData,
+  ): Promise<CompareResumeResponse> => {
+    const response = await axiosInstance.post("/resume/compare", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   },
 };
