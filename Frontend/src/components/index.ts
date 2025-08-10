@@ -28,6 +28,8 @@ import ScanStatistics from "./resume/ScanStatistics";
 import FeaturesList from "./resume/FeaturesList";
 import VisualElements from "./resume/VisualElements";
 import ResumeUpload from "./resume/ResumeUpload"
+
+
 export {
   // Auth
   Login,
@@ -58,5 +60,5 @@ export {
   ScanStatistics,
   FeaturesList,
   VisualElements,
-  ResumeUpload
+  ResumeUpload,
 };

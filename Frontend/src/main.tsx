@@ -71,11 +71,11 @@ const router = createBrowserRouter([
             element: <ResumeScan />,
           },
           {
-            path: "/resume-scan-result/:scanId", // Add this route
+            path: "/resume-scan-result/:scanId",
             element: <ResumeScanResult />,
           },
           {
-            path: "/resume-scan-result/:scanId/section/:sectionName", // Add section detail route
+            path: "/resume-scan-result/:scanId/section/:sectionName",
             element: <SectionAnalysisDetail />,
           },
           // Add more dashboard routes here
