@@ -5,17 +5,17 @@ import type { RootState } from "../../store/store";
 interface ScanStatisticsProps {
   scansLeft?: number;
   completedScans?: number;
-  lastResume?: {
+  lastResumes?: Array<{
     scanId: string;
     overallScore: number;
     scanDate: string;
-  } | null;
+  }>;
 }
 
 const ScanStatistics: React.FC<ScanStatisticsProps> = ({
   scansLeft: propScansLeft,
   completedScans: propCompletedScans,
-  lastResume: propLastResume,
+  lastResumes: propLastResumes,
 }) => {
   const { user, resumeStatsData } = useSelector(
     (state: RootState) => state.auth,
@@ -29,41 +29,37 @@ const ScanStatistics: React.FC<ScanStatisticsProps> = ({
     user?.resumeStats?.totalScans ??
     0;
 
-  // Handle null values properly
-  const lastResume =
-    propLastResume !== undefined
-      ? propLastResume
-      : (resumeStatsData?.lastResume ?? user?.lastResume ?? null);
+  // Handle arrays properly - get the most recent resume
+  const lastResumes =
+    propLastResumes !== undefined
+      ? propLastResumes
+      : (resumeStatsData?.lastResumes ?? user?.lastResumes ?? []);
+
+  const mostRecentResume = lastResumes.length > 0 ? lastResumes[0] : null;
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
   };
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <h3 className="mb-4 text-lg font-semibold text-gray-900">
-        Your Scan Usage
+        Scan Statistics
       </h3>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-lg bg-red-50 p-4 text-center">
-          <div className="mb-2">
-            <span className="text-3xl font-bold text-red-600">{scansLeft}</span>
-          </div>
-          <span className="text-sm font-medium text-gray-600">
-            Scans Remaining
-          </span>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-blue-600">{scansLeft}</div>
+          <div className="text-sm text-gray-600">Scans Left</div>
         </div>
-
-        <div className="rounded-lg bg-green-50 p-4 text-center">
-          <div className="mb-2">
-            <span className="text-3xl font-bold text-green-600">
-              {completedScans}
-            </span>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-green-600">
+            {completedScans}
           </div>
-          <span className="text-sm font-medium text-gray-600">
-            Completed Scans
-          </span>
+          <div className="text-sm text-gray-600">Completed</div>
         </div>
       </div>
 
@@ -81,8 +77,8 @@ const ScanStatistics: React.FC<ScanStatisticsProps> = ({
         </div>
       </div>
 
-      {/* Last Resume Section - Handle null properly */}
-      {lastResume && (
+      {/* Last Resume Section - Updated for array */}
+      {mostRecentResume && (
         <div className="mt-4 rounded-lg bg-blue-50 p-3">
           <h4 className="mb-2 text-sm font-medium text-gray-700">
             Last Resume Scan
@@ -90,14 +86,28 @@ const ScanStatistics: React.FC<ScanStatisticsProps> = ({
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">
               Score:{" "}
-              <span className="font-semibold text-blue-600">
-                {lastResume.overallScore}/100
+              <span className="font-medium text-gray-900">
+                {mostRecentResume.overallScore}%
               </span>
             </span>
             <span className="text-gray-500">
-              {formatDate(lastResume.scanDate)}
+              {formatDate(mostRecentResume.scanDate)}
             </span>
           </div>
+
+          {/* Show recent scan history if multiple scans available */}
+          {lastResumes.length > 1 && (
+            <div className="mt-2 border-t border-blue-100 pt-2">
+              <div className="text-xs text-gray-500">Recent Scores:</div>
+              <div className="flex space-x-2 text-xs">
+                {lastResumes.slice(1, 4).map((resume) => (
+                  <span key={resume.scanId} className="text-gray-600">
+                    {resume.overallScore}%
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

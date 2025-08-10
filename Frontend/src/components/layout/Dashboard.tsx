@@ -29,8 +29,7 @@ const Dashboard = () => {
   const stats = {
     totalScans:
       resumeStatsData?.totalScans ?? user?.resumeStats?.totalScans ?? 0,
-    latestScore:
-      resumeStatsData?.bestScore ?? user?.resumeStats?.bestScore ?? 0,
+    bestScore: resumeStatsData?.bestScore ?? user?.resumeStats?.bestScore ?? 0,
     resumeImprovement:
       resumeStatsData?.improvementTrend ??
       user?.resumeStats?.improvementTrend ??
@@ -38,6 +37,9 @@ const Dashboard = () => {
     linkedinImprovement: 0.15, // Will be replaced with actual data
     averageScore:
       resumeStatsData?.weeklyAvg ?? user?.resumeStats?.weeklyAvg ?? 0,
+    // Updated to use arrays
+    lastResumes: resumeStatsData?.lastResumes ?? user?.lastResumes ?? [],
+    lastLinkedins: user?.lastLinkedins ?? [],
   };
 
   const recentActivities = [
@@ -209,7 +211,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900">
-                {stats.latestScore}
+                {stats.bestScore}
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-600">

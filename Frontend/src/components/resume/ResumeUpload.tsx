@@ -5,7 +5,7 @@ import type { RootState, AppDispatch } from "../../store/store";
 import { uploadAndAnalyzeResume } from "../../store/resumeScanSlice";
 import {
   updateScansLeft,
-  updateLastResume,
+  updateLastResumes,
   fetchResumeStats,
 } from "../../store/authSlice";
 import toast from "react-hot-toast";
@@ -71,7 +71,7 @@ const ResumeUpload: React.FC = () => {
       // Update Redux state after successful upload
       dispatch(updateScansLeft(Math.max(0, scansLeft - 1)));
       dispatch(
-        updateLastResume({
+        updateLastResumes({
           scanId: result.scanId,
           overallScore: result.overallScore,
           scanDate: new Date().toISOString(),

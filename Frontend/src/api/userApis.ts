@@ -16,11 +16,12 @@ export interface ResumeStatsResponse {
       message: string;
     };
     improvementPercentage: string;
-    lastResume: {
+    // Updated to array
+    lastResumes: Array<{
       scanId: string;
       overallScore: number;
       scanDate: string;
-    } | null;
+    }>;
     scansLeft: number;
   };
 }
@@ -54,11 +55,12 @@ export interface CombinedStatsResponse {
         message: string;
       };
       improvementPercentage: string;
-      lastResume: {
+      // Updated to array
+      lastResumes: Array<{
         scanId: string;
         overallScore: number;
         scanDate: string;
-      } | null;
+      }>;
     };
     linkedin: {
       totalScans: number;
@@ -72,6 +74,12 @@ export interface CombinedStatsResponse {
         message: string;
       };
       improvementPercentage: string;
+      // New LinkedIn scans array
+      lastLinkedins: Array<{
+        scanId: string;
+        overallScore: number;
+        scanDate: string;
+      }>;
     };
     scansLeft: number;
   };
@@ -87,7 +95,7 @@ export const userAPI = {
     return response.data;
   },
 
-  // Get combined statistics (if you have this endpoint)
+  // Get combined statistics
   getCombinedStats: async (): Promise<CombinedStatsResponse> => {
     const response = await axiosInstance.get("/user/combined-stats");
     return response.data;

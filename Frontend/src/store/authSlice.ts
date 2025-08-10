@@ -84,8 +84,8 @@ const authSlice = createSlice({
         state.user.scansLeft = action.payload;
       }
     },
-    // Update lastResume after a successful scan
-    updateLastResume: (
+    // Update lastResumes after a successful scan (updated to handle array)
+    updateLastResumes: (
       state,
       action: PayloadAction<{
         scanId: string;
@@ -94,7 +94,30 @@ const authSlice = createSlice({
       }>,
     ) => {
       if (state.user) {
-        state.user.lastResume = action.payload;
+        // Add new scan to beginning of array
+        state.user.lastResumes.unshift(action.payload);
+        // Keep only last 5 scans
+        if (state.user.lastResumes.length > 5) {
+          state.user.lastResumes = state.user.lastResumes.slice(0, 5);
+        }
+      }
+    },
+    // New action for updating LinkedIn scans
+    updateLastLinkedins: (
+      state,
+      action: PayloadAction<{
+        scanId: string;
+        overallScore: number;
+        scanDate: string;
+      }>,
+    ) => {
+      if (state.user) {
+        // Add new scan to beginning of array
+        state.user.lastLinkedins.unshift(action.payload);
+        // Keep only last 5 scans
+        if (state.user.lastLinkedins.length > 5) {
+          state.user.lastLinkedins = state.user.lastLinkedins.slice(0, 5);
+        }
       }
     },
     clearResumeStats: (state) => {
@@ -130,9 +153,13 @@ const authSlice = createSlice({
         if (state.user && action.payload.scansLeft !== undefined) {
           state.user.scansLeft = action.payload.scansLeft;
         }
-        // Update user's lastResume from resume stats (handle null properly)
-        if (state.user && action.payload.resume) {
-          state.user.lastResume = action.payload.resume.lastResume;
+        // Update user's lastResumes from resume stats
+        if (state.user && action.payload.resume.lastResumes) {
+          state.user.lastResumes = action.payload.resume.lastResumes;
+        }
+        // Update user's lastLinkedins from linkedin stats
+        if (state.user && action.payload.linkedin.lastLinkedins) {
+          state.user.lastLinkedins = action.payload.linkedin.lastLinkedins;
         }
       })
       .addCase(
@@ -150,7 +177,8 @@ export const {
   logout,
   updateUser,
   updateScansLeft,
-  updateLastResume,
+  updateLastResumes, // Updated name
+  updateLastLinkedins, // New action
   clearResumeStats,
   clearCombinedStats,
 } = authSlice.actions;
