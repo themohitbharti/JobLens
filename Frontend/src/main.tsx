@@ -16,6 +16,7 @@ import {
   SectionAnalysisDetail,
   LinkedinStats,
   ResumeCompare,
+  ResumeCompareResult,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -92,7 +93,7 @@ const router = createBrowserRouter([
           },
           {
             path: "/compare-resume-result",
-            element: <div>compare resume result Coming Soon</div>,
+            element: <ResumeCompareResult />,
           },
           {
             path: "/linkedin-builder",

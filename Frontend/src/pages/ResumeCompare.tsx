@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import { resumeCompareAPI } from "../api/resumeScan";
+import { setComparisonResult } from "../store/resumeCompareSlice";
+import type { AppDispatch } from "../store/store";
 
 interface ResumePreferences {
   targetIndustry: string;
@@ -21,6 +24,7 @@ const ResumeCompare: React.FC = () => {
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleFileUpload = (fileNumber: 1 | 2, file: File | null) => {
     if (fileNumber === 1) {
@@ -56,8 +60,8 @@ const ResumeCompare: React.FC = () => {
       const response = await resumeCompareAPI.compareResumes(formData);
 
       if (response.success) {
-        // Store the comparison result in sessionStorage to pass to results page
-        sessionStorage.setItem("compareResult", JSON.stringify(response.data));
+        // Store the comparison result in Redux
+        dispatch(setComparisonResult(response.data));
         toast.success("Resumes compared successfully!");
         navigate("/compare-resume-result");
       } else {
@@ -88,8 +92,8 @@ const ResumeCompare: React.FC = () => {
     >
       {/* Decorative background elements */}
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-rose-100 opacity-10 blur-1xl" />
-        <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-red-100 opacity-10 blur-1xl" />
+        <div className="blur-1xl absolute right-0 top-0 h-96 w-96 rounded-full bg-rose-100 opacity-10" />
+        <div className="blur-1xl absolute bottom-0 left-0 h-64 w-64 rounded-full bg-red-100 opacity-10" />
         <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-pink-100 opacity-10 blur-3xl" />
       </div>
 

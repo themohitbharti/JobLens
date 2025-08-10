@@ -14,6 +14,7 @@ import SectionAnalysisDetail from "./SectionAnalysisDetail";
 import ResumeStats from "./ResumeStats";
 import LinkedinStats from "./LinkedinStats";
 import ResumeCompare from "./ResumeCompare";
+import ResumeCompareResult from "./ResumeCompareResult";
 
 export {
   Home,
@@ -26,6 +27,7 @@ export {
   ResumeStats,
   LinkedinStats,
   ResumeCompare,
+  ResumeCompareResult,
   //   VerifyOTP,
   //   UploadItem,
   //   ProductDetails,

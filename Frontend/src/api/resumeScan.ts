@@ -181,15 +181,25 @@ export const resumeScanAPI = {
   },
 };
 
+
 export const resumeCompareAPI = {
-  compareResumes: async (
-    formData: FormData,
-  ): Promise<CompareResumeResponse> => {
-    const response = await axiosInstance.post("/resume/compare", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
+  compareResumes: async (formData: FormData): Promise<CompareResumeResponse> => {
+    try {
+      const response = await axiosInstance.post(
+        "/resume/compare",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Failed to compare resumes");
+    }
   },
 };
