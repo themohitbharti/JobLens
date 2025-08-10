@@ -102,7 +102,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 p-6">
+    <div className="bg-gradient-to-br from-rose-100 via-pink-100 to-red-400 p-6">
       <div className="mx-auto max-w-7xl space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
