@@ -16,6 +16,7 @@ import {
   getUserProfile,
   getLastResumeScores,
   getLastLinkedinScores,
+  getLastFiveScans,
 } from "../controllers/user.controllers";
 import {verifyToken} from '../middlewares/verifyToken.middleware'
 import { validateInput } from "../middlewares/isValidInput.middleware";
@@ -47,5 +48,6 @@ router.get("/combined-stats", verifyToken, getCombinedStats); // Both stats comb
 // New routes for getting last scan scores
 router.get("/last-resume-scores", verifyToken, getLastResumeScores);
 router.get("/last-linkedin-scores",verifyToken, getLastLinkedinScores);
+router.get("/last-five-scans", verifyToken, getLastFiveScans);
 
 export default router

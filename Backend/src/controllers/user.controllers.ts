@@ -904,6 +904,75 @@ const getLastLinkedinScores = asyncHandler(async (req: CustomRequest, res: Respo
   }
 });
 
+const getLastFiveScans = asyncHandler(async (req: CustomRequest, res: Response) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).select('lastResumes lastLinkedins');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Combine resume and LinkedIn scans with type indication
+    const allScans = [
+      ...user.lastResumes.map(resume => ({
+        scanId: resume.scanId.toString(),
+        overallScore: resume.overallScore,
+        scanDate: resume.scanDate,
+        scanType: 'resume' as const,
+      })),
+      ...user.lastLinkedins.map(linkedin => ({
+        scanId: linkedin.scanId.toString(),
+        overallScore: linkedin.overallScore,
+        scanDate: linkedin.scanDate,
+        scanType: 'linkedin' as const,
+      }))
+    ];
+
+    // Sort by scanDate in descending order (most recent first) and take last 5
+    const lastFiveScans = allScans
+      .sort((a, b) => new Date(b.scanDate).getTime() - new Date(a.scanDate).getTime())
+      .slice(0, 5)
+      .map(scan => ({
+        scanId: scan.scanId,
+        overallScore: scan.overallScore,
+        scanDate: scan.scanDate.toISOString(),
+        scanType: scan.scanType,
+      }));
+
+    // Calculate some basic stats
+    const totalScans = allScans.length;
+    const averageScore = lastFiveScans.length > 0 
+      ? Math.round(lastFiveScans.reduce((sum, scan) => sum + scan.overallScore, 0) / lastFiveScans.length)
+      : 0;
+
+    const resumeScans = lastFiveScans.filter(scan => scan.scanType === 'resume').length;
+    const linkedinScans = lastFiveScans.filter(scan => scan.scanType === 'linkedin').length;
+
+    return res.status(200).json({
+      success: true,
+      message: "Last five scans retrieved successfully",
+      data: {
+        totalScans,
+        resumeScans,
+        linkedinScans,
+        averageScore,
+        scans: lastFiveScans,
+      },
+    });
+  } catch (error) {
+    console.error("Error retrieving last five scans:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
 export {
   registerUser,
   verifyOTP,
@@ -919,6 +988,7 @@ export {
   getLinkedinStats,
   getCombinedStats,
   getUserProfile,
-  getLastResumeScores,    // New API
-  getLastLinkedinScores,  // New API
+  getLastResumeScores,
+  getLastLinkedinScores,
+  getLastFiveScans,        // New API
 };
