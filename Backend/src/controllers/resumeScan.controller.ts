@@ -272,8 +272,8 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
       user.resumeStats.bestScore = calculatedOverallScore;
     }
 
-    // Update lastResume with current scan (fix TypeScript error)
-    await user.updateLastResume(resumeScan._id as mongoose.Types.ObjectId, calculatedOverallScore);
+    // Update lastResumes with current scan (updated method name)
+    await user.updateLastResumes(resumeScan._id as mongoose.Types.ObjectId, calculatedOverallScore);
 
     await user.calculateResumeStats(); // Calculate resume stats only
     await user.calculateImprovementTrend('resume'); // Calculate resume trend only

@@ -38,12 +38,18 @@ export interface UserDocument extends mongoose.Document {
     improvementTrend: number;
   };
 
-  // Make lastResume completely optional for new users
-  lastResume?: {
+  // Updated to arrays for last 5 scans
+  lastResumes: {
     scanId: mongoose.Types.ObjectId;
     overallScore: number;
     scanDate: Date;
-  };
+  }[];
+
+  lastLinkedins: {
+    scanId: mongoose.Types.ObjectId;
+    overallScore: number;
+    scanDate: Date;
+  }[];
 
   scansLeft: number; // Daily scans remaining (calculated field)
 
@@ -57,7 +63,8 @@ export interface UserDocument extends mongoose.Document {
   calculateImprovementTrend(scanType: 'resume' | 'linkedin'): Promise<void>;
   calculateTrendSlope(scores: number[]): number;
   initializeLinkedinStats(): void;
-  updateLastResume(scanId: mongoose.Types.ObjectId, overallScore: number): Promise<void>;
+  updateLastResumes(scanId: mongoose.Types.ObjectId, overallScore: number): Promise<void>;
+  updateLastLinkedins(scanId: mongoose.Types.ObjectId, overallScore: number): Promise<void>;
   calculateScansLeft(): number;
 }
 
@@ -172,24 +179,46 @@ const userSchema = new mongoose.Schema<UserDocument>(
       },
     },
 
-    // New fields - make lastResume completely optional
-    lastResume: {
-      scanId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "ResumeScan",
-        required: false,
+    // Updated to arrays for last 5 scans
+    lastResumes: [
+      {
+        scanId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "ResumeScan",
+          required: true,
+        },
+        overallScore: {
+          type: Number,
+          min: 0,
+          max: 100,
+          required: true,
+        },
+        scanDate: {
+          type: Date,
+          required: true,
+        },
       },
-      overallScore: {
-        type: Number,
-        min: 0,
-        max: 100,
-        required: false,
+    ],
+
+    lastLinkedins: [
+      {
+        scanId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "LinkedinScan",
+          required: true,
+        },
+        overallScore: {
+          type: Number,
+          min: 0,
+          max: 100,
+          required: true,
+        },
+        scanDate: {
+          type: Date,
+          required: true,
+        },
       },
-      scanDate: {
-        type: Date,
-        required: false,
-      },
-    },
+    ],
 
     scansLeft: {
       type: Number,
@@ -430,14 +459,42 @@ userSchema.methods.calculateScansLeft = function () {
   return Math.max(0, 30 - usedScans);
 };
 
-userSchema.methods.updateLastResume = async function (scanId: mongoose.Types.ObjectId, overallScore: number) {
-  this.lastResume = {
+userSchema.methods.updateLastResumes = async function (scanId: mongoose.Types.ObjectId, overallScore: number) {
+  const newScan = {
     scanId: scanId,
     overallScore: overallScore,
     scanDate: new Date(),
   };
+
+  // Add new scan to the beginning of the array
+  this.lastResumes.unshift(newScan);
+  
+  // Keep only the last 5 scans
+  if (this.lastResumes.length > 5) {
+    this.lastResumes = this.lastResumes.slice(0, 5);
+  }
+
   // Mark the field as modified to ensure it gets saved
-  this.markModified('lastResume');
+  this.markModified('lastResumes');
+};
+
+userSchema.methods.updateLastLinkedins = async function (scanId: mongoose.Types.ObjectId, overallScore: number) {
+  const newScan = {
+    scanId: scanId,
+    overallScore: overallScore,
+    scanDate: new Date(),
+  };
+
+  // Add new scan to the beginning of the array
+  this.lastLinkedins.unshift(newScan);
+  
+  // Keep only the last 5 scans
+  if (this.lastLinkedins.length > 5) {
+    this.lastLinkedins = this.lastLinkedins.slice(0, 5);
+  }
+
+  // Mark the field as modified to ensure it gets saved
+  this.markModified('lastLinkedins');
 };
 
 // Update canPerformScan method to also update scansLeft

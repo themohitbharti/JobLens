@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -254,17 +255,20 @@ const safeDeleteFiles = (filePaths: string[]) => {
       await linkedinScan.save();
   
       // Update user scan counts and stats for LINKEDIN only
-      await user.updateDailyScanCount('linkedin'); // Specify LinkedIn scan type
-      user.linkedinStats.totalScans += 1; // Update LinkedIn stats only
+      await user.updateDailyScanCount('linkedin'); // Specify linkedin scan type
+      user.linkedinStats.totalScans += 1; // Update linkedin stats only
       user.linkedinStats.lastScanDate = new Date();
-  
-      // Update best score if this LinkedIn scan is better
+
+      // Update best score if this linkedin scan is better
       if (calculatedOverallScore > user.linkedinStats.bestScore) {
         user.linkedinStats.bestScore = calculatedOverallScore;
       }
-  
-      await user.calculateLinkedinStats(); // Calculate LinkedIn stats only
-      await user.calculateImprovementTrend('linkedin'); // Calculate LinkedIn trend only
+
+      // Update lastLinkedins with current scan (new method)
+      await user.updateLastLinkedins(linkedinScan._id as mongoose.Types.ObjectId, calculatedOverallScore);
+
+      await user.calculateLinkedinStats(); // Calculate linkedin stats only
+      await user.calculateImprovementTrend('linkedin'); // Calculate linkedin trend only
       await user.save();
   
       // Clean up uploaded file (success case)

@@ -36,13 +36,6 @@ const ResumeStats = () => {
       <div className="mx-auto max-w-7xl space-y-6">
         {/* Header */}
         <div className="mb-8">
-          <div className="mb-4 rounded-lg bg-gradient-to-r from-red-500 to-rose-500 p-1">
-            <div className="rounded bg-white p-4">
-              <h1 className="text-center text-2xl font-bold text-gray-600">
-                Detailed analysis of your resume performance
-              </h1>
-            </div>
-          </div>
           <div className="flex items-center justify-between">
             <div>
               <h2 className="mb-2 bg-gradient-to-r from-red-600 via-pink-600 to-purple-600 bg-clip-text text-4xl font-bold text-transparent">

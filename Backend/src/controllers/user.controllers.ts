@@ -582,12 +582,12 @@ const getResumeStats = asyncHandler(async (req: CustomRequest, res: Response) =>
           (user.resumeStats.improvementTrend || 0) > 0
             ? `+${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`
             : `${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`,
-        // Handle optional lastResume for new users
-        lastResume: user.lastResume && user.lastResume.scanId ? {
-          scanId: user.lastResume.scanId.toString(),
-          overallScore: user.lastResume.overallScore,
-          scanDate: user.lastResume.scanDate.toISOString(),
-        } : null,
+        // Updated to use lastResumes array (last 5 resume scans)
+        lastResumes: user.lastResumes.map(resume => ({
+          scanId: resume.scanId.toString(),
+          overallScore: resume.overallScore,
+          scanDate: resume.scanDate.toISOString(),
+        })),
         scansLeft: user.scansLeft || user.calculateScansLeft(),
       },
     });
@@ -658,11 +658,16 @@ const getLinkedinStats = asyncHandler(async (req: CustomRequest, res: Response) 
         lastScanDate: user.linkedinStats.lastScanDate || null,
         improvementTrend: user.linkedinStats.improvementTrend || 0,
         trendInterpretation: linkedinTrendInterpretation,
-        // Add percentage change from first to last scan
         improvementPercentage:
           (user.linkedinStats.improvementTrend || 0) > 0
             ? `+${((user.linkedinStats.improvementTrend || 0) * 10).toFixed(1)}%`
             : `${((user.linkedinStats.improvementTrend || 0) * 10).toFixed(1)}%`,
+        // Add lastLinkedins array (last 5 LinkedIn scans)
+        lastLinkedins: user.lastLinkedins.map(linkedin => ({
+          scanId: linkedin.scanId.toString(),
+          overallScore: linkedin.overallScore,
+          scanDate: linkedin.scanDate.toISOString(),
+        })),
       },
     });
   } catch (error) {
@@ -758,12 +763,12 @@ const getCombinedStats = asyncHandler(async (req: CustomRequest, res: Response) 
             (user.resumeStats.improvementTrend || 0) > 0
               ? `+${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`
               : `${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`,
-          // Handle optional lastResume for new users
-          lastResume: user.lastResume && user.lastResume.scanId ? {
-            scanId: user.lastResume.scanId.toString(),
-            overallScore: user.lastResume.overallScore,
-            scanDate: user.lastResume.scanDate.toISOString(),
-          } : null,
+          // Updated to use lastResumes array (last 5 resume scans)
+          lastResumes: user.lastResumes.map(resume => ({
+            scanId: resume.scanId.toString(),
+            overallScore: resume.overallScore,
+            scanDate: resume.scanDate.toISOString(),
+          })),
         },
         linkedin: {
           totalScans: user.linkedinStats.totalScans || 0,
@@ -777,6 +782,12 @@ const getCombinedStats = asyncHandler(async (req: CustomRequest, res: Response) 
             (user.linkedinStats.improvementTrend || 0) > 0
               ? `+${((user.linkedinStats.improvementTrend || 0) * 10).toFixed(1)}%`
               : `${((user.linkedinStats.improvementTrend || 0) * 10).toFixed(1)}%`,
+          // Add lastLinkedins array (last 5 LinkedIn scans)
+          lastLinkedins: user.lastLinkedins.map(linkedin => ({
+            scanId: linkedin.scanId.toString(),
+            overallScore: linkedin.overallScore,
+            scanDate: linkedin.scanDate.toISOString(),
+          })),
         },
         scansLeft: user.scansLeft || user.calculateScansLeft(),
       },
@@ -786,6 +797,35 @@ const getCombinedStats = asyncHandler(async (req: CustomRequest, res: Response) 
     return res.status(500).json({
       success: false,
       message: "Internal server error",
+    });
+  }
+});
+
+// Update any endpoint that returns user data to include the new arrays
+const getUserProfile = asyncHandler(async (req: CustomRequest, res: Response) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .populate('lastResumes.scanId', 'fileName scanDate overallScore')
+      .populate('lastLinkedins.scanId', 'scanDate overallScore')
+      .select('-password -refreshToken');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User profile retrieved successfully",
+      data: user,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to get user profile",
+      error: error.message,
     });
   }
 });
@@ -804,4 +844,5 @@ export {
   getResumeStats,        // Resume stats only
   getLinkedinStats,      // LinkedIn stats only  
   getCombinedStats,      // Both stats combined
+  getUserProfile,        // New endpoint to get user profile with arrays
 };
