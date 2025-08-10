@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -469,4 +469,45 @@ const compareLinkedinProfiles = asyncHandler(async (req: CustomRequest, res: Res
   }
 });
 
-export { scanLinkedinProfile, compareLinkedinProfiles };
+const getLinkedinScanById = asyncHandler(async (req: CustomRequest, res: Response) => {
+  try {
+    const { scanId } = req.params;
+
+    // Validate scanId format
+    if (!scanId || !scanId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid scan ID format",
+      });
+    }
+
+    // Find the LinkedIn scan by ID and ensure it belongs to the authenticated user
+    const linkedinScan = await LinkedinScan.findOne({
+      _id: scanId,
+      userId: req.user._id,
+    });
+
+    if (!linkedinScan) {
+      return res.status(404).json({
+        success: false,
+        message: "LinkedIn scan not found or you don't have permission to access it",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "LinkedIn scan retrieved successfully",
+      data: linkedinScan,
+    });
+
+  } catch (error: any) {
+    console.error("Get LinkedIn scan error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve LinkedIn scan",
+      error: error.message,
+    });
+  }
+});
+
+export { scanLinkedinProfile, compareLinkedinProfiles, getLinkedinScanById };

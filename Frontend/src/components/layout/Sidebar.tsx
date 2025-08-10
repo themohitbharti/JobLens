@@ -118,7 +118,7 @@ const LinkedInCompareIcon = () => (
     {/* Small v in the center */}
     <text
       x="20"
-      y="25"
+      y="23"
       textAnchor="middle"
       fontWeight="bold"
       fontSize="10"

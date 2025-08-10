@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyToken } from "../middlewares/verifyToken.middleware";
-import { scanLinkedinProfile, upload, compareLinkedinProfiles } from "../controllers/linkedinScan.controller";
+import { scanLinkedinProfile, upload, compareLinkedinProfiles, getLinkedinScanById } from "../controllers/linkedinScan.controller";
 
 const router = Router();
 
@@ -16,5 +16,7 @@ router.post(
     ]), 
     compareLinkedinProfiles
   );
+
+router.get("/scan/:scanId", verifyToken, getLinkedinScanById);
 
 export default router;
