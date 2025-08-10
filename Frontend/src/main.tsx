@@ -23,6 +23,7 @@ import {
 import { AuthProvider } from "./contexts/AuthProvider.tsx";
 // import Categories from "./pages/Discover.tsx";
 import { Toaster } from "react-hot-toast";
+import {ResumeStats} from "./pages/index.ts";
 
 const router = createBrowserRouter([
   {
@@ -81,7 +82,7 @@ const router = createBrowserRouter([
           // Add more dashboard routes here
           {
             path: "/resume-stats",
-            element: <div>Resume Stats Coming Soon</div>,
+            element: <ResumeStats />,
           },
           {
             path: "/compare-resumes",

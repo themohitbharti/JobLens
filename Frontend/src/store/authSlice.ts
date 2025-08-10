@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { userAPI, CombinedStatsData } from "../api/userApis";
 import { User, ResumeStatsData } from "../types";
+import { getResumeStats } from "../api/resumeStatsAPI";
 
 // Define a type for the minimum required user data
 export type PartialUser = Partial<User> & {
@@ -14,14 +15,11 @@ export const fetchResumeStats = createAsyncThunk(
   "auth/fetchResumeStats",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await userAPI.getResumeStats();
-      if (!response.success) {
-        throw new Error(response.message || "Failed to fetch resume stats");
-      }
+      const response = await getResumeStats();
       return response.data;
     } catch (error: unknown) {
       if (error instanceof Error) return rejectWithValue(error.message);
-      return rejectWithValue("Unknown error occurred");
+      return rejectWithValue("failed to fetch resume stats");
     }
   },
 );
@@ -111,27 +109,15 @@ const authSlice = createSlice({
       // Fetch resume stats
       .addCase(fetchResumeStats.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchResumeStats.fulfilled, (state, action) => {
         state.loading = false;
         state.resumeStatsData = action.payload;
-        // Update user's scansLeft if user exists
-        if (state.user && action.payload.scansLeft !== undefined) {
-          state.user.scansLeft = action.payload.scansLeft;
-        }
-        // Update user's lastResume if user exists (handle null properly)
-        if (state.user) {
-          state.user.lastResume = action.payload.lastResume;
-        }
       })
-      .addCase(
-        fetchResumeStats.rejected,
-        (state, action: PayloadAction<unknown>) => {
-          state.loading = false;
-          state.error = action.payload as string;
-        },
-      )
+      .addCase(fetchResumeStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
       // Fetch combined stats
       .addCase(fetchCombinedStats.pending, (state) => {
         state.loading = true;
