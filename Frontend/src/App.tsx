@@ -1,31 +1,18 @@
 import { Outlet } from "react-router-dom";
+import "./App.css";
+import { Header, Footer } from "./components/index";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Header, Footer } from "./components/index";
 
 function App() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-transparent">
       <Header />
-
-      <main className="flex-1">
+      <main className="flex-grow">
         <Outlet />
       </main>
-
       <Footer />
-
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      <ToastContainer />
     </div>
   );
 }

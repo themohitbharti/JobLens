@@ -583,7 +583,7 @@ const getResumeStats = asyncHandler(async (req: CustomRequest, res: Response) =>
             ? `+${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`
             : `${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`,
         // Handle optional lastResume for new users
-        lastResume: user.lastResume ? {
+        lastResume: user.lastResume && user.lastResume.scanId ? {
           scanId: user.lastResume.scanId.toString(),
           overallScore: user.lastResume.overallScore,
           scanDate: user.lastResume.scanDate.toISOString(),
@@ -759,7 +759,7 @@ const getCombinedStats = asyncHandler(async (req: CustomRequest, res: Response) 
               ? `+${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`
               : `${((user.resumeStats.improvementTrend || 0) * 10).toFixed(1)}%`,
           // Handle optional lastResume for new users
-          lastResume: user.lastResume ? {
+          lastResume: user.lastResume && user.lastResume.scanId ? {
             scanId: user.lastResume.scanId.toString(),
             overallScore: user.lastResume.overallScore,
             scanDate: user.lastResume.scanDate.toISOString(),

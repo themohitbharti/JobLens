@@ -35,7 +35,7 @@ const Dashboard = () => {
       resumeStatsData?.improvementTrend ??
       user?.resumeStats?.improvementTrend ??
       0,
-    linkedinImprovement: 0.15,
+    linkedinImprovement: 0.15, // Will be replaced with actual data
     averageScore:
       resumeStatsData?.weeklyAvg ?? user?.resumeStats?.weeklyAvg ?? 0,
   };
@@ -102,7 +102,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-rose-100 via-pink-100 to-red-400 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 p-6">
       <div className="mx-auto max-w-7xl space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -287,7 +287,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Rest of your Dashboard content remains exactly the same */}
         {/* Main Content Grid */}
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Career Preferences */}
@@ -571,7 +570,7 @@ const Dashboard = () => {
 
           {/* This Week Stats */}
           <div className="lg:col-span-1">
-            <div className="rounded-2xl bg-white p-6 shadow-lg h-full">
+            <div className="rounded-2xl bg-white p-6 shadow-lg">
               <div className="mb-6 flex items-center gap-3">
                 <div className="rounded-full bg-gradient-to-r from-green-500 to-emerald-500 p-2">
                   <svg
@@ -621,7 +620,7 @@ const Dashboard = () => {
 
           {/* Quick Actions */}
           <div className="lg:col-span-1">
-            <div className="rounded-2xl bg-white p-6 shadow-lg h-full">
+            <div className="rounded-2xl bg-white p-6 shadow-lg">
               <div className="mb-6 flex items-center gap-3">
                 <div className="rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 p-2">
                   <svg
