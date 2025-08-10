@@ -1,13 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authSlice from "./authSlice";
 import resumeScanSlice from "./resumeScanSlice";
-import resumeCompareReducer from "./resumeCompareSlice"
+import resumeCompareReducer from "./resumeCompareSlice";
+import linkedinCompareReducer from "./linkedinCompareSlice";
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
     auth: authSlice,
     resumeScan: resumeScanSlice,
     resumeCompare: resumeCompareReducer,
+    linkedinCompare: linkedinCompareReducer,
   },
 });
 
