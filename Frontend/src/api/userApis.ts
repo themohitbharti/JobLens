@@ -113,6 +113,31 @@ export interface LastFiveScansResponse {
   };
 }
 
+// Response interface for LinkedIn stats
+export interface LinkedinStatsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    totalScans: number;
+    weeklyScans: number;
+    weeklyAvg: number;
+    bestScore: number;
+    lastScanDate: string | null;
+    improvementTrend: number;
+    trendInterpretation: {
+      status: string;
+      message: string;
+    };
+    improvementPercentage: string;
+    lastLinkedins: Array<{
+      scanId: string;
+      overallScore: number;
+      scanDate: string;
+    }>;
+    scansLeft: number;
+  };
+}
+
 // Export the data type for reuse in Redux
 export type CombinedStatsData = CombinedStatsResponse["data"];
 
@@ -138,6 +163,12 @@ export const userAPI = {
   // Get last five scans
   getLastFiveScans: async (): Promise<LastFiveScansResponse> => {
     const response = await axiosInstance.get("/user/last-five-scans");
+    return response.data;
+  },
+
+  // Get LinkedIn statistics
+  getLinkedinStats: async (): Promise<LinkedinStatsResponse> => {
+    const response = await axiosInstance.get("/user/linkedin-stats");
     return response.data;
   },
 };

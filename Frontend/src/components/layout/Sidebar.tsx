@@ -213,14 +213,14 @@ const Sidebar = ({ className = "" }: SidebarProps) => {
       icon: LinkedInBuilderIcon,
     },
     {
-      name: "Compare LinkedIn",
-      href: "/compare-linkedin",
-      icon: LinkedInCompareIcon,
-    },
-    {
       name: "LinkedIn Stats",
       href: "/linkedin-stats",
       icon: LinkedInStatsIcon,
+    },
+    {
+      name: "Compare LinkedIn",
+      href: "/compare-linkedin",
+      icon: LinkedInCompareIcon,
     },
   ];
 

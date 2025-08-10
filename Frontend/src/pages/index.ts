@@ -12,6 +12,7 @@ import ResumeScan from "./ResumeScan";
 import ResumeScanResult from "./ResumeScanResult";
 import SectionAnalysisDetail from "./SectionAnalysisDetail";
 import ResumeStats from "./ResumeStats";
+import LinkedinStats from "./LinkedinStats";
 
 export {
   Home,
@@ -22,6 +23,7 @@ export {
   ResumeScanResult,
   SectionAnalysisDetail,
   ResumeStats,
+  LinkedinStats,
   //   VerifyOTP,
   //   UploadItem,
   //   ProductDetails,

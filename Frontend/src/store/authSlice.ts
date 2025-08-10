@@ -3,10 +3,14 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { userAPI } from "../api/userApis";
+import axios from "axios";
+import {
+  userAPI,
+} from "../api/userApis";
 import type {
   User,
   ResumeStatsData,
+  LinkedinStatsData,
   CombinedStatsData,
   LastResumeScoresData,
 } from "../types";
@@ -67,26 +71,42 @@ export const fetchLastResumeScores = createAsyncThunk(
   },
 );
 
+// New async thunk for fetching LinkedIn stats
+export const fetchLinkedinStats = createAsyncThunk(
+  "auth/fetchLinkedinStats",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await userAPI.getLinkedinStats();
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(
+          error.response?.data?.message || "Failed to fetch LinkedIn stats",
+        );
+      }
+      return rejectWithValue("An unexpected error occurred");
+    }
+  },
+);
+
 interface AuthState {
   user: User | null;
-  accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
   resumeStatsData: ResumeStatsData | null;
+  linkedinStatsData: LinkedinStatsData | null; // Add this line
   combinedStatsData: CombinedStatsData | null;
   lastResumeScores: LastResumeScoresData | null;
 }
 
 const initialState: AuthState = {
   user: null,
-  accessToken: null,
-  refreshToken: null,
   isAuthenticated: false,
   loading: false,
   error: null,
   resumeStatsData: null,
+  linkedinStatsData: null, // Add this line
   combinedStatsData: null,
   lastResumeScores: null,
 };
@@ -162,6 +182,9 @@ const authSlice = createSlice({
     clearLastResumeScores: (state) => {
       state.lastResumeScores = null;
     },
+    clearLinkedinStats: (state) => {
+      state.linkedinStatsData = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -216,6 +239,18 @@ const authSlice = createSlice({
       .addCase(fetchLastResumeScores.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      // Fetch LinkedIn stats
+      .addCase(fetchLinkedinStats.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchLinkedinStats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.linkedinStatsData = action.payload;
+      })
+      .addCase(fetchLinkedinStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
@@ -230,5 +265,6 @@ export const {
   clearResumeStats,
   clearCombinedStats,
   clearLastResumeScores,
+  clearLinkedinStats,
 } = authSlice.actions;
 export default authSlice.reducer;

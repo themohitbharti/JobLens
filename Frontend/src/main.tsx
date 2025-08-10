@@ -12,8 +12,9 @@ import {
   Signup,
   DashboardLayout,
   ResumeScan,
-  ResumeScanResult, // Add this import
+  ResumeScanResult,
   SectionAnalysisDetail,
+  LinkedinStats,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -98,7 +99,7 @@ const router = createBrowserRouter([
           },
           {
             path: "/linkedin-stats",
-            element: <div>LinkedIn Stats Coming Soon</div>,
+            element: <LinkedinStats />,
           },
           {
             path: "/settings",
