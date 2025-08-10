@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { RootState, AppDispatch } from "../../store/store";
 import { fetchResumeStats } from "../../store/authSlice";
 import { ScanStatistics } from "../index";
+import { userAPI } from "../../api/userApis";
+
+interface ScanData {
+  scanId: string;
+  overallScore: number;
+  scanDate: string;
+  scanType: "resume" | "linkedin";
+}
 
 const Dashboard = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { user, resumeStatsData } = useSelector(
     (state: RootState) => state.auth,
   );
@@ -22,9 +31,77 @@ const Dashboard = () => {
   );
   const [tempValue, setTempValue] = useState("");
 
+  // New state for recent scans
+  const [recentScans, setRecentScans] = useState<ScanData[]>([]);
+  const [showAllScans, setShowAllScans] = useState(false);
+  const [loadingScans, setLoadingScans] = useState(false);
+
   useEffect(() => {
     dispatch(fetchResumeStats());
+    // Load initial 3 scans
+    loadRecentScans(false);
   }, [dispatch]);
+
+  // Function to load recent scans
+  const loadRecentScans = async (loadAll: boolean = false) => {
+    try {
+      setLoadingScans(true);
+      const response = await userAPI.getLastFiveScans();
+      if (response.success) {
+        const scans = loadAll
+          ? response.data.scans
+          : response.data.scans.slice(0, 3);
+        setRecentScans(scans);
+        setShowAllScans(loadAll);
+      }
+    } catch (error) {
+      console.error("Failed to load recent scans:", error);
+    } finally {
+      setLoadingScans(false);
+    }
+  };
+
+  // Function to handle scan click
+  const handleScanClick = (scan: ScanData) => {
+    if (scan.scanType === "resume") {
+      navigate(`/resume-scan-result/${scan.scanId}`);
+    } else {
+      // Navigate to LinkedIn scan result page when implemented
+      navigate(`/linkedin-scan-result/${scan.scanId}`);
+    }
+  };
+
+  // Function to format date
+  const formatScanDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
+    );
+
+    if (diffInHours < 1) return "Just now";
+    if (diffInHours < 24) return `${diffInHours} hours ago`;
+    if (diffInHours < 48) return "1 day ago";
+    return `${Math.floor(diffInHours / 24)} days ago`;
+  };
+
+  // Function to get scan description
+  const getScanDescription = (scan: ScanData) => {
+    if (scan.scanType === "resume") {
+      return `Resume analysis completed with ${scan.overallScore}% score`;
+    } else {
+      return `LinkedIn profile analysis completed with ${scan.overallScore}% score`;
+    }
+  };
+
+  // Function to get scan action text
+  const getScanAction = (scan: ScanData) => {
+    if (scan.scanType === "resume") {
+      return `Resume scan completed`;
+    } else {
+      return `LinkedIn scan completed`;
+    }
+  };
 
   const stats = {
     totalScans:
@@ -41,36 +118,6 @@ const Dashboard = () => {
     lastResumes: resumeStatsData?.lastResumes ?? user?.lastResumes ?? [],
     lastLinkedins: user?.lastLinkedins ?? [],
   };
-
-  const recentActivities = [
-    {
-      id: 1,
-      type: "resume",
-      action: "Resume score improved to 97%",
-      description: "Added new skills and optimized keywords",
-      time: "2 hours ago",
-      icon: "🎯",
-      color: "bg-green-500",
-    },
-    {
-      id: 2,
-      type: "application",
-      action: "Applied to Software Engineer at TechCorp",
-      description: "Resume automatically tailored for the position",
-      time: "1 day ago",
-      icon: "📋",
-      color: "bg-blue-500",
-    },
-    {
-      id: 3,
-      type: "profile",
-      action: "Profile viewed by 47 recruiters",
-      description: "Increased visibility from recent updates",
-      time: "2 days ago",
-      icon: "👥",
-      color: "bg-purple-500",
-    },
-  ];
 
   const handlePreferenceEdit = (key: string, currentValue: string) => {
     setEditingPreference(key);
@@ -718,49 +765,270 @@ const Dashboard = () => {
         <div className="grid gap-6">
           {/* Recent Activity - Full Width */}
           <div className="rounded-2xl bg-white p-6 shadow-lg">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 p-2">
-                <svg
-                  className="h-5 w-5 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+            <div className="mb-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 p-2">
+                  <svg
+                    className="h-5 w-5 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Recent Activity
+                </h2>
               </div>
-              <h2 className="text-xl font-bold text-gray-900">
-                Recent Activity
-              </h2>
+
+              {/* Load More / Show Less Button */}
+              {recentScans.length > 0 && (
+                <button
+                  onClick={() => loadRecentScans(!showAllScans)}
+                  disabled={loadingScans}
+                  className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-red-600 hover:to-pink-600 disabled:opacity-50"
+                >
+                  {loadingScans ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      Loading...
+                    </>
+                  ) : showAllScans ? (
+                    <>
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M20 12H4"
+                        />
+                      </svg>
+                      Show Less
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      Load More
+                    </>
+                  )}
+                </button>
+              )}
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-3">
-              {recentActivities.map((activity) => (
+            {/* Full Width Scan Items */}
+            <div className="space-y-4">
+              {recentScans.map((scan, index) => (
                 <div
-                  key={activity.id}
-                  className="flex items-start gap-4 rounded-lg border border-gray-100 p-4 transition-colors hover:bg-gray-50"
+                  key={scan.scanId}
+                  onClick={() => handleScanClick(scan)}
+                  className="group flex w-full cursor-pointer items-center justify-between rounded-xl border border-gray-100 bg-gradient-to-r from-gray-50 to-white p-6 transition-all hover:border-gray-200 hover:from-blue-50 hover:to-indigo-50 hover:shadow-md"
                 >
-                  <div className={`rounded-full ${activity.color} p-2`}>
-                    <span className="text-lg">{activity.icon}</span>
+                  {/* Left Section - Icon and Content */}
+                  <div className="flex items-center gap-4">
+                    {/* Scan Type Icon */}
+                    <div
+                      className={`rounded-full p-3 ${
+                        scan.scanType === "resume"
+                          ? "bg-gradient-to-r from-blue-500 to-indigo-500"
+                          : "bg-gradient-to-r from-blue-600 to-blue-800"
+                      }`}
+                    >
+                      {scan.scanType === "resume" ? (
+                        <svg
+                          className="h-6 w-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="h-6 w-6 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                        </svg>
+                      )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1">
+                      <div className="mb-1 flex items-center gap-3">
+                        <h3 className="text-lg font-semibold text-gray-900 transition-colors group-hover:text-blue-600">
+                          {getScanAction(scan)}
+                        </h3>
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                            scan.scanType === "resume"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
+                        >
+                          {scan.scanType === "resume" ? "Resume" : "LinkedIn"}
+                        </span>
+                      </div>
+                      <p className="mb-2 text-gray-600">
+                        {getScanDescription(scan)}
+                      </p>
+                      <div className="flex items-center gap-4">
+                        <span className="flex items-center gap-1 text-sm text-gray-500">
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          {formatScanDate(scan.scanDate)}
+                        </span>
+                        <span className="text-sm text-gray-400">•</span>
+                        <span className="text-sm text-gray-500">
+                          Scan #{recentScans.length - index}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">
-                      {activity.action}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {activity.description}
-                    </p>
-                    <span className="text-xs text-gray-500">
-                      {activity.time}
-                    </span>
+
+                  {/* Right Section - Score and Arrow */}
+                  <div className="flex items-center gap-4">
+                    {/* Score */}
+                    <div className="text-right">
+                      <div
+                        className={`text-3xl font-bold ${
+                          scan.overallScore >= 90
+                            ? "text-green-600"
+                            : scan.overallScore >= 70
+                              ? "text-yellow-600"
+                              : "text-red-600"
+                        }`}
+                      >
+                        {scan.overallScore}%
+                      </div>
+                      <div className="text-sm text-gray-500">Overall Score</div>
+                    </div>
+
+                    {/* Performance Indicator */}
+                    <div
+                      className={`h-16 w-2 rounded-full ${
+                        scan.overallScore >= 90
+                          ? "bg-green-500"
+                          : scan.overallScore >= 70
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
+                      }`}
+                    ></div>
+
+                    {/* Arrow */}
+                    <svg
+                      className="h-6 w-6 text-gray-400 transition-all group-hover:translate-x-1 group-hover:text-blue-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </div>
                 </div>
               ))}
+
+              {/* Empty State */}
+              {recentScans.length === 0 && !loadingScans && (
+                <div className="py-12 text-center">
+                  <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-100">
+                    <svg
+                      className="h-12 w-12 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="mb-2 text-xl font-medium text-gray-900">
+                    No recent scans
+                  </h3>
+                  <p className="mb-6 text-gray-600">
+                    Start analyzing your resume or LinkedIn profile to see your
+                    career insights!
+                  </p>
+                  <div className="flex justify-center gap-3">
+                    <Link to="/resume-scan">
+                      <button className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 px-6 py-3 text-sm font-medium text-white transition-all hover:from-red-600 hover:to-pink-600">
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                        Upload Resume
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* Loading State */}
+              {loadingScans && (
+                <div className="py-8 text-center">
+                  <div className="inline-flex items-center gap-2 text-gray-600">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-red-500"></div>
+                    Loading recent scans...
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

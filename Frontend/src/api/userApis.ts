@@ -96,6 +96,22 @@ export interface LastResumeScoresResponse {
     }>;
   };
 }
+export interface LastFiveScansResponse {
+  success: boolean;
+  message: string;
+  data: {
+    totalScans: number;
+    resumeScans: number;
+    linkedinScans: number;
+    averageScore: number;
+    scans: Array<{
+      scanId: string;
+      overallScore: number;
+      scanDate: string;
+      scanType: "resume" | "linkedin";
+    }>;
+  };
+}
 
 // Export the data type for reuse in Redux
 export type CombinedStatsData = CombinedStatsResponse["data"];
@@ -116,6 +132,12 @@ export const userAPI = {
   // Get last resume scores for chart
   getLastResumeScores: async (): Promise<LastResumeScoresResponse> => {
     const response = await axiosInstance.get("/user/last-resume-scores");
+    return response.data;
+  },
+
+  // Get last five scans
+  getLastFiveScans: async (): Promise<LastFiveScansResponse> => {
+    const response = await axiosInstance.get("/user/last-five-scans");
     return response.data;
   },
 };
