@@ -14,9 +14,12 @@ interface SidebarProps {
 
 // Custom SVG Icons
 const DashboardIcon = () => (
-  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
-  </svg>
+  <img
+    src="/dashboard.png"
+    alt="dashboard"
+    className="h-8 w-8 rounded object-contain"
+    draggable={false}
+  />
 );
 
 // --- Resume Scan Icon: Bold, clear document with magnifier ---
@@ -279,7 +282,7 @@ const Sidebar = ({ className = "" }: SidebarProps) => {
     <div className={`flex h-screen bg-white shadow-xl ${className}`}>
       <div
         className={`relative flex flex-col border-r border-gray-200 bg-white transition-all duration-300 ease-in-out ${
-          isCollapsed ? "w-17" : "w-64"
+          isCollapsed ? "w-20" : "w-64"
         }`}
       >
         {/* Header with Logo */}
