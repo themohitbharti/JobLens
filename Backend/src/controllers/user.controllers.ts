@@ -830,6 +830,80 @@ const getUserProfile = asyncHandler(async (req: CustomRequest, res: Response) =>
   }
 });
 
+const getLastResumeScores = asyncHandler(async (req: CustomRequest, res: Response) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).select('lastResumes');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Extract only the overall scores from lastResumes
+    const resumeScores = user.lastResumes.map(resume => ({
+      scanId: resume.scanId.toString(),
+      overallScore: resume.overallScore,
+      scanDate: resume.scanDate.toISOString(),
+    }));
+
+    return res.status(200).json({
+      success: true,
+      message: "Last resume scores retrieved successfully",
+      data: {
+        totalScans: resumeScores.length,
+        scores: resumeScores,
+      },
+    });
+  } catch (error) {
+    console.error("Error retrieving last resume scores:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+const getLastLinkedinScores = asyncHandler(async (req: CustomRequest, res: Response) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).select('lastLinkedins');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Extract only the overall scores from lastLinkedins
+    const linkedinScores = user.lastLinkedins.map(linkedin => ({
+      scanId: linkedin.scanId.toString(),
+      overallScore: linkedin.overallScore,
+      scanDate: linkedin.scanDate.toISOString(),
+    }));
+
+    return res.status(200).json({
+      success: true,
+      message: "Last LinkedIn scores retrieved successfully",
+      data: {
+        totalScans: linkedinScores.length,
+        scores: linkedinScores,
+      },
+    });
+  } catch (error) {
+    console.error("Error retrieving last LinkedIn scores:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
 export {
   registerUser,
   verifyOTP,
@@ -841,8 +915,10 @@ export {
   resetPassword,
   getUser,
   editUserProfile,
-  getResumeStats,        // Resume stats only
-  getLinkedinStats,      // LinkedIn stats only  
-  getCombinedStats,      // Both stats combined
-  getUserProfile,        // New endpoint to get user profile with arrays
+  getResumeStats,
+  getLinkedinStats,
+  getCombinedStats,
+  getUserProfile,
+  getLastResumeScores,    // New API
+  getLastLinkedinScores,  // New API
 };

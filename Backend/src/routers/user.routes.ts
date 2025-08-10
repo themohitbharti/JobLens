@@ -1,16 +1,22 @@
 import { Router } from "express";
-import { 
-    registerUser,
-    loginUser, 
-    logoutUser , 
-    refreshAccessToken , 
-    verifyOTP , 
-    changePassword , 
-    forgotPassword , 
-    resetPassword, 
-    getResumeStats,
-    getLinkedinStats,
-    getCombinedStats,} from "../controllers/user.controllers";
+import {
+  registerUser,
+  verifyOTP,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  changePassword,
+  forgotPassword,
+  resetPassword,
+  getUser,
+  editUserProfile,
+  getResumeStats,
+  getLinkedinStats,
+  getCombinedStats,
+  getUserProfile,
+  getLastResumeScores,
+  getLastLinkedinScores,
+} from "../controllers/user.controllers";
 import {verifyToken} from '../middlewares/verifyToken.middleware'
 import { validateInput } from "../middlewares/isValidInput.middleware";
 
@@ -36,5 +42,10 @@ router.post('/reset-password' , resetPassword)
 router.get("/resume-stats", verifyToken, getResumeStats);              // Resume stats only
 router.get("/linkedin-stats", verifyToken, getLinkedinStats); // LinkedIn stats only
 router.get("/combined-stats", verifyToken, getCombinedStats); // Both stats combined
+
+
+// New routes for getting last scan scores
+router.get("/last-resume-scores", verifyToken, getLastResumeScores);
+router.get("/last-linkedin-scores",verifyToken, getLastLinkedinScores);
 
 export default router
