@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import LinkedinUpload from "../components/linkedin/LinkedinUpload";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 
 const LinkedinScan: React.FC = () => {
-  // Get scansLeft from Redux (assuming same as ResumeScan)
   const scansLeft = useSelector(
     (state: RootState) => state.auth.user?.scansLeft ?? 30,
   );
+  const [showInstruction, setShowInstruction] = useState(false);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
@@ -20,7 +20,7 @@ const LinkedinScan: React.FC = () => {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Header */}
-        <div className="mb-12 text-center">
+        <div className="relative mb-12 text-center">
           <h1 className="mb-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-5xl font-bold text-transparent">
             LinkedIn Analyzer
           </h1>
@@ -28,25 +28,92 @@ const LinkedinScan: React.FC = () => {
             Upload your LinkedIn profile and get AI-powered insights to enhance
             your professional presence!
           </p>
+          {/* Info icon for instructions */}
+          <div className="mt-4 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setShowInstruction(true)}
+              className="flex flex-col items-center focus:outline-none"
+              aria-label="How to get your LinkedIn profile PDF?"
+            >
+              <div className="flex items-center justify-center rounded-full bg-blue-100 p-3 shadow-lg transition hover:bg-blue-200">
+                <svg
+                  className="h-6 w-6 text-blue-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z"
+                  />
+                </svg>
+              </div>
+              <span className="mt-2 cursor-pointer text-base font-semibold text-blue-700 underline">
+                How to get your LinkedIn profile PDF?
+              </span>
+            </button>
+          </div>
+          {/* Daily Scans Left Tab - top right of header */}
+          <div className="absolute right-0 top-0">
+            <div className="flex items-center justify-center rounded-xl border-2 border-blue-300 bg-gradient-to-br from-blue-100 via-blue-50/90 to-indigo-300 p-4 shadow-2xl backdrop-blur-xl">
+              <span className="text-sm font-medium text-gray-700">
+                Daily scans remaining:
+              </span>
+              <span
+                className={`ml-2 text-sm font-bold ${
+                  scansLeft > 5
+                    ? "text-green-600"
+                    : scansLeft > 0
+                      ? "text-yellow-600"
+                      : "text-red-600"
+                }`}
+              >
+                {scansLeft}/30
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Daily Scans Left Tab */}
-        <div className="mx-auto mb-10 flex max-w-xs items-center justify-center rounded-xl border border-white/40 bg-white/60 p-4 shadow backdrop-blur-sm">
-          <span className="text-sm font-medium text-gray-700">
-            Daily scans remaining:
-          </span>
-          <span
-            className={`ml-2 text-sm font-bold ${
-              scansLeft > 5
-                ? "text-green-600"
-                : scansLeft > 0
-                  ? "text-yellow-600"
-                  : "text-red-600"
-            }`}
+        {/* Instruction Modal */}
+        {showInstruction && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-sm"
+            onClick={() => setShowInstruction(false)}
           >
-            {scansLeft}/30
-          </span>
-        </div>
+            <div
+              className="relative rounded-2xl bg-white/95 p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="absolute right-3 top-3 rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                onClick={() => setShowInstruction(false)}
+                aria-label="Close"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+              <img
+                src="/Linkedin_instruction.png"
+                alt="LinkedIn Profile Instructions"
+                className="max-h-[50vh] w-auto rounded-xl shadow-md"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Upload Section - Grand and Stylish (Full Width) */}
         <div className="mb-16">

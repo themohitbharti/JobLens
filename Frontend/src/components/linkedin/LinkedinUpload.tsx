@@ -18,12 +18,12 @@ interface LinkedinPreferences {
 
 const LinkedinUpload: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  // Remove linkedinUrl and uploadMethod state
   const [preferences, setPreferences] = useState<LinkedinPreferences>({
     targetIndustry: "",
     experienceLevel: "",
     targetJobTitle: "",
   });
+  const [showInstruction, setShowInstruction] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -96,12 +96,53 @@ const LinkedinUpload: React.FC = () => {
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       {/* Upload Section */}
-      <div className="rounded-3xl border-2 border-white/60 bg-gradient-to-br from-white/80 via-blue-50/80 to-indigo-100/80 p-8 shadow-2xl backdrop-blur-xl">
+      <div className="relative rounded-3xl border-2 border-white/60 bg-gradient-to-br from-white/80 via-blue-50/80 to-indigo-100/80 p-8 shadow-2xl backdrop-blur-xl">
+
+        {/* Info Modal */}
+        {showInstruction && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-sm"
+            onClick={() => setShowInstruction(false)}
+          >
+            <div
+              className="relative rounded-2xl bg-white/95 p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="absolute right-3 top-3 rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                onClick={() => setShowInstruction(false)}
+                aria-label="Close"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+              <img
+                src="/Linkedin_instruction.png"
+                alt="LinkedIn Profile Instructions"
+                className="max-h-[70vh] w-auto rounded-xl shadow-md"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Decorative elements */}
         <div className="pointer-events-none absolute -left-2 -top-2 h-6 w-6 rounded-full bg-gradient-to-r from-blue-400 to-indigo-400 opacity-60 blur-sm"></div>
         <div className="pointer-events-none absolute -right-2 -top-2 h-8 w-8 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400 opacity-40 blur-md"></div>
 
         <div className="text-center">
+          
+
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-xl">
             <svg
               className="h-8 w-8 text-white"
@@ -124,6 +165,35 @@ const LinkedinUpload: React.FC = () => {
           <p className="mb-8 font-medium text-gray-700">
             Get comprehensive insights to optimize your professional presence
           </p>
+
+          {/* Info Icon and Text just above the file upload area */}
+          <div className="mb-4 flex w-full items-center justify-center">
+            <button
+              type="button"
+              onClick={() => setShowInstruction(true)}
+              className="flex items-center focus:outline-none"
+              aria-label="How to get your LinkedIn profile PDF?"
+            >
+              <div className="flex items-center justify-center rounded-full bg-blue-100 p-2 shadow transition hover:bg-blue-200">
+                <svg
+                  className="h-5 w-5 text-blue-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z"
+                  />
+                </svg>
+              </div>
+              <span className="ml-2 cursor-pointer text-sm font-semibold text-blue-700 underline">
+                how to get your LinkedIn profile PDF?
+              </span>
+            </button>
+          </div>
 
           {/* File Upload Area */}
           <div

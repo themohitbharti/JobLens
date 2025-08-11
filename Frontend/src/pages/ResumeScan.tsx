@@ -19,7 +19,7 @@ const ResumeScan: React.FC = () => {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Header */}
-        <div className="mb-12 text-center">
+        <div className="relative mb-12 text-center">
           <h1 className="mb-4 bg-gradient-to-r from-red-600 via-pink-600 to-purple-600 bg-clip-text text-5xl font-bold text-transparent">
             Resume Scanner
           </h1>
@@ -27,24 +27,25 @@ const ResumeScan: React.FC = () => {
             Upload your resume and get instant, AI-powered feedback to boost
             your job search!
           </p>
-        </div>
-
-        {/* Daily Scans Left Tab */}
-        <div className="mx-auto mb-10 flex max-w-xs items-center justify-center rounded-xl border border-white/40 bg-white/60 p-4 shadow backdrop-blur-sm">
-          <span className="text-sm font-medium text-gray-700">
-            Daily scans remaining:
-          </span>
-          <span
-            className={`ml-2 text-sm font-bold ${
-              scansLeft > 5
-                ? "text-green-600"
-                : scansLeft > 0
-                  ? "text-yellow-600"
-                  : "text-red-600"
-            }`}
-          >
-            {scansLeft}/30
-          </span>
+          {/* Daily Scans Left Tab - top right of header */}
+          <div className="absolute right-0 top-0">
+            <div className="flex items-center justify-center rounded-xl border-2 border-red-200 bg-gradient-to-br from-red-100 via-pink-50/90 to-red-300 p-4 shadow-2xl backdrop-blur-xl">
+              <span className="text-sm font-medium text-gray-700">
+                Daily scans remaining:
+              </span>
+              <span
+                className={`ml-2 text-sm font-bold ${
+                  scansLeft > 5
+                    ? "text-green-600"
+                    : scansLeft > 0
+                      ? "text-yellow-600"
+                      : "text-red-600"
+                }`}
+              >
+                {scansLeft}/30
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Upload Section - Grand and Stylish (Full Width) */}
