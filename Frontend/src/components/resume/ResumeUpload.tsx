@@ -18,7 +18,6 @@ interface ResumePreferences {
 
 const ResumeUpload: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [showPreferences, setShowPreferences] = useState(false);
   const [preferences, setPreferences] = useState<ResumePreferences>({
     targetIndustry: "",
     experienceLevel: "",
@@ -89,7 +88,6 @@ const ResumeUpload: React.FC = () => {
 
   const resetUpload = () => {
     setSelectedFile(null);
-    setShowPreferences(false);
     setPreferences({
       targetIndustry: "",
       experienceLevel: "",
@@ -100,49 +98,72 @@ const ResumeUpload: React.FC = () => {
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       {/* Upload Section */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+      <div className="rounded-3xl border-2 border-white/60 bg-gradient-to-br from-white/80 via-pink-50/80 to-purple-100/80 p-8 shadow-2xl backdrop-blur-xl">
+        {/* Decorative elements */}
+        <div className="pointer-events-none absolute -left-2 -top-2 h-6 w-6 rounded-full bg-gradient-to-r from-red-400 to-pink-400 opacity-60 blur-sm"></div>
+        <div className="pointer-events-none absolute -right-2 -top-2 h-8 w-8 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 opacity-40 blur-md"></div>
+
         {/* Scans Left Indicator */}
-        <div className="mb-4 flex items-center justify-between">
-          <span className="text-sm text-gray-600">Daily scans remaining:</span>
+        <div className="mb-6 flex items-center justify-between rounded-xl border border-white/40 bg-white/60 p-4 backdrop-blur-sm">
+          <span className="text-sm font-medium text-gray-700">
+            Daily scans remaining:
+          </span>
           <span
-            className={`text-sm font-semibold ${scansLeft > 5 ? "text-green-600" : scansLeft > 0 ? "text-yellow-600" : "text-red-600"}`}
+            className={`text-sm font-bold ${scansLeft > 5 ? "text-green-600" : scansLeft > 0 ? "text-yellow-600" : "text-red-600"}`}
           >
             {scansLeft}/30
           </span>
         </div>
 
         <div className="text-center">
-          <h2 className="mb-4 text-2xl font-bold text-gray-900">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 shadow-xl">
+            <svg
+              className="h-8 w-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              />
+            </svg>
+          </div>
+
+          <h2 className="mb-3 bg-gradient-to-r from-red-600 to-purple-600 bg-clip-text text-2xl font-bold text-transparent">
             Upload Your Resume
           </h2>
-          <p className="mb-8 text-gray-600">
+          <p className="mb-8 font-medium text-gray-700">
             Get instant AI-powered feedback and improve your resume score
           </p>
 
           {/* File Upload Area */}
           <div
-            className="mb-6 rounded-lg border-2 border-dashed border-gray-300 p-8 transition-colors hover:border-red-400"
+            className="group mb-6 cursor-pointer rounded-2xl border-2 border-dashed border-red-300 bg-gradient-to-br from-red-50 to-pink-50 p-8 transition-all duration-300 hover:border-red-400 hover:shadow-lg"
             onClick={() => document.getElementById("file-input")?.click()}
           >
             <div className="flex flex-col items-center">
-              <svg
-                className="mb-4 h-12 w-12 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                />
-              </svg>
-              <p className="mb-2 text-sm text-gray-500">
-                <span className="font-semibold">Click to upload</span> or drag
-                and drop
+              <div className="mb-4 rounded-full bg-red-100 p-3 transition-colors group-hover:bg-red-200">
+                <svg
+                  className="h-8 w-8 text-red-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+              </div>
+              <p className="mb-2 text-lg font-semibold text-gray-700">
+                Click to upload or drag and drop
               </p>
-              <p className="text-xs text-gray-500">PDF, DOC, DOCX (MAX. 5MB)</p>
+              <p className="text-sm text-gray-500">PDF, DOC, DOCX (MAX. 5MB)</p>
             </div>
             <input
               id="file-input"
@@ -154,184 +175,180 @@ const ResumeUpload: React.FC = () => {
           </div>
 
           {selectedFile && (
-            <div className="mb-4">
-              <div className="mb-2 text-sm text-green-600">
-                Selected: {selectedFile.name}
+            <div className="mb-6 rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-4">
+              <div className="flex items-center justify-center">
+                <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-green-100">
+                  <svg
+                    className="h-5 w-5 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <span className="font-medium text-green-800">
+                  {selectedFile.name}
+                </span>
               </div>
-
-              {/* Preferences Toggle */}
-              <button
-                onClick={() => setShowPreferences(!showPreferences)}
-                className="mb-4 text-sm text-blue-600 underline hover:text-blue-700"
-              >
-                {showPreferences ? "Hide" : "Show"} Analysis Preferences
-              </button>
             </div>
           )}
 
-          {/* Preferences Section */}
-          {showPreferences && selectedFile && (
-            <div className="mb-6 rounded-lg bg-gray-50 p-4 text-left">
-              <h3 className="mb-3 text-sm font-semibold text-gray-900">
-                Analysis Preferences (Optional)
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-700">
-                    Target Industry
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Technology, Healthcare"
-                    value={preferences.targetIndustry}
-                    onChange={(e) =>
-                      setPreferences((prev) => ({
-                        ...prev,
-                        targetIndustry: e.target.value,
-                      }))
-                    }
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-700">
-                    Experience Level
-                  </label>
-                  <select
-                    value={preferences.experienceLevel}
-                    onChange={(e) =>
-                      setPreferences((prev) => ({
-                        ...prev,
-                        experienceLevel: e.target.value,
-                      }))
-                    }
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-                  >
-                    <option value="">Select experience level</option>
-                    <option value="entry">Entry Level (0-2 years)</option>
-                    <option value="mid">Mid Level (3-5 years)</option>
-                    <option value="senior">Senior Level (6-10 years)</option>
-                    <option value="executive">Executive (10+ years)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-700">
-                    Target Job Title
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Software Engineer, Marketing Manager"
-                    value={preferences.targetJobTitle}
-                    onChange={(e) =>
-                      setPreferences((prev) => ({
-                        ...prev,
-                        targetJobTitle: e.target.value,
-                      }))
-                    }
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-                  />
-                </div>
-              </div>
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            <button
+              onClick={handleUpload}
+              disabled={!selectedFile || loading || scansLeft <= 0}
+              className={`w-full rounded-xl px-6 py-4 text-lg font-bold transition-all duration-300 ${
+                !selectedFile || loading || scansLeft <= 0
+                  ? "cursor-not-allowed bg-gray-300 text-gray-500"
+                  : "transform bg-gradient-to-r from-red-500 to-pink-500 text-white hover:scale-105 hover:from-red-600 hover:to-pink-600 hover:shadow-xl"
+              }`}
+            >
+              {loading
+                ? "Analyzing..."
+                : scansLeft <= 0
+                  ? "Daily Limit Reached"
+                  : "Analyze Resume"}
+            </button>
+
+            {selectedFile && (
               <button
                 onClick={resetUpload}
-                className="mt-3 text-xs text-gray-500 hover:text-gray-700"
+                className="w-full rounded-xl border-2 border-gray-300 bg-white px-6 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
               >
-                Reset All
+                Reset Upload
               </button>
-            </div>
-          )}
-
-          {/* Upload Button */}
-          <button
-            onClick={handleUpload}
-            disabled={!selectedFile || loading || scansLeft <= 0}
-            className={`w-full rounded-lg px-4 py-3 font-medium transition-colors ${
-              !selectedFile || loading || scansLeft <= 0
-                ? "cursor-not-allowed bg-gray-300 text-gray-500"
-                : "bg-gradient-to-r from-red-500 to-rose-500 text-white hover:from-red-600 hover:to-rose-600"
-            }`}
-          >
-            {loading
-              ? "Analyzing..."
-              : scansLeft <= 0
-                ? "Daily Limit Reached"
-                : "Analyze Resume"}
-          </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Features Section */}
-      <div className="space-y-6">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
-          <h3 className="mb-4 text-lg font-semibold text-gray-900">
-            What You'll Get
+      {/* Analysis Preferences Section */}
+      <div className="rounded-3xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-100 p-8 shadow-2xl">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 shadow-lg">
+            <svg
+              className="h-8 w-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+              />
+            </svg>
+          </div>
+          <h3 className="mb-3 text-2xl font-bold text-blue-900">
+            Analysis Preferences
           </h3>
-          <div className="space-y-3">
-            <div className="flex items-start">
-              <svg
-                className="mr-3 mt-0.5 h-5 w-5 text-green-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          <p className="font-medium text-blue-700">
+            Customize your analysis for better insights
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-blue-800">
+              Target Industry
+            </label>
+            <input
+              type="text"
+              placeholder="e.g., Technology, Healthcare, Finance"
+              value={preferences.targetIndustry}
+              onChange={(e) =>
+                setPreferences((prev) => ({
+                  ...prev,
+                  targetIndustry: e.target.value,
+                }))
+              }
+              className="w-full rounded-xl border-2 border-blue-200 bg-white/70 px-4 py-3 text-sm font-medium focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-blue-800">
+              Experience Level
+            </label>
+            <select
+              value={preferences.experienceLevel}
+              onChange={(e) =>
+                setPreferences((prev) => ({
+                  ...prev,
+                  experienceLevel: e.target.value,
+                }))
+              }
+              className="w-full rounded-xl border-2 border-blue-200 bg-white/70 px-4 py-3 text-sm font-medium focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            >
+              <option value="">Select experience level</option>
+              <option value="entry">Entry Level (0-2 years)</option>
+              <option value="mid">Mid Level (3-5 years)</option>
+              <option value="senior">Senior Level (6-10 years)</option>
+              <option value="executive">Executive (10+ years)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-blue-800">
+              Target Job Title
+            </label>
+            <input
+              type="text"
+              placeholder="e.g., Software Engineer, Marketing Manager"
+              value={preferences.targetJobTitle}
+              onChange={(e) =>
+                setPreferences((prev) => ({
+                  ...prev,
+                  targetJobTitle: e.target.value,
+                }))
+              }
+              className="w-full rounded-xl border-2 border-blue-200 bg-white/70 px-4 py-3 text-sm font-medium focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+          </div>
+
+          {/* Preference Benefits */}
+          <div className="mt-8 space-y-3">
+            <h4 className="text-sm font-bold text-blue-800">
+              Why set preferences?
+            </h4>
+            {[
+              "Get industry-specific feedback",
+              "Tailored keyword recommendations",
+              "Level-appropriate suggestions",
+              "Role-focused improvements",
+            ].map((benefit, idx) => (
+              <div
+                key={idx}
+                className="flex items-center space-x-3 rounded-lg border border-blue-200 bg-blue-100/60 p-3"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <div>
-                <h4 className="font-medium text-gray-900">
-                  AI-Powered Analysis
-                </h4>
-                <p className="text-sm text-gray-600">
-                  Comprehensive scoring across multiple dimensions
-                </p>
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white">
+                  <svg
+                    className="h-3 w-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <span className="text-sm font-medium text-blue-800">
+                  {benefit}
+                </span>
               </div>
-            </div>
-            <div className="flex items-start">
-              <svg
-                className="mr-3 mt-0.5 h-5 w-5 text-green-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <div>
-                <h4 className="font-medium text-gray-900">Detailed Feedback</h4>
-                <p className="text-sm text-gray-600">
-                  Section-by-section improvement suggestions
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start">
-              <svg
-                className="mr-3 mt-0.5 h-5 w-5 text-green-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <div>
-                <h4 className="font-medium text-gray-900">ATS Optimization</h4>
-                <p className="text-sm text-gray-600">
-                  Ensure your resume passes applicant tracking systems
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
