@@ -46,7 +46,7 @@ const LinkedinStats = () => {
 
   const handleViewLastLinkedin = () => {
     if (stats.lastLinkedins && stats.lastLinkedins.length > 0) {
-      navigate(`/linkedin-analysis/${stats.lastLinkedins[0].scanId}`);
+      navigate(`/linkedin-builder-result/${stats.lastLinkedins[0].scanId}`);
     }
   };
 

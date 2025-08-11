@@ -18,8 +18,7 @@ interface LinkedinPreferences {
 
 const LinkedinUpload: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [linkedinUrl, setLinkedinUrl] = useState<string>("");
-  const [uploadMethod, setUploadMethod] = useState<"file" | "url">("file");
+  // Remove linkedinUrl and uploadMethod state
   const [preferences, setPreferences] = useState<LinkedinPreferences>({
     targetIndustry: "",
     experienceLevel: "",
@@ -34,23 +33,16 @@ const LinkedinUpload: React.FC = () => {
 
   const scansLeft = user?.scansLeft ?? 30;
 
-  // Fetch user stats on component mount
   useEffect(() => {
     dispatch(fetchLinkedinStats());
   }, [dispatch]);
 
   const handleUpload = async () => {
-    if (uploadMethod === "file" && !selectedFile) {
+    if (!selectedFile) {
       toast.error("Please select a file first");
       return;
     }
 
-    if (uploadMethod === "url" && !linkedinUrl) {
-      toast.error("Please enter a LinkedIn URL");
-      return;
-    }
-
-    // Check scans left before uploading
     if (scansLeft <= 0) {
       toast.error("Daily scan limit reached. Please try again tomorrow.");
       return;
@@ -58,9 +50,7 @@ const LinkedinUpload: React.FC = () => {
 
     try {
       const requestData = {
-        ...(uploadMethod === "file" &&
-          selectedFile && { linkedin: selectedFile }),
-        ...(uploadMethod === "url" && linkedinUrl && { linkedinUrl }),
+        linkedin: selectedFile,
         ...(preferences.targetIndustry && {
           targetIndustry: preferences.targetIndustry,
         }),
@@ -74,7 +64,6 @@ const LinkedinUpload: React.FC = () => {
 
       const result = await dispatch(scanLinkedInProfile(requestData)).unwrap();
 
-      // Update Redux state after successful upload
       dispatch(updateScansLeft(Math.max(0, scansLeft - 1)));
       dispatch(
         updateLastLinkedins({
@@ -85,7 +74,7 @@ const LinkedinUpload: React.FC = () => {
       );
 
       toast.success("LinkedIn profile analyzed successfully!");
-      navigate(`/linkedin-analysis/${result.scanId}`);
+      navigate(`/linkedin-builder-result/${result.scanId}`);
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
@@ -97,7 +86,6 @@ const LinkedinUpload: React.FC = () => {
 
   const resetUpload = () => {
     setSelectedFile(null);
-    setLinkedinUrl("");
     setPreferences({
       targetIndustry: "",
       experienceLevel: "",
@@ -112,18 +100,6 @@ const LinkedinUpload: React.FC = () => {
         {/* Decorative elements */}
         <div className="pointer-events-none absolute -left-2 -top-2 h-6 w-6 rounded-full bg-gradient-to-r from-blue-400 to-indigo-400 opacity-60 blur-sm"></div>
         <div className="pointer-events-none absolute -right-2 -top-2 h-8 w-8 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400 opacity-40 blur-md"></div>
-
-        {/* Scans Left Indicator */}
-        <div className="mb-6 flex items-center justify-between rounded-xl border border-white/40 bg-white/60 p-4 backdrop-blur-sm">
-          <span className="text-sm font-medium text-gray-700">
-            Daily scans remaining:
-          </span>
-          <span
-            className={`text-sm font-bold ${scansLeft > 5 ? "text-green-600" : scansLeft > 0 ? "text-yellow-600" : "text-red-600"}`}
-          >
-            {scansLeft}/30
-          </span>
-        </div>
 
         <div className="text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-xl">
@@ -149,98 +125,43 @@ const LinkedinUpload: React.FC = () => {
             Get comprehensive insights to optimize your professional presence
           </p>
 
-          {/* Upload Method Toggle */}
-          <div className="mb-6 flex rounded-lg border border-gray-200 bg-white p-1">
-            <button
-              onClick={() => setUploadMethod("file")}
-              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                uploadMethod === "file"
-                  ? "bg-blue-500 text-white shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Upload PDF
-            </button>
-            <button
-              onClick={() => setUploadMethod("url")}
-              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                uploadMethod === "url"
-                  ? "bg-blue-500 text-white shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              LinkedIn URL
-            </button>
+          {/* File Upload Area */}
+          <div
+            className="group mb-6 cursor-pointer rounded-2xl border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50 to-indigo-50 p-8 transition-all duration-300 hover:border-blue-400 hover:shadow-lg"
+            onClick={() => document.getElementById("file-input")?.click()}
+          >
+            <div className="flex flex-col items-center">
+              <div className="mb-4 rounded-full bg-blue-100 p-3 transition-colors group-hover:bg-blue-200">
+                <svg
+                  className="h-8 w-8 text-blue-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+              </div>
+              <p className="mb-2 text-lg font-semibold text-gray-700">
+                Click to upload LinkedIn PDF
+              </p>
+              <p className="text-sm text-gray-500">PDF only (MAX. 10MB)</p>
+            </div>
+            <input
+              id="file-input"
+              type="file"
+              className="hidden"
+              accept=".pdf"
+              onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+            />
           </div>
 
-          {uploadMethod === "file" ? (
-            /* File Upload Area */
-            <div
-              className="group mb-6 cursor-pointer rounded-2xl border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50 to-indigo-50 p-8 transition-all duration-300 hover:border-blue-400 hover:shadow-lg"
-              onClick={() => document.getElementById("file-input")?.click()}
-            >
-              <div className="flex flex-col items-center">
-                <div className="mb-4 rounded-full bg-blue-100 p-3 transition-colors group-hover:bg-blue-200">
-                  <svg
-                    className="h-8 w-8 text-blue-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                </div>
-                <p className="mb-2 text-lg font-semibold text-gray-700">
-                  Click to upload LinkedIn PDF
-                </p>
-                <p className="text-sm text-gray-500">PDF only (MAX. 10MB)</p>
-              </div>
-              <input
-                id="file-input"
-                type="file"
-                className="hidden"
-                accept=".pdf"
-                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-              />
-            </div>
-          ) : (
-            /* URL Input Area */
-            <div className="mb-6 rounded-2xl border-2 border-dashed border-indigo-300 bg-gradient-to-br from-indigo-50 to-purple-50 p-8">
-              <div className="flex flex-col items-center">
-                <div className="mb-4 rounded-full bg-indigo-100 p-3">
-                  <svg
-                    className="h-8 w-8 text-indigo-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                    />
-                  </svg>
-                </div>
-                <input
-                  type="url"
-                  placeholder="https://www.linkedin.com/in/yourprofile"
-                  value={linkedinUrl}
-                  onChange={(e) => setLinkedinUrl(e.target.value)}
-                  className="w-full rounded-lg border border-indigo-200 bg-white px-4 py-3 text-center font-medium focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* File/URL Display */}
-          {((uploadMethod === "file" && selectedFile) ||
-            (uploadMethod === "url" && linkedinUrl)) && (
+          {/* File Display */}
+          {selectedFile && (
             <div className="mb-6 rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-4">
               <div className="flex items-center justify-center">
                 <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-green-100">
@@ -259,9 +180,7 @@ const LinkedinUpload: React.FC = () => {
                   </svg>
                 </div>
                 <span className="font-medium text-green-800">
-                  {uploadMethod === "file"
-                    ? selectedFile?.name
-                    : "LinkedIn URL provided"}
+                  {selectedFile.name}
                 </span>
               </div>
             </div>
@@ -271,19 +190,9 @@ const LinkedinUpload: React.FC = () => {
           <div className="space-y-3">
             <button
               onClick={handleUpload}
-              disabled={
-                (!selectedFile && !linkedinUrl) ||
-                loading ||
-                scansLeft <= 0 ||
-                (uploadMethod === "file" && !selectedFile) ||
-                (uploadMethod === "url" && !linkedinUrl)
-              }
+              disabled={!selectedFile || loading || scansLeft <= 0}
               className={`w-full rounded-xl px-6 py-4 text-lg font-bold transition-all duration-300 ${
-                (!selectedFile && !linkedinUrl) ||
-                loading ||
-                scansLeft <= 0 ||
-                (uploadMethod === "file" && !selectedFile) ||
-                (uploadMethod === "url" && !linkedinUrl)
+                !selectedFile || loading || scansLeft <= 0
                   ? "cursor-not-allowed bg-gray-300 text-gray-500"
                   : "transform bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:scale-105 hover:from-blue-600 hover:to-indigo-600 hover:shadow-xl"
               }`}
@@ -295,8 +204,7 @@ const LinkedinUpload: React.FC = () => {
                   : "Analyze LinkedIn Profile"}
             </button>
 
-            {((uploadMethod === "file" && selectedFile) ||
-              (uploadMethod === "url" && linkedinUrl)) && (
+            {selectedFile && (
               <button
                 onClick={resetUpload}
                 className="w-full rounded-xl border-2 border-gray-300 bg-white px-6 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
@@ -391,43 +299,6 @@ const LinkedinUpload: React.FC = () => {
               }
               className="w-full rounded-xl border-2 border-purple-200 bg-white/70 px-4 py-3 text-sm font-medium focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-200"
             />
-          </div>
-
-          {/* Preference Benefits */}
-          <div className="mt-8 space-y-3">
-            <h4 className="text-sm font-bold text-purple-800">
-              Why set preferences?
-            </h4>
-            {[
-              "Industry-specific recommendations",
-              "Role-focused optimization tips",
-              "Level-appropriate suggestions",
-              "Targeted keyword analysis",
-            ].map((benefit, idx) => (
-              <div
-                key={idx}
-                className="flex items-center space-x-3 rounded-lg border border-purple-200 bg-purple-100/60 p-3"
-              >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-500 text-white">
-                  <svg
-                    className="h-3 w-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium text-purple-800">
-                  {benefit}
-                </span>
-              </div>
-            ))}
           </div>
         </div>
       </div>

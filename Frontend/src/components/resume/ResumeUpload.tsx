@@ -103,18 +103,6 @@ const ResumeUpload: React.FC = () => {
         <div className="pointer-events-none absolute -left-2 -top-2 h-6 w-6 rounded-full bg-gradient-to-r from-red-400 to-pink-400 opacity-60 blur-sm"></div>
         <div className="pointer-events-none absolute -right-2 -top-2 h-8 w-8 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 opacity-40 blur-md"></div>
 
-        {/* Scans Left Indicator */}
-        <div className="mb-6 flex items-center justify-between rounded-xl border border-white/40 bg-white/60 p-4 backdrop-blur-sm">
-          <span className="text-sm font-medium text-gray-700">
-            Daily scans remaining:
-          </span>
-          <span
-            className={`text-sm font-bold ${scansLeft > 5 ? "text-green-600" : scansLeft > 0 ? "text-yellow-600" : "text-red-600"}`}
-          >
-            {scansLeft}/30
-          </span>
-        </div>
-
         <div className="text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 shadow-xl">
             <svg
@@ -174,6 +162,7 @@ const ResumeUpload: React.FC = () => {
             />
           </div>
 
+          {/* File Display */}
           {selectedFile && (
             <div className="mb-6 rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-4">
               <div className="flex items-center justify-center">
@@ -312,43 +301,6 @@ const ResumeUpload: React.FC = () => {
               }
               className="w-full rounded-xl border-2 border-blue-200 bg-white/70 px-4 py-3 text-sm font-medium focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
-          </div>
-
-          {/* Preference Benefits */}
-          <div className="mt-8 space-y-3">
-            <h4 className="text-sm font-bold text-blue-800">
-              Why set preferences?
-            </h4>
-            {[
-              "Get industry-specific feedback",
-              "Tailored keyword recommendations",
-              "Level-appropriate suggestions",
-              "Role-focused improvements",
-            ].map((benefit, idx) => (
-              <div
-                key={idx}
-                className="flex items-center space-x-3 rounded-lg border border-blue-200 bg-blue-100/60 p-3"
-              >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white">
-                  <svg
-                    className="h-3 w-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium text-blue-800">
-                  {benefit}
-                </span>
-              </div>
-            ))}
           </div>
         </div>
       </div>

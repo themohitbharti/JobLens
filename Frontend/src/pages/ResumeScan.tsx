@@ -1,7 +1,13 @@
 import React from "react";
 import ResumeUpload from "../components/resume/ResumeUpload";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store";
 
 const ResumeScan: React.FC = () => {
+  const scansLeft = useSelector(
+    (state: RootState) => state.auth.user?.scansLeft ?? 30,
+  );
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 p-6">
       {/* Decorative background elements */}
@@ -18,18 +24,37 @@ const ResumeScan: React.FC = () => {
             Resume Scanner
           </h1>
           <p className="text-xl font-medium text-gray-700">
-            Upload your resume and get instant, AI-powered feedback to boost your job search!
+            Upload your resume and get instant, AI-powered feedback to boost
+            your job search!
           </p>
+        </div>
+
+        {/* Daily Scans Left Tab */}
+        <div className="mx-auto mb-10 flex max-w-xs items-center justify-center rounded-xl border border-white/40 bg-white/60 p-4 shadow backdrop-blur-sm">
+          <span className="text-sm font-medium text-gray-700">
+            Daily scans remaining:
+          </span>
+          <span
+            className={`ml-2 text-sm font-bold ${
+              scansLeft > 5
+                ? "text-green-600"
+                : scansLeft > 0
+                  ? "text-yellow-600"
+                  : "text-red-600"
+            }`}
+          >
+            {scansLeft}/30
+          </span>
         </div>
 
         {/* Upload Section - Grand and Stylish (Full Width) */}
         <div className="mb-16">
-          <div className="relative rounded-3xl border-2 border-gradient-to-r from-red-200 via-pink-200 to-purple-200 bg-gradient-to-br p-8 shadow-2xl backdrop-blur-xl">
+          <div className="border-gradient-to-r relative rounded-3xl border-2 bg-gradient-to-br from-red-200 via-pink-200 to-purple-200 p-8 shadow-2xl backdrop-blur-xl">
             {/* Decorative elements for the upload section */}
             <div className="pointer-events-none absolute -left-4 -top-4 h-8 w-8 rounded-full bg-gradient-to-r from-red-400 to-pink-400 opacity-60 blur-sm"></div>
             <div className="pointer-events-none absolute -right-4 -top-4 h-12 w-12 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 opacity-40 blur-md"></div>
             <div className="pointer-events-none absolute -bottom-4 -left-4 h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-indigo-400 opacity-50 blur-sm"></div>
-            
+
             {/* Header for upload section */}
             <div className="mb-8 text-center">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 shadow-xl">
@@ -53,18 +78,23 @@ const ResumeScan: React.FC = () => {
               <p className="text-lg font-medium text-gray-700">
                 Drop your resume here and let our AI analyze it instantly
               </p>
-              
+
               {/* Feature highlights */}
               <div className="mt-6 flex flex-wrap justify-center gap-4">
                 {[
                   { icon: "🚀", text: "Instant Analysis" },
                   { icon: "🎯", text: "ATS Optimized" },
                   { icon: "📊", text: "Detailed Report" },
-                  { icon: "🔒", text: "100% Secure" }
+                  { icon: "🔒", text: "100% Secure" },
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-center space-x-2 rounded-full bg-white/60 px-4 py-2 shadow-md backdrop-blur-sm">
+                  <div
+                    key={idx}
+                    className="flex items-center space-x-2 rounded-full bg-white/60 px-4 py-2 shadow-md backdrop-blur-sm"
+                  >
                     <span className="text-lg">{item.icon}</span>
-                    <span className="text-sm font-semibold text-gray-700">{item.text}</span>
+                    <span className="text-sm font-semibold text-gray-700">
+                      {item.text}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -74,17 +104,17 @@ const ResumeScan: React.FC = () => {
             <div className="transform transition-all duration-300 hover:scale-[1.02]">
               <ResumeUpload />
             </div>
-            
+
             {/* Bottom decorative stats */}
             <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
               {[
                 { number: "10K+", label: "Resumes Analyzed" },
                 { number: "95%", label: "Success Rate" },
                 { number: "24/7", label: "Available" },
-                { number: "3min", label: "Average Time" }
+                { number: "3min", label: "Average Time" },
               ].map((stat, idx) => (
                 <div key={idx} className="text-center">
-                  <div className="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+                  <div className="bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-2xl font-bold text-transparent">
                     {stat.number}
                   </div>
                   <div className="text-sm text-gray-600">{stat.label}</div>
@@ -95,7 +125,7 @@ const ResumeScan: React.FC = () => {
         </div>
 
         {/* Side by Side Layout for Features and Tips */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 mb-16">
+        <div className="mb-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Features Card */}
           <div className="rounded-3xl border-2 border-white/60 bg-gradient-to-br from-white/80 via-pink-50/80 to-purple-100/80 p-8 shadow-2xl backdrop-blur-xl">
             <div className="mb-8 text-center">

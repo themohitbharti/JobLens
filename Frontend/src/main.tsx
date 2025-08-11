@@ -102,6 +102,10 @@ const router = createBrowserRouter([
             element: <LinkedinScan />,
           },
           {
+            path: "/linkedin-builder-result/:scanId",
+            element: <div> coming soon</div>,
+          },
+          {
             path: "/compare-linkedin",
             element: <LinkedinCompare />,
           },
