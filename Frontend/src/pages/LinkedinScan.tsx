@@ -117,7 +117,7 @@ const LinkedinScan: React.FC = () => {
 
         {/* Upload Section - Grand and Stylish (Full Width) */}
         <div className="mb-16">
-          <div className="border-gradient-to-r relative rounded-3xl border-2 bg-gradient-to-br from-blue-200 via-blue-50/90 to-purple-200 p-8 shadow-2xl backdrop-blur-xl">
+          <div className="border-gradient-to-r relative rounded-3xl bg-gradient-to-br from-blue-200 via-blue-50/90 to-purple-200 p-8 shadow-2xl backdrop-blur-xl">
             {/* Decorative elements for the upload section */}
             <div className="pointer-events-none absolute -left-4 -top-4 h-8 w-8 rounded-full bg-gradient-to-r from-blue-400 to-indigo-400 opacity-60 blur-sm"></div>
             <div className="pointer-events-none absolute -right-4 -top-4 h-12 w-12 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400 opacity-40 blur-md"></div>
@@ -175,7 +175,7 @@ const LinkedinScan: React.FC = () => {
             </div>
 
             {/* Bottom decorative stats */}
-            <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
               {[
                 { number: "5K+", label: "Profiles Analyzed" },
                 { number: "92%", label: "Success Rate" },
@@ -194,7 +194,7 @@ const LinkedinScan: React.FC = () => {
         </div>
 
         {/* What You'll Get from LinkedIn Analysis Section - Full Width */}
-        <div className="border-gradient-to-r rounded-3xl border-2 bg-gradient-to-br from-blue-200 via-indigo-200 to-purple-200 p-8 shadow-2xl backdrop-blur-xl">
+        <div className="border-gradient-to-r rounded-3xl bg-gradient-to-br from-blue-200 via-indigo-200 to-purple-200 p-8 shadow-2xl backdrop-blur-xl">
           <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-lg">
               <svg

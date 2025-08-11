@@ -50,7 +50,7 @@ const ResumeScan: React.FC = () => {
 
         {/* Upload Section - Grand and Stylish (Full Width) */}
         <div className="mb-16">
-          <div className="border-gradient-to-r relative rounded-3xl border-2 bg-gradient-to-br from-red-200 via-pink-200 to-purple-200 p-8 shadow-2xl backdrop-blur-xl">
+          <div className="border-gradient-to-r relative rounded-3xl bg-gradient-to-br from-red-200 via-pink-200 to-purple-200 p-8 shadow-2xl backdrop-blur-xl">
             {/* Decorative elements for the upload section */}
             <div className="pointer-events-none absolute -left-4 -top-4 h-8 w-8 rounded-full bg-gradient-to-r from-red-400 to-pink-400 opacity-60 blur-sm"></div>
             <div className="pointer-events-none absolute -right-4 -top-4 h-12 w-12 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 opacity-40 blur-md"></div>
