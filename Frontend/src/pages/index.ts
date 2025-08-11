@@ -16,6 +16,7 @@ import LinkedinStats from "./LinkedinStats";
 import ResumeCompare from "./ResumeCompare";
 import ResumeCompareResult from "./ResumeCompareResult";
 import LinkedinCompare from "./LinkedinCompare";
+import LinkedinScan from "./LinkedinScan";
 
 export {
   Home,
@@ -30,6 +31,7 @@ export {
   ResumeCompare,
   ResumeCompareResult,
   LinkedinCompare,
+  LinkedinScan,
   //   VerifyOTP,
   //   UploadItem,
   //   ProductDetails,

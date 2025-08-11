@@ -3,6 +3,7 @@ import authSlice from "./authSlice";
 import resumeScanSlice from "./resumeScanSlice";
 import resumeCompareReducer from "./resumeCompareSlice";
 import linkedinCompareReducer from "./linkedinCompareSlice";
+import linkedinScanReducer from "./linkedinScanSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,7 +11,14 @@ export const store = configureStore({
     resumeScan: resumeScanSlice,
     resumeCompare: resumeCompareReducer,
     linkedinCompare: linkedinCompareReducer,
+    linkedinScan: linkedinScanReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
+      },
+    }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

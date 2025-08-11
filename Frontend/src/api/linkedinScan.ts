@@ -88,7 +88,9 @@ interface CompareLinkedinResponse {
 }
 
 export const linkedinCompareAPI = {
-  compareProfiles: async (formData: FormData): Promise<CompareLinkedinResponse> => {
+  compareProfiles: async (
+    formData: FormData,
+  ): Promise<CompareLinkedinResponse> => {
     const response = await axiosInstance.post<CompareLinkedinResponse>(
       "/linkedin/compare",
       formData,
@@ -96,8 +98,20 @@ export const linkedinCompareAPI = {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
+    return response.data;
+  },
+};
+
+export const linkedinScanAPI = {
+  scanLinkedInProfile: async (data: FormData) => {
+    const response = await axiosInstance.post("/linkedin/scan", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log(response.data)
     return response.data;
   },
 };

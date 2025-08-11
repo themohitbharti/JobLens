@@ -123,6 +123,7 @@ const safeDeleteFiles = (filePaths: string[]) => {
         extractedContent = await extractTextFromPDF(req.file.path);
       } catch (error: any) {
         // Handle content validation errors
+        console.log(error)
         if (error.message.includes("Profile too short")) {
           return res.status(400).json({
             success: false,
