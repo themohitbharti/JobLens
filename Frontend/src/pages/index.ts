@@ -19,6 +19,7 @@ import LinkedinCompare from "./LinkedinCompare";
 import LinkedinScan from "./LinkedinScan";
 import LinkedinScanResult from "./LinkedinScanResult";
 import LinkedinSectionAnalysisDetail from "./LinkedinSectionAnalysisDetail";
+import LinkedinCompareResult from "./LinkedinCompareResult";
 
 export {
   Home,
@@ -36,6 +37,7 @@ export {
   LinkedinScan,
   LinkedinScanResult,
   LinkedinSectionAnalysisDetail,
+  LinkedinCompareResult,
   //   VerifyOTP,
   //   UploadItem,
   //   ProductDetails,

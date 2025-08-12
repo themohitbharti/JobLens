@@ -75,6 +75,7 @@ interface CompareLinkedinResponse {
         profile1: string[];
         profile2: string[];
       };
+      improvementAreas: string[]; // Add this line
     };
     processingTime: number;
     usedPreferences: {

@@ -4,6 +4,7 @@ export interface Winner {
   profile: string;
   fileName: string;
   scoreDifference: number;
+  reason?: string; // Add this optional property
 }
 
 export interface ProfileScore {
@@ -17,6 +18,7 @@ export interface KeyDifferences {
   profile2Advantages: string[];
   commonWeaknesses: string[];
   improvementOpportunities: string[];
+  bestPractices?: string[]; // Add this optional property
 }
 
 export interface BenchmarkComparison {
@@ -70,6 +72,7 @@ export interface DetailedInsights {
     profile1: string[];
     profile2: string[];
   };
+  improvementAreas?: string[]; // Make this optional
 }
 
 export interface UsedPreferences {
@@ -122,14 +125,17 @@ const linkedinCompareSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+    clearComparisonResult: (state) => {
+      state.comparisonResult = null;
+      state.loading = false;
+      state.error = null;
+    },
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
       state.loading = false;
     },
-    clearComparisonResult: (state) => {
-      state.comparisonResult = null;
+    clearError: (state) => {
       state.error = null;
-      state.loading = false;
     },
   },
 });
@@ -137,8 +143,9 @@ const linkedinCompareSlice = createSlice({
 export const {
   setLoading,
   setComparisonResult,
-  setError,
   clearComparisonResult,
+  setError,
+  clearError,
 } = linkedinCompareSlice.actions;
 
 export default linkedinCompareSlice.reducer;

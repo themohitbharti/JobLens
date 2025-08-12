@@ -21,6 +21,7 @@ import {
   LinkedinScan,
   LinkedinScanResult,
   LinkedinSectionAnalysisDetail,
+  LinkedinCompareResult,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -114,6 +115,10 @@ const router = createBrowserRouter([
           {
             path: "/compare-linkedin",
             element: <LinkedinCompare />,
+          },
+          {
+            path: "/compare-linkedin-result",
+            element: <LinkedinCompareResult />,
           },
           {
             path: "/linkedin-stats",
