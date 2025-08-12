@@ -19,6 +19,7 @@ const Dashboard = () => {
   const { user, resumeStatsData } = useSelector(
     (state: RootState) => state.auth,
   );
+  const { linkedinStatsData } = useSelector((state: RootState) => state.auth);
 
   const [preferences, setPreferences] = useState({
     targetIndustry: "Technology",
@@ -111,7 +112,7 @@ const Dashboard = () => {
       resumeStatsData?.improvementTrend ??
       user?.resumeStats?.improvementTrend ??
       0,
-    linkedinImprovement: 0.15, // Will be replaced with actual data
+    linkedinImprovement: linkedinStatsData?.improvementTrend ?? 0,
     averageScore:
       resumeStatsData?.weeklyAvg ?? user?.resumeStats?.weeklyAvg ?? 0,
     // Updated to use arrays
@@ -230,7 +231,7 @@ const Dashboard = () => {
                   Total Scans
                 </span>
                 <span className="text-xs text-green-600">
-                  +5% from last week
+                  {(stats.totalScans>0 ? "+5%" : "0%") + (" from last week")}
                 </span>
               </div>
             </div>
@@ -291,13 +292,17 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900">
-                +{(stats.resumeImprovement * 100).toFixed(1)}%
+                {(stats.resumeImprovement > 0 ? "+" : "") +
+                  (stats.resumeImprovement * 100).toFixed(1) +
+                  "%"}
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-600">
                   Resume Improvement
                 </span>
-                <span className="text-xs text-purple-600">+18% growth</span>
+                <span className="text-xs text-purple-600">
+                  {(stats.resumeImprovement > 0 ? "+18%" : "-7%") + " growth"}
+                </span>
               </div>
             </div>
           </div>
@@ -324,7 +329,9 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900">
-                +{(stats.linkedinImprovement * 100).toFixed(1)}%
+                {(stats.linkedinImprovement > 0 ? "+" : "") +
+                  (stats.linkedinImprovement * 100).toFixed(1) +
+                  "%"}
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-600">
