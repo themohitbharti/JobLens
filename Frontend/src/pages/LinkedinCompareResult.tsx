@@ -151,9 +151,8 @@ Generated on: ${new Date().toLocaleDateString()}
     leftLabel: string;
     rightLabel: string;
   }> = ({ leftValue, rightValue, leftLabel, rightLabel }) => {
-    const total = Math.max(leftValue + rightValue, 10);
-    const leftPercentage = (leftValue / total) * 100;
-    const rightPercentage = (rightValue / total) * 100;
+    const leftPercentage = leftValue * 100;
+    const rightPercentage = rightValue * 100;
 
     return (
       <div className="w-full">
@@ -435,7 +434,7 @@ Generated on: ${new Date().toLocaleDateString()}
                     }
                     size={160}
                     strokeWidth={12}
-                    label="Overall Score"
+                    label={`${isProfile1Winner ? scores.profile1.overallScore : scores.profile2.overallScore}/100`}
                     color="blue"
                   />
                 </div>
@@ -598,7 +597,7 @@ Generated on: ${new Date().toLocaleDateString()}
                     percentage={(scores.profile1.overallScore / 10) * 100}
                     size={150}
                     strokeWidth={12}
-                    label={`${scores.profile1.overallScore}/10`}
+                    label={`${scores.profile1.overallScore}/100`}
                     color={isProfile1Winner ? "blue" : "purple"}
                   />
                 </div>
@@ -730,7 +729,7 @@ Generated on: ${new Date().toLocaleDateString()}
                     percentage={(scores.profile2.overallScore / 10) * 100}
                     size={150}
                     strokeWidth={12}
-                    label={`${scores.profile2.overallScore}/10`}
+                    label={`${scores.profile2.overallScore}/100`}
                     color={!isProfile1Winner ? "indigo" : "purple"}
                   />
                 </div>
