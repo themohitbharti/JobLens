@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import type { RootState, AppDispatch } from "../store/store";
-import { clearComparisonResult } from "../store/linkedinCompareSlice";
+import {
+  clearComparisonResult,
+  setComparisonResult,
+} from "../store/linkedinCompareSlice";
 
 const LinkedinCompareResult: React.FC = () => {
   const navigate = useNavigate();
@@ -13,14 +16,42 @@ const LinkedinCompareResult: React.FC = () => {
   const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
-    // If no comparison result, redirect back to compare page
+    // Only redirect if there's no comparison result and we're not coming from a direct navigation
     if (!comparisonResult) {
-      navigate("/compare-linkedin");
+      // Check if we have comparison data in sessionStorage as a backup
+      const storedResult = sessionStorage.getItem("linkedinComparisonResult");
+      if (storedResult) {
+        try {
+          const parsedResult = JSON.parse(storedResult);
+          dispatch(setComparisonResult(parsedResult));
+          return;
+        } catch (error) {
+          console.error("Failed to parse stored comparison result:", error);
+        }
+      }
+
+      // Only redirect if we're certain there's no valid data
+      const timer = setTimeout(() => {
+        navigate("/compare-linkedin");
+      }, 100); // Small delay to allow for any pending state updates
+
+      return () => clearTimeout(timer);
     }
-  }, [comparisonResult, navigate]);
+  }, [comparisonResult, navigate, dispatch]);
+
+  // Store comparison result in sessionStorage whenever it changes
+  useEffect(() => {
+    if (comparisonResult) {
+      sessionStorage.setItem(
+        "linkedinComparisonResult",
+        JSON.stringify(comparisonResult),
+      );
+    }
+  }, [comparisonResult]);
 
   const handleNewComparison = () => {
     dispatch(clearComparisonResult());
+    sessionStorage.removeItem("linkedinComparisonResult"); // Clean up stored data
     navigate("/compare-linkedin");
   };
 
@@ -367,53 +398,52 @@ Generated on: ${new Date().toLocaleDateString()}
 
         {/* Winner Announcement Card */}
         <div className="relative mb-16">
-          <div
-            className={`relative overflow-hidden rounded-3xl p-8 shadow-2xl transition-all duration-500 ${
-              isProfile1Winner
-                ? "border-2 border-blue-300 bg-gradient-to-br from-blue-50/90 to-cyan-100/70"
-                : "border-2 border-indigo-300 bg-gradient-to-br from-indigo-50/90 to-purple-100/70"
-            }`}
-          >
-            <div className="relative z-10 text-center">
-              <div className="mb-6">
-                <div className="flex justify-center">
-                  <div
-                    className={`rounded-full p-4 ${
-                      isProfile1Winner
-                        ? "bg-gradient-to-r from-blue-500 to-cyan-500"
-                        : "bg-gradient-to-r from-indigo-500 to-purple-500"
-                    } shadow-2xl`}
-                  >
+          <div className="rounded-3xl border border-white/60 bg-gradient-to-br from-white/95 via-blue-50/90 to-indigo-100/80 p-12 shadow-2xl backdrop-blur-xl">
+            <div className="text-center">
+              {/* Winner Crown Animation */}
+              <div className="mb-8 flex justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-blue-400/30 to-indigo-400/30 blur-2xl"></div>
+                  <div className="relative flex h-32 w-32 animate-bounce items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 shadow-2xl">
                     <svg
-                      className="h-12 w-12 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                      className="h-16 w-16 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
                     >
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
                   </div>
                 </div>
               </div>
-              <h2 className="mb-4 text-4xl font-black text-gray-800">
-                🏆 WINNER:{" "}
-                {isProfile1Winner
-                  ? scores.profile1.fileName
-                  : scores.profile2.fileName}
+
+              <h2 className="mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-5xl font-black text-transparent">
+                TOP PERFORMER
               </h2>
-              <div className="mb-4 text-2xl font-bold text-gray-700">
-                Score:{" "}
-                {isProfile1Winner
-                  ? scores.profile1.overallScore
-                  : scores.profile2.overallScore}
-                /10
+
+              <div className="mb-8 space-y-4">
+                <h3 className="text-4xl font-bold text-gray-800">
+                  {isProfile1Winner
+                    ? scores.profile1.fileName
+                    : scores.profile2.fileName}
+                </h3>
+                <div className="flex justify-center">
+                  <CircularProgress
+                    percentage={
+                      isProfile1Winner
+                        ? scores.profile1.overallScore * 10
+                        : scores.profile2.overallScore * 10
+                    }
+                    size={160}
+                    strokeWidth={12}
+                    label="Overall Score"
+                    color="blue"
+                  />
+                </div>
               </div>
-              <p className="text-lg text-gray-600">
-                {winner.reason ||
-                  `Achieved ${winner.scoreDifference} point advantage over the other profile`}
-              </p>
-              <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-                <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-4 shadow-lg">
+
+              {/* Comparison Stats */}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-100 p-6 shadow-lg">
                   <div className="mb-4 flex justify-center">
                     <GradientIcon gradient="blue">
                       <svg
@@ -426,26 +456,105 @@ Generated on: ${new Date().toLocaleDateString()}
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-6m-2-3h6m-8 0V9a2 2 0 012-2h8a2 2 0 012 2v8M9 7h.01M9 10h.01"
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
                         />
                       </svg>
                     </GradientIcon>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-blue-600">
-                      {scores.profile1.overallScore}/10
+                      +{winner.scoreDifference}
                     </div>
-                    <div className="text-sm text-blue-700">
-                      {scores.profile1.fileName}
+                    <div className="text-sm font-medium text-blue-700">
+                      Point Advantage
                     </div>
-                    <div className="mt-2 text-xs text-blue-600">
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-100 p-6 shadow-lg">
+                  <div className="mb-4 flex justify-center">
+                    <GradientIcon gradient="purple">
+                      <svg
+                        className="h-6 w-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </GradientIcon>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-purple-600">
+                      {(comparisonResult.processingTime / 1000).toFixed(1)}s
+                    </div>
+                    <div className="text-sm font-medium text-purple-700">
+                      Analysis Duration
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-green-200 bg-gradient-to-br from-green-50 to-emerald-100 p-6 shadow-lg">
+                  <div className="mb-4 flex justify-center">
+                    <GradientIcon gradient="green">
+                      <svg
+                        className="h-6 w-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                        />
+                      </svg>
+                    </GradientIcon>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-600">
                       {comparisonResult.usedPreferences.targetIndustry ||
                         "General"}
                     </div>
-                    <div className="text-sm font-medium text-blue-700">
+                    <div className="text-sm font-medium text-green-700">
                       Target Industry
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-100 p-6 shadow-lg">
+                <div className="mb-4 flex justify-center">
+                  <GradientIcon gradient="indigo">
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2zm8 0V3a2 2 0 00-2-2h-4a2 2 0 00-2 2v2h8zm0 2h2a2 2 0 012 2v6a2 2 0 01-2 2h-2V7z"
+                      />
+                    </svg>
+                  </GradientIcon>
+                </div>
+                <div className="text-center">
+                  <div className="mb-2 text-lg font-bold text-gray-700">
+                    Winner Analysis
+                  </div>
+                  <p className="text-sm text-indigo-700">
+                    {winner.reason ||
+                      `Achieved ${winner.scoreDifference} point advantage with superior professional presentation across multiple LinkedIn sections`}
+                  </p>
                 </div>
               </div>
             </div>
