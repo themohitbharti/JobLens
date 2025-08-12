@@ -68,7 +68,7 @@ const Dashboard = () => {
       navigate(`/resume-scan-result/${scan.scanId}`);
     } else {
       // Navigate to LinkedIn scan result page when implemented
-      navigate(`/linkedin-scan-result/${scan.scanId}`);
+      navigate(`/linkedin-builder-result/${scan.scanId}`);
     }
   };
 
