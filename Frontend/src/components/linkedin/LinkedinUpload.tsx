@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import type { RootState, AppDispatch } from "../../store/store";
-import { scanLinkedInProfile } from "../../store/linkedinScanSlice";
+import { scanLinkedinProfile } from "../../store/linkedinScanSlice";
 import {
   updateScansLeft,
   updateLastLinkedins,
@@ -62,7 +62,7 @@ const LinkedinUpload: React.FC = () => {
         }),
       };
 
-      const result = await dispatch(scanLinkedInProfile(requestData)).unwrap();
+      const result = await dispatch(scanLinkedinProfile(requestData)).unwrap();
 
       dispatch(updateScansLeft(Math.max(0, scansLeft - 1)));
       dispatch(

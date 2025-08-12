@@ -19,6 +19,8 @@ import {
   ResumeCompareResult,
   LinkedinCompare,
   LinkedinScan,
+  LinkedinScanResult,
+  LinkedinSectionAnalysisDetail,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -28,7 +30,7 @@ import {
 import { AuthProvider } from "./contexts/AuthProvider.tsx";
 // import Categories from "./pages/Discover.tsx";
 import { Toaster } from "react-hot-toast";
-import {ResumeStats} from "./pages/index.ts";
+import { ResumeStats } from "./pages/index.ts";
 
 const router = createBrowserRouter([
   {
@@ -103,7 +105,11 @@ const router = createBrowserRouter([
           },
           {
             path: "/linkedin-builder-result/:scanId",
-            element: <div> coming soon</div>,
+            element: <LinkedinScanResult />,
+          },
+          {
+            path: "/linkedin-builder-result/:scanId/section/:sectionName",
+            element: <LinkedinSectionAnalysisDetail />,
           },
           {
             path: "/compare-linkedin",

@@ -87,6 +87,53 @@ interface CompareLinkedinResponse {
   };
 }
 
+interface LinkedinScanResponse {
+  success: boolean;
+  message: string;
+  data: {
+    scanId: string;
+    overallScore: number;
+    sectionScores: Array<{
+      sectionName: string;
+      score: number;
+      weight: number;
+    }>;
+    detailedFeedback: Array<{
+      sectionName: string;
+      currentScore: number;
+      issues: string[];
+      aiSuggestion?: {
+        originalText: string;
+        improvedText: string;
+        explanation: string;
+        improvementType: string;
+      };
+      benchmarkResults: Record<string, { passed: boolean; score: number }>;
+      _id?: string;
+    }>;
+    benchmarkResults: Record<string, { passed: boolean; score: number }>;
+    processingTime: number;
+    improvementPotential: number;
+    sectionsFound: string[];
+    usedPreferences: {
+      targetIndustry: string;
+      experienceLevel: string;
+      targetJobTitle: string;
+      isUsingDefaults: {
+        industry: boolean;
+        experienceLevel: boolean;
+        jobTitle: boolean;
+      };
+    };
+    contentInfo: {
+      originalWordCount: number;
+      processedWordCount: number;
+      wasTruncated: boolean;
+      estimatedTokensUsed: number;
+    };
+  };
+}
+
 export const linkedinCompareAPI = {
   compareProfiles: async (
     formData: FormData,
@@ -105,13 +152,11 @@ export const linkedinCompareAPI = {
 };
 
 export const linkedinScanAPI = {
-  scanLinkedInProfile: async (data: FormData) => {
-    const response = await axiosInstance.post("/linkedin/scan", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    console.log(response.data)
-    return response.data;
+  scanLinkedInProfile: (data: FormData) => {
+    return axiosInstance.post<LinkedinScanResponse>("/linkedin/scan", data);
+  },
+
+  getScanResult: (scanId: string) => {
+    return axiosInstance.get<LinkedinScanResponse>(`/linkedin/scan/${scanId}`);
   },
 };
