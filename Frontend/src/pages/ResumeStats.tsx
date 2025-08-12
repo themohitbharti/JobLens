@@ -273,7 +273,7 @@ const ResumeStats = () => {
 
           {/* Right Side - Enhanced Stats Dashboard */}
           <div className="lg:col-span-2">
-            <div className="relative rounded-3xl border border-red-100 bg-gradient-to-br from-red-50 via-pink-50 to-rose-50 p-8 shadow-xl h-full">
+            <div className="relative h-full rounded-3xl border border-red-100 bg-gradient-to-br from-red-50 via-pink-50 to-rose-50 p-8 shadow-xl">
               {/* Decorative Elements */}
               <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-gradient-to-r from-red-200 to-pink-200 opacity-20"></div>
               <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-gradient-to-r from-pink-200 to-rose-200 opacity-20"></div>

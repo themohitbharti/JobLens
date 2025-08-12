@@ -90,10 +90,10 @@ const scanResume = asyncHandler(async (req: CustomRequest, res: Response) => {
     if (!canScan) {
       return res.status(429).json({
         success: false,
-        message: "Daily scan limit reached (30 scans per day)",
+        message: "Daily scan limit reached (10 scans per day)",
         data: {
           scansLeft: user.scansLeft,
-          dailyLimit: 30,
+          dailyLimit: 10,
         },
       });
     }
@@ -355,7 +355,7 @@ const compareResumes = asyncHandler(async (req: CustomRequest, res: Response) =>
     if (!canScan) {
       return res.status(429).json({
         success: false,
-        message: "Daily scan limit reached (30 scans per day)",
+        message: "Daily scan limit reached (10 scans per day)",
       });
     }
 

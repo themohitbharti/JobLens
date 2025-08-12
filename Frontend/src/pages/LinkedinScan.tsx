@@ -71,7 +71,7 @@ const LinkedinScan: React.FC = () => {
                       : "text-red-600"
                 }`}
               >
-                {scansLeft}/30
+                {scansLeft}/10
               </span>
             </div>
           </div>

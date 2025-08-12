@@ -222,9 +222,9 @@ const userSchema = new mongoose.Schema<UserDocument>(
 
     scansLeft: {
       type: Number,
-      default: 30,
+      default: 10,
       min: 0,
-      max: 30,
+      max: 10,
     },
   },
   { timestamps: true }
@@ -281,7 +281,7 @@ userSchema.methods.canPerformScan = async function () {
     return scanDate.getTime() === today.getTime();
   });
 
-  return !todayScans || todayScans.totalCount < 30;
+  return !todayScans || todayScans.totalCount < 10;
 };
 
 userSchema.methods.updateDailyScanCount = async function (scanType: 'resume' | 'linkedin') {
@@ -456,7 +456,7 @@ userSchema.methods.calculateScansLeft = function () {
   });
 
   const usedScans = todayScans ? todayScans.totalCount : 0;
-  return Math.max(0, 30 - usedScans);
+  return Math.max(0, 10 - usedScans);
 };
 
 userSchema.methods.updateLastResumes = async function (scanId: mongoose.Types.ObjectId, overallScore: number) {

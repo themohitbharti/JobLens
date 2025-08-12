@@ -69,7 +69,7 @@ const safeDeleteFiles = (filePaths: string[]) => {
     let uploadedFilePath: string | null = null;
   
     try {
-      // Check if user can perform scan (this already checks the 30 scans per day limit)
+      // Check if user can perform scan (this already checks the 10 scans per day limit)
       const user = await User.findById(req.user._id);
       if (!user) {
         return res.status(404).json({
@@ -82,7 +82,7 @@ const safeDeleteFiles = (filePaths: string[]) => {
       if (!canScan) {
         return res.status(429).json({
           success: false,
-          message: "Daily scan limit reached (30 scans per day for both resume and LinkedIn combined)",
+          message: "Daily scan limit reached (10 scans per day for both resume and LinkedIn combined)", 
         });
       }
   
@@ -348,7 +348,7 @@ const compareLinkedinProfiles = asyncHandler(async (req: CustomRequest, res: Res
     if (!canScan) {
       return res.status(429).json({
         success: false,
-        message: "Daily scan limit reached (30 scans per day)",
+        message: "Daily scan limit reached (10 scans per day)",
       });
     }
 

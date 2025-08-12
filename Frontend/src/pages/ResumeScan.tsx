@@ -5,7 +5,7 @@ import type { RootState } from "../store/store";
 
 const ResumeScan: React.FC = () => {
   const scansLeft = useSelector(
-    (state: RootState) => state.auth.user?.scansLeft ?? 30,
+    (state: RootState) => state.auth.user?.scansLeft ?? 10, // Changed from 30
   );
 
   return (
@@ -42,7 +42,7 @@ const ResumeScan: React.FC = () => {
                       : "text-red-600"
                 }`}
               >
-                {scansLeft}/30
+                {scansLeft}/10
               </span>
             </div>
           </div>

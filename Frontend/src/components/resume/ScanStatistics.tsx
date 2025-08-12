@@ -21,7 +21,7 @@ const ScanStatistics: React.FC<ScanStatisticsProps> = ({
   );
 
   // Use props if provided, otherwise use Redux state
-  const scansLeft = propScansLeft ?? user?.scansLeft ?? 30;
+  const scansLeft = propScansLeft ?? user?.scansLeft ?? 10;
   const completedScans =
     propCompletedScans ??
     resumeStatsData?.totalScans ??
@@ -51,16 +51,15 @@ const ScanStatistics: React.FC<ScanStatisticsProps> = ({
       <div className="mt-4">
         <div className="mb-2 flex justify-between text-sm text-gray-600">
           <span>Daily Usage</span>
-          <span>{30 - scansLeft}/30</span>
+          <span>{10 - scansLeft}/10</span> // Changed from 30
         </div>
         <div className="h-2 rounded-full bg-gray-200">
           <div
             className="h-2 rounded-full bg-gradient-to-r from-red-500 to-rose-500 transition-all duration-300"
-            style={{ width: `${((30 - scansLeft) / 30) * 100}%` }}
+            style={{ width: `${((10 - scansLeft) / 10) * 100}%` }} // Changed from 30
           ></div>
         </div>
       </div>
-      
     </div>
   );
 };
