@@ -345,6 +345,7 @@ const LinkedinScanResult: React.FC = () => {
             <span className="font-medium">Back to LinkedIn Builder</span>
           </button>
 
+          {/* Main Header */}
           <div className="flex items-center justify-between">
             <div>
               <h1 className="bg-gradient-to-r from-gray-800 via-blue-700 to-blue-600 bg-clip-text text-4xl font-extrabold text-transparent">
@@ -357,22 +358,11 @@ const LinkedinScanResult: React.FC = () => {
                 </p>
               </div>
             </div>
-
-            <button
-              onClick={() => setShowSuggestions(!showSuggestions)}
-              className={`rounded-2xl px-6 py-3 font-semibold shadow-lg transition-all duration-200 ${
-                showSuggestions
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
-                  : "border-2 border-blue-200 bg-white/80 text-blue-700 hover:bg-blue-50"
-              }`}
-            >
-              {showSuggestions ? "Hide Suggestions" : "View AI Suggestions"}
-            </button>
           </div>
         </div>
 
         <div className="mx-auto max-w-7xl space-y-8">
-          {/* Main Score Overview - Original Design */}
+          {/* Main Score Overview */}
           <div className="rounded-3xl border border-white/80 bg-gradient-to-br from-white/90 via-indigo-100/90 to-purple-200/80 p-8 shadow-2xl backdrop-blur-xl">
             <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-3">
               {/* Main Score Circle */}
@@ -411,9 +401,9 @@ const LinkedinScanResult: React.FC = () => {
                         {scanData.improvementPotential}%
                       </p>
                     </div>
-                    <div className="rounded-xl bg-blue-500/10 p-3 shadow-inner">
+                    <div className="rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 p-3">
                       <svg
-                        className="h-6 w-6 text-blue-500"
+                        className="h-6 w-6 text-white"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -422,15 +412,15 @@ const LinkedinScanResult: React.FC = () => {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                          d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
                         />
                       </svg>
                     </div>
                   </div>
                 </div>
 
-                {/* Sections Analyzed Card */}
-                <div className="rounded-2xl border border-indigo-300/60 bg-gradient-to-br from-indigo-100/90 via-purple-100/80 to-blue-200/60 p-6 shadow-lg backdrop-blur-sm">
+                {/* Sections Found Card */}
+                <div className="rounded-2xl border border-indigo-300/60 bg-gradient-to-br from-indigo-100/90 via-purple-100/80 to-pink-200/60 p-6 shadow-lg backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="mb-1 font-semibold text-gray-700">
@@ -440,9 +430,9 @@ const LinkedinScanResult: React.FC = () => {
                         {scanData.sectionScores.length}
                       </p>
                     </div>
-                    <div className="rounded-xl bg-indigo-500/10 p-3 shadow-inner">
+                    <div className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
                       <svg
-                        className="h-6 w-6 text-indigo-500"
+                        className="h-6 w-6 text-white"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -451,31 +441,9 @@ const LinkedinScanResult: React.FC = () => {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-4a2 2 0 01-2-2V7z"
                         />
                       </svg>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Target Role Match Card */}
-                <div className="rounded-2xl border border-purple-300/60 bg-gradient-to-br from-purple-100/90 via-pink-100/80 to-indigo-200/60 p-6 shadow-lg backdrop-blur-sm">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="mb-1 font-semibold text-gray-700">
-                        Target Role
-                      </h4>
-                      <p className="text-lg font-bold text-purple-600">
-                        {scanData.usedPreferences?.targetJobTitle ||
-                          "General Analysis"}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">Industry Focus</p>
-                      <p className="font-semibold text-gray-800">
-                        {scanData.usedPreferences?.targetIndustry ||
-                          "Technology"}
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -485,15 +453,17 @@ const LinkedinScanResult: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="mb-1 font-semibold text-gray-700">
-                        Analysis Time
+                        Processing Time
                       </h4>
                       <p className="text-3xl font-bold text-green-600">
-                        {Math.round(scanData.processingTime / 1000)}s
+                        {scanData.processingTime
+                          ? `${(scanData.processingTime / 1000).toFixed(1)}s`
+                          : "< 30s"}
                       </p>
                     </div>
-                    <div className="rounded-xl bg-green-500/10 p-3 shadow-inner">
+                    <div className="rounded-full bg-gradient-to-r from-green-500 to-emerald-500 p-3">
                       <svg
-                        className="h-6 w-6 text-green-500"
+                        className="h-6 w-6 text-white"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -508,6 +478,35 @@ const LinkedinScanResult: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* AI Suggestions Card */}
+                <div className="rounded-2xl border border-red-300/60 bg-gradient-to-br from-pink-100/90 via-red-100/80 to-red-200/60 p-6 shadow-lg backdrop-blur-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="mb-1 font-semibold text-gray-700">
+                        AI Suggestions
+                      </h4>
+                      <p className="text-3xl font-bold text-red-600">
+                        {aiSuggestions.length}
+                      </p>
+                    </div>
+                    <div className="rounded-full bg-gradient-to-r from-pink-500 to-red-500 p-3">
+                      <svg
+                        className="h-6 w-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -516,9 +515,9 @@ const LinkedinScanResult: React.FC = () => {
               {/* Highest Section */}
               <div className="rounded-2xl border border-emerald-300/60 bg-gradient-to-br from-emerald-100/90 via-green-100/80 to-teal-200/60 p-4 shadow-lg backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
-                  <div className="rounded-lg bg-emerald-100 p-2 text-emerald-600 shadow-inner">
+                  <div className="rounded-full bg-gradient-to-r from-emerald-500 to-green-500 p-2">
                     <svg
-                      className="h-5 w-5"
+                      className="h-5 w-5 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -548,9 +547,9 @@ const LinkedinScanResult: React.FC = () => {
               {/* Lowest Section */}
               <div className="rounded-2xl border border-red-300/60 bg-gradient-to-br from-red-100/90 via-rose-100/80 to-pink-200/60 p-4 shadow-lg backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
-                  <div className="rounded-lg bg-red-100 p-2 text-red-600 shadow-inner">
+                  <div className="rounded-full bg-gradient-to-r from-red-500 to-rose-500 p-2">
                     <svg
-                      className="h-5 w-5"
+                      className="h-5 w-5 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -559,7 +558,7 @@ const LinkedinScanResult: React.FC = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.498 0L4.316 15.5c-.77.833.192 2.5 1.732 2.5z"
                       />
                     </svg>
                   </div>
@@ -580,9 +579,9 @@ const LinkedinScanResult: React.FC = () => {
               {/* Average Score */}
               <div className="rounded-2xl border border-blue-300/60 bg-gradient-to-br from-blue-100/90 via-indigo-100/80 to-purple-200/60 p-4 shadow-lg backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
-                  <div className="rounded-lg bg-blue-100 p-2 text-blue-600 shadow-inner">
+                  <div className="rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 p-2">
                     <svg
-                      className="h-5 w-5"
+                      className="h-5 w-5 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -591,7 +590,7 @@ const LinkedinScanResult: React.FC = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2v-8a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
                   </div>
@@ -792,12 +791,12 @@ const LinkedinScanResult: React.FC = () => {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2v-8a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                           />
                         </svg>
                       </div>
                     </div>
-                    <h4 className="mb-2 text-lg font-bold text-gray-800">
+                    <h4 className="mb-2 text-xl font-bold text-gray-800">
                       Average Score
                     </h4>
                     <div className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-5xl font-extrabold text-transparent">
@@ -853,7 +852,7 @@ const LinkedinScanResult: React.FC = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2v-8a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                       />
                     </svg>
                   </div>
@@ -1014,7 +1013,7 @@ const LinkedinScanResult: React.FC = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        d="M13 16h-1v-4h-1m-1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
                   </div>
@@ -1061,13 +1060,30 @@ const LinkedinScanResult: React.FC = () => {
           {/* Section Analysis */}
           <div className="rounded-3xl border border-white/80 bg-gradient-to-br from-white/90 via-blue-50/90 to-indigo-100/80 p-8 shadow-2xl backdrop-blur-xl">
             <div className="mb-8 flex items-center justify-between">
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800">
-                  Section Analysis
-                </h3>
-                <p className="text-gray-600">
-                  Click on any section for detailed insights
-                </p>
+              <div className="flex items-center">
+                <div className="mr-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                  <svg
+                    className="h-6 w-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    Section Analysis
+                  </h3>
+                  <p className="text-gray-600">
+                    Click on any section for detailed insights
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -1131,7 +1147,9 @@ const LinkedinScanResult: React.FC = () => {
                     </div>
                     <div className="h-2 rounded-full bg-gray-200">
                       <div
-                        className={`h-2 rounded-full transition-all duration-1000 ${getScoreGradient(section.score)}`}
+                        className={`h-2 rounded-full transition-all duration-1000 ${getScoreGradient(
+                          section.score,
+                        )}`}
                         style={{ width: `${section.score * 10}%` }}
                       />
                     </div>
@@ -1141,13 +1159,13 @@ const LinkedinScanResult: React.FC = () => {
             </div>
           </div>
 
-          {/* AI Suggestions Panel (conditional) */}
-          {showSuggestions && aiSuggestions.length > 0 && (
-            <div className="rounded-3xl border border-green-200/50 bg-gradient-to-br from-green-50/90 via-emerald-50/80 to-green-100/60 p-8 shadow-2xl backdrop-blur-xl">
-              <div className="mb-8 flex items-center">
-                <div className="mr-4 rounded-xl bg-green-100/80 p-3 shadow-inner">
+          {/* AI Insights Panel with Button */}
+          <div className="rounded-3xl border border-green-200/50 bg-gradient-to-br from-green-50/90 via-emerald-50/80 to-green-100/60 p-8 shadow-2xl backdrop-blur-xl">
+            <div className="mb-8 flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="mr-4 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 p-3">
                   <svg
-                    className="h-6 w-6 text-green-600"
+                    className="h-6 w-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -1156,20 +1174,66 @@ const LinkedinScanResult: React.FC = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
                     />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-green-800">
-                    AI Improvement Suggestions
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    AI Insights
                   </h3>
-                  <p className="text-green-700">
-                    Personalized recommendations to enhance your profile
+                  <p className="text-gray-600">
+                    Personalized suggestions to enhance your LinkedIn profile
                   </p>
                 </div>
               </div>
 
+              {/* Toggle Button */}
+              <button
+                onClick={() => setShowSuggestions(!showSuggestions)}
+                className={`rounded-2xl px-6 py-3 font-semibold shadow-lg transition-all duration-200 ${
+                  showSuggestions
+                    ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white"
+                    : "border-2 border-green-200 bg-white/80 text-green-700 hover:bg-green-50"
+                }`}
+              >
+                {showSuggestions ? "Hide Suggestions" : "View AI Suggestions"}
+              </button>
+            </div>
+
+            {/* Show suggestions count and potential improvement even when collapsed */}
+            {!showSuggestions && (
+              <div className="text-center">
+                <div className="inline-flex items-center space-x-4 rounded-xl bg-white/60 px-6 py-3 shadow-sm backdrop-blur-sm">
+                  <div className="flex items-center space-x-2">
+                    <div className="h-3 w-3 animate-pulse rounded-full bg-green-500"></div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {aiSuggestions.length} AI Suggestions Available
+                    </span>
+                  </div>
+                  <div className="h-4 w-px bg-gray-300"></div>
+                  <div className="flex items-center space-x-2">
+                    <svg
+                      className="h-4 w-4 text-green-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-sm font-medium text-green-700">
+                      +{scanData.improvementPotential}% Potential Improvement
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Suggestions Content */}
+            {showSuggestions && aiSuggestions.length > 0 && (
               <div className="space-y-6">
                 {aiSuggestions.map((suggestion, index) => (
                   <div
@@ -1220,8 +1284,36 @@ const LinkedinScanResult: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+
+            {/* No suggestions available message */}
+            {showSuggestions && aiSuggestions.length === 0 && (
+              <div className="py-8 text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                  <svg
+                    className="h-8 w-8 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h4 className="mb-2 text-lg font-semibold text-gray-800">
+                  Great Work!
+                </h4>
+                <p className="text-gray-600">
+                  Your LinkedIn profile is already optimized. No AI suggestions
+                  needed at this time.
+                </p>
+              </div>
+            )}
+          </div>
 
           {/* Action Panel */}
           <div className="rounded-3xl border border-white/80 bg-gradient-to-br from-white/90 via-purple-50/90 to-pink-100/80 p-8 shadow-2xl backdrop-blur-xl">
@@ -1238,7 +1330,7 @@ const LinkedinScanResult: React.FC = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2v-8a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                     />
                   </svg>
                 </div>

@@ -711,9 +711,9 @@ const ResumeScanResult: React.FC = () => {
                         {scanData.improvementPotential}%
                       </p>
                     </div>
-                    <div className="rounded-xl bg-red-500/10 p-3 shadow-inner">
+                    <div className="rounded-full bg-gradient-to-r from-red-500 to-pink-500 p-3">
                       <svg
-                        className="h-6 w-6 text-red-500"
+                        className="h-6 w-6 text-white"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -722,7 +722,7 @@ const ResumeScanResult: React.FC = () => {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                          d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
                         />
                       </svg>
                     </div>
@@ -740,9 +740,9 @@ const ResumeScanResult: React.FC = () => {
                         {scanData.sectionScores.length}
                       </p>
                     </div>
-                    <div className="rounded-xl bg-blue-500/10 p-3 shadow-inner">
+                    <div className="rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 p-3">
                       <svg
-                        className="h-6 w-6 text-blue-500"
+                        className="h-6 w-6 text-white"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -751,7 +751,7 @@ const ResumeScanResult: React.FC = () => {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3"
+                          d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2M15 7a2 2 0 00-2-2H9a2 2 0 00-2 2v10a2 2 0 002 2h4a2 2 0 002-2V7z"
                         />
                       </svg>
                     </div>
@@ -762,9 +762,9 @@ const ResumeScanResult: React.FC = () => {
                 <div className="col-span-1 rounded-2xl border border-purple-300/60 bg-gradient-to-br from-purple-100/90 via-pink-100/80 to-rose-200/60 p-6 shadow-lg backdrop-blur-sm sm:col-span-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="rounded-xl bg-purple-500/10 p-3 shadow-inner">
+                      <div className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 p-3">
                         <svg
-                          className="h-6 w-6 text-purple-500"
+                          className="h-6 w-6 text-white"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -1002,9 +1002,9 @@ const ResumeScanResult: React.FC = () => {
               {/* Highest Section */}
               <div className="rounded-2xl border border-emerald-300/60 bg-gradient-to-br from-emerald-100/90 via-green-100/80 to-teal-200/60 p-4 shadow-lg backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
-                  <div className="rounded-lg bg-emerald-100 p-2 text-emerald-600 shadow-inner">
+                  <div className="rounded-full bg-gradient-to-r from-emerald-500 to-green-500 p-2">
                     <svg
-                      className="h-5 w-5"
+                      className="h-5 w-5 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1034,9 +1034,9 @@ const ResumeScanResult: React.FC = () => {
               {/* Lowest Section */}
               <div className="rounded-2xl border border-red-300/60 bg-gradient-to-br from-red-100/90 via-rose-100/80 to-pink-200/60 p-4 shadow-lg backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
-                  <div className="rounded-lg bg-red-100 p-2 text-red-600 shadow-inner">
+                  <div className="rounded-full bg-gradient-to-r from-red-500 to-rose-500 p-2">
                     <svg
-                      className="h-5 w-5"
+                      className="h-5 w-5 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1045,7 +1045,7 @@ const ResumeScanResult: React.FC = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.498 0L4.316 15.5c-.77.833.192 2.5 1.732 2.5z"
                       />
                     </svg>
                   </div>
@@ -1066,9 +1066,9 @@ const ResumeScanResult: React.FC = () => {
               {/* Average Score */}
               <div className="rounded-2xl border border-blue-300/60 bg-gradient-to-br from-blue-100/90 via-indigo-100/80 to-purple-200/60 p-4 shadow-lg backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
-                  <div className="rounded-lg bg-blue-100 p-2 text-blue-600 shadow-inner">
+                  <div className="rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 p-2">
                     <svg
-                      className="h-5 w-5"
+                      className="h-5 w-5 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1077,7 +1077,7 @@ const ResumeScanResult: React.FC = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2v-8a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2h2a2 2 0 002-2v-8a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                       />
                     </svg>
                   </div>
@@ -1101,13 +1101,13 @@ const ResumeScanResult: React.FC = () => {
             </div>
           </div>
 
-          {/* Enhanced Section Analysis with More Intense Gradient Backgrounds */}
+          {/* Enhanced Section Analysis */}
           <div className="rounded-3xl border border-white/80 bg-gradient-to-br from-white/90 via-purple-100/90 to-pink-200/80 p-8 shadow-2xl backdrop-blur-xl">
             <div className="mb-8 flex items-center justify-between">
               <div className="flex items-center">
-                <div className="mr-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-indigo-500/10 p-3 shadow-inner">
+                <div className="mr-4 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 p-3">
                   <svg
-                    className="h-6 w-6 text-purple-600"
+                    className="h-6 w-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -1116,7 +1116,7 @@ const ResumeScanResult: React.FC = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
                 </div>
@@ -1311,9 +1311,9 @@ const ResumeScanResult: React.FC = () => {
             {/* Quick Improvements Card */}
             <div className="hover:shadow-3xl flex w-full flex-col rounded-2xl border border-white/80 bg-gradient-to-br from-white/95 via-red-100/90 to-orange-200/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300">
               <div className="mb-4 flex items-center">
-                <div className="mr-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 p-3 shadow-inner">
+                <div className="mr-4 rounded-full bg-gradient-to-r from-orange-500 to-red-500 p-3">
                   <svg
-                    className="h-6 w-6 text-orange-600"
+                    className="h-6 w-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -1322,13 +1322,11 @@ const ResumeScanResult: React.FC = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
                     />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800">
-                  Quick Improvements
-                </h3>
+                <h3 className="text-xl font-bold text-gray-800">AI Insights</h3>
               </div>
               {/* Highlighted improvement potential above suggestions */}
               <div className="mb-3 flex items-center justify-center">
@@ -1510,9 +1508,9 @@ const ResumeScanResult: React.FC = () => {
             <div className="hover:shadow-3xl mt-6 flex w-full flex-col justify-between rounded-2xl border border-white/80 bg-gradient-to-br from-white/95 via-blue-100/90 to-indigo-200/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300">
               <div>
                 <div className="mb-4 flex items-center">
-                  <div className="mr-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 p-3 shadow-inner">
+                  <div className="mr-4 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 p-3">
                     <svg
-                      className="h-6 w-6 text-blue-600"
+                      className="h-6 w-6 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1521,12 +1519,12 @@ const ResumeScanResult: React.FC = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2v-8a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                       />
                     </svg>
                   </div>
                   <h3 className="text-xl font-bold text-gray-800">
-                    Track Progress
+                    Analytics Dashboard
                   </h3>
                 </div>
                 <p className="mb-4 text-gray-600">
