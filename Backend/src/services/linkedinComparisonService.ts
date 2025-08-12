@@ -212,8 +212,9 @@ export class LinkedinComparisonService {
     );
 
     return allBenchmarks.map(benchmark => {
-      const score1 = profile1.analysis.benchmarkResults[benchmark]?.matchPercentage || 0;
-      const score2 = profile2.analysis.benchmarkResults[benchmark]?.matchPercentage || 0;
+      // Use the actual score (0-10) instead of matchPercentage (0-100)
+      const score1 = this.scoringService.calculateBenchmarkScore(benchmark, profile1.analysis.benchmarkResults[benchmark]) || 0;
+      const score2 = this.scoringService.calculateBenchmarkScore(benchmark, profile2.analysis.benchmarkResults[benchmark]) || 0;
       const passed1 = profile1.analysis.benchmarkResults[benchmark]?.passed || false;
       const passed2 = profile2.analysis.benchmarkResults[benchmark]?.passed || false;
       

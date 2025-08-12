@@ -117,7 +117,7 @@ export class LinkedinScoringService {
   }
 
   // Calculate individual benchmark score based on Gemini analysis
-  private calculateBenchmarkScore(benchmark: string, result: LinkedinGeminiBenchmarkResult): number {
+  public calculateBenchmarkScore(benchmark: string, result: LinkedinGeminiBenchmarkResult): number {
     const baseScore = result.passed ? 6 : 2;
     const matchPercentage = result.matchPercentage || 0;
     
