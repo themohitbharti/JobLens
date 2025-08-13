@@ -51,7 +51,7 @@ const ScanStatistics: React.FC<ScanStatisticsProps> = ({
       <div className="mt-4">
         <div className="mb-2 flex justify-between text-sm text-gray-600">
           <span>Daily Usage</span>
-          <span>{10 - scansLeft}/10</span> // Changed from 30
+          <span>{10 - scansLeft}/10</span>
         </div>
         <div className="h-2 rounded-full bg-gray-200">
           <div

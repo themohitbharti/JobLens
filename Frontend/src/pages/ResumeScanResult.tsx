@@ -96,9 +96,8 @@ const ResumeScanResult: React.FC = () => {
       return (
         <div className="flex items-center justify-center rounded-xl bg-purple-200 p-2.5 shadow-inner">
           {" "}
-          {/* Changed from yellow */}
           <svg
-            className="h-5 w-5 text-purple-700" // Changed from yellow-600
+            className="h-5 w-5 text-purple-700"
             fill="currentColor"
             viewBox="0 0 20 20"
           >

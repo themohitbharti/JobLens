@@ -621,7 +621,7 @@ export class DeterministicScoringService {
     const weights = this.getAdjustedWeights(
       safeJobTitle,
       safeExperienceLevel,
-      undefined // Changed from null to undefined
+      undefined 
     );
 
     let weightedScore = 0;
