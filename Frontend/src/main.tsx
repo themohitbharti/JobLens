@@ -22,6 +22,7 @@ import {
   LinkedinScanResult,
   LinkedinSectionAnalysisDetail,
   LinkedinCompareResult,
+  Settings,
   // VerifyOTP,
   // UploadItem,
   // ProductDetails,
@@ -126,7 +127,7 @@ const router = createBrowserRouter([
           },
           {
             path: "/settings",
-            element: <div>Settings Coming Soon</div>,
+            element: <Settings />,
           },
         ],
       },

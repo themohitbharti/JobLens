@@ -973,6 +973,52 @@ const getLastFiveScans = asyncHandler(async (req: CustomRequest, res: Response) 
   }
 });
 
+const getUserDetails = asyncHandler(async (req: CustomRequest, res: Response) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .populate('lastResumes.scanId', 'fileName scanDate overallScore')
+      .populate('lastLinkedins.scanId', 'scanDate overallScore')
+      .select('-password -refreshToken -resetPasswordToken -resetPasswordExpires');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Calculate current stats if they don't exist
+    if (!user.resumeStats.totalScans) {
+      await user.calculateResumeStats();
+    }
+    if (!user.linkedinStats.totalScans) {
+      await user.calculateLinkedinStats();
+    }
+
+    // Calculate improvement trends
+    await user.calculateImprovementTrend('resume');
+    await user.calculateImprovementTrend('linkedin');
+    
+    // Calculate scans left
+    user.calculateScansLeft();
+    
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User details retrieved successfully",
+      data: user,
+    });
+  } catch (error: any) {
+    console.error("Error retrieving user details:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to get user details",
+      error: error.message,
+    });
+  }
+});
+
 export {
   registerUser,
   verifyOTP,
@@ -991,4 +1037,5 @@ export {
   getLastResumeScores,
   getLastLinkedinScores,
   getLastFiveScans,        // New API
+  getUserDetails,
 };

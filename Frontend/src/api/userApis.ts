@@ -138,6 +138,86 @@ export interface LinkedinStatsResponse {
   };
 }
 
+// Add this interface for user profile response
+export interface UserProfileResponse {
+  success: boolean;
+  message: string;
+  data: {
+    _id: string;
+    email: string;
+    fullName: string;
+    googleId?: string;
+    coverImage?: string;
+    createdAt: string;
+    updatedAt: string;
+    dailyScans: Array<{
+      date: string;
+      totalCount: number;
+      resumeCount: number;
+      linkedinCount: number;
+      _id: string;
+    }>;
+    resumeStats: {
+      totalScans: number;
+      weeklyScans: number;
+      weeklyAvg: number;
+      bestScore: number;
+      lastScanDate?: string;
+      improvementTrend: number;
+    };
+    linkedinStats: {
+      totalScans: number;
+      weeklyScans: number;
+      weeklyAvg: number;
+      bestScore: number;
+      lastScanDate?: string;
+      improvementTrend: number;
+    };
+    lastResumes: Array<{
+      scanId: string;
+      overallScore: number;
+      scanDate: string;
+    }>;
+    lastLinkedins: Array<{
+      scanId: string;
+      overallScore: number;
+      scanDate: string;
+    }>;
+    scansLeft: number;
+  };
+}
+
+// Add these new interfaces for profile updates
+export interface UpdateProfileRequest {
+  fullName: string;
+  // Add more fields as they become available in the backend
+}
+
+export interface ChangePasswordRequest {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface UpdatePreferencesRequest {
+  targetIndustry: string;
+  experienceLevel: string;
+  targetJobTitle: string;
+  emailNotifications: boolean;
+  weeklyReports: boolean;
+  scanReminders: boolean;
+}
+
+export interface UpdateProfileResponse {
+  success: boolean;
+  message: string;
+  data: {
+    _id: string;
+    email: string;
+    fullName: string;
+    // Add other fields as they become available
+  };
+}
+
 // Export the data type for reuse in Redux
 export type CombinedStatsData = CombinedStatsResponse["data"];
 
@@ -169,6 +249,42 @@ export const userAPI = {
   // Get LinkedIn statistics
   getLinkedinStats: async (): Promise<LinkedinStatsResponse> => {
     const response = await axiosInstance.get("/user/linkedin-stats");
+    return response.data;
+  },
+
+  // Get user profile using existing API
+  getUserProfile: async (): Promise<UserProfileResponse> => {
+    const response = await axiosInstance.get("/user/profile");
+    return response.data;
+  },
+
+  // Update user profile using existing API
+  updateProfile: async (
+    profileData: UpdateProfileRequest,
+  ): Promise<UpdateProfileResponse> => {
+    const response = await axiosInstance.put("/user/profile", profileData);
+    return response.data;
+  },
+
+  // Change password
+  changePassword: async (
+    passwordData: ChangePasswordRequest,
+  ): Promise<{ success: boolean; message: string }> => {
+    const response = await axiosInstance.post(
+      "/user/change-password",
+      passwordData,
+    );
+    return response.data;
+  },
+
+  // Update user preferences (you'll need to implement this in the backend)
+  updatePreferences: async (
+    preferencesData: UpdatePreferencesRequest,
+  ): Promise<{ success: boolean; message: string }> => {
+    const response = await axiosInstance.put(
+      "/user/preferences",
+      preferencesData,
+    );
     return response.data;
   },
 };

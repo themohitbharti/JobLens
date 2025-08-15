@@ -39,11 +39,14 @@ router.post('/forgot-password' ,forgotPassword);
 
 router.post('/reset-password' , resetPassword)
 
+// User profile routes
+router.get("/profile", verifyToken, getUserProfile);
+router.put("/profile", verifyToken, editUserProfile);
+
 // Stats routes
 router.get("/resume-stats", verifyToken, getResumeStats);              // Resume stats only
 router.get("/linkedin-stats", verifyToken, getLinkedinStats); // LinkedIn stats only
 router.get("/combined-stats", verifyToken, getCombinedStats); // Both stats combined
-
 
 // New routes for getting last scan scores
 router.get("/last-resume-scores", verifyToken, getLastResumeScores);
