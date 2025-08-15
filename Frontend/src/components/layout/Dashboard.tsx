@@ -37,6 +37,10 @@ const Dashboard = () => {
   const [showAllScans, setShowAllScans] = useState(false);
   const [loadingScans, setLoadingScans] = useState(false);
 
+  // Add new state for showing options
+  const [showCompareOptions, setShowCompareOptions] = useState(false);
+  const [showStatsOptions, setShowStatsOptions] = useState(false);
+
   useEffect(() => {
     dispatch(fetchResumeStats());
     // Load initial 3 scans
@@ -699,15 +703,17 @@ const Dashboard = () => {
 
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Profile Views</span>
+                  <span className="text-gray-600">Resume Scans</span>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-gray-900">342</div>
-                    <div className="text-xs text-green-600">+23%</div>
+                    <div className="text-2xl font-bold text-gray-900">12</div>
+                    <div className="text-xs text-green-600">
+                      +4 from last week
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Applications</span>
+                  <span className="text-gray-600">LinkedIn Scans</span>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-gray-900">8</div>
                     <div className="text-xs text-blue-600">+2 new</div>
@@ -715,10 +721,12 @@ const Dashboard = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Responses</span>
+                  <span className="text-gray-600">Avg. Score</span>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-gray-900">5</div>
-                    <div className="text-xs text-purple-600">63% rate</div>
+                    <div className="text-2xl font-bold text-gray-900">87%</div>
+                    <div className="text-xs text-purple-600">
+                      +5% improvement
+                    </div>
                   </div>
                 </div>
               </div>
@@ -750,8 +758,9 @@ const Dashboard = () => {
               </div>
 
               <div className="space-y-3">
+                {/* Upload New Resume */}
                 <Link to="/resume-scan">
-                  <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50">
+                  <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50 mb-3">
                     <svg
                       className="h-5 w-5 text-gray-600"
                       fill="none"
@@ -771,49 +780,143 @@ const Dashboard = () => {
                   </button>
                 </Link>
 
-                <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50">
-                  <svg
-                    className="h-5 w-5 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                {/* Compare Section */}
+                {!showCompareOptions ? (
+                  <button
+                    onClick={() => setShowCompareOptions(true)}
+                    className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <span className="font-medium text-gray-900">
-                    Job Application Tracker
-                  </span>
-                </button>
+                    <svg
+                      className="h-5 w-5 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      />
+                    </svg>
+                    <span className="font-medium text-gray-900">Compare</span>
+                  </button>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">
+                        Choose comparison type:
+                      </span>
+                      <button
+                        onClick={() => setShowCompareOptions(false)}
+                        className="text-xs text-gray-500 hover:text-gray-700"
+                      >
+                        Back
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link to="/compare-resumes">
+                        <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 px-3 py-2 text-sm font-medium text-white shadow-sm transition-all hover:from-red-600 hover:to-pink-600">
+                          <svg
+                            className="h-4 w-4 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          Resume
+                        </button>
+                      </Link>
+                      <Link to="/compare-linkedin">
+                        <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 px-3 py-2 text-sm font-medium text-white shadow-sm transition-all hover:from-red-600 hover:to-pink-600">
+                          <svg
+                            className="h-4 w-4 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                          </svg>
+                          LinkedIn
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                )}
 
-                <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50">
-                  <svg
-                    className="h-5 w-5 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                {/* Stats Section */}
+                {!showStatsOptions ? (
+                  <button
+                    onClick={() => setShowStatsOptions(true)}
+                    className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                  <span className="font-medium text-gray-900">
-                    Skills Assessment
-                  </span>
-                </button>
+                    <svg
+                      className="h-5 w-5 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      />
+                    </svg>
+                    <span className="font-medium text-gray-900">Stats</span>
+                  </button>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">
+                        Choose stats type:
+                      </span>
+                      <button
+                        onClick={() => setShowStatsOptions(false)}
+                        className="text-xs text-gray-500 hover:text-gray-700"
+                      >
+                        Back
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link to="/resume-stats">
+                        <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 px-3 py-2 text-sm font-medium text-white shadow-sm transition-all hover:from-red-600 hover:to-pink-600">
+                          <svg
+                            className="h-4 w-4 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          Resume
+                        </button>
+                      </Link>
+                      <Link to="/linkedin-stats">
+                        <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-pink-500 px-3 py-2 text-sm font-medium text-white shadow-sm transition-all hover:from-red-600 hover:to-pink-600">
+                          <svg
+                            className="h-4 w-4 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                          </svg>
+                          LinkedIn
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
