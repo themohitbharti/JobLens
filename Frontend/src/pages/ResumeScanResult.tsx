@@ -324,7 +324,7 @@ const ResumeScanResult: React.FC = () => {
         {/* Score display */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-2xl font-bold text-gray-800">{score}</span>
-          <span className="text-xs font-medium text-gray-500">/ 10</span>
+          <span className="text-xs font-medium text-gray-500">/ 100</span>
         </div>
       </div>
     );
