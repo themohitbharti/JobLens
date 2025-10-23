@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../store/store";
 import { fetchLinkedinSectionAnalysis } from "../store/linkedinScanSlice";
 import CustomCircularProgress from "../components/ui/CustomCircularProgress";
+import AnalysisLoader from "../components/common/AnalysisLoader";
 
 const LinkedinSectionAnalysisDetail: React.FC = () => {
   const { scanId, sectionName } = useParams<{
@@ -29,14 +30,7 @@ const LinkedinSectionAnalysisDetail: React.FC = () => {
   }, [dispatch, scanId, sectionName]);
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-blue-300 border-t-blue-600"></div>
-          <p className="text-gray-600">Loading section details...</p>
-        </div>
-      </div>
-    );
+    return <AnalysisLoader label="Loading section details..." />;
   }
 
   if (!scanResult || !sectionName || !selectedSection) {

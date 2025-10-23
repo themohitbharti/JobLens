@@ -9,6 +9,7 @@ import {
   fetchResumeStats,
 } from "../../store/authSlice";
 import toast from "react-hot-toast";
+import AnalysisLoader from "../common/AnalysisLoader";
 
 interface ResumePreferences {
   targetIndustry: string;
@@ -97,6 +98,9 @@ const ResumeUpload: React.FC = () => {
 
   return (
     <div className="grid gap-8 lg:grid-cols-2">
+      {loading && (
+        <AnalysisLoader label="Analyzing your resume..." />
+      )}
       {/* Upload Section */}
       <div className="rounded-3xl border-2 border-white/60 bg-gradient-to-br from-white/80 via-pink-50/80 to-purple-100/80 p-8 shadow-2xl backdrop-blur-xl">
         {/* Decorative elements */}
